@@ -2,8 +2,8 @@ export interface PermitGroup {
   FacilityID: string;
   FacilityName: string;
   RecAreaName: string;
-  Longitude: string;
-  Latitude: string;
+  Longitude: number;
+  Latitude: number;
 }
 
 export interface PermitGroupResponse {
@@ -17,6 +17,7 @@ export interface PermitGroupResponse {
 export interface Division {
   id: string;
   district: string;
+  description: string;
   latitude: number;
   longitude: number;
   name: string;

@@ -45,17 +45,18 @@ const campsToCheckObj: { [key: string]: boolean } = {};
 const campsToCheckAr: number[] = [];
 
 export const fetchCaliCamppgrounds = async () => {
+  console.log('starting up cali');
   await checkCampground(initialPlaceId);
   let id;
+  // Recursively go through the reserve california campgrounds to find them all and fetch their details
   while (campsToCheckAr.length > 0) {
     await delay();
     id = campsToCheckAr.shift() as number;
     await checkCampground(id);
   }
-  console.log('fetched the cali camps');
-  console.log(caliCamps);
   console.log('There are ' + Object.keys(caliCamps).length + ' cali camps');
 
+  // Add our reserve california campgrounds to the database
   await getConnection()
     .createQueryBuilder()
     .insert()
@@ -63,6 +64,7 @@ export const fetchCaliCamppgrounds = async () => {
     .values(caliCampsArray)
     .returning('*')
     .execute();
+  console.log('added camps to db');
   return caliCamps;
 };
 
@@ -80,14 +82,14 @@ const checkCampground = async (id: number) => {
       };
     });
   if (!res || res.error || !res.SelectedPlace) return;
-  const { Latitude, Longitude, PlaceId, Name } = res.SelectedPlace;
-  console.log('grabbed ', Name);
+  const { Latitude, Longitude, PlaceId, Name, Description } = res.SelectedPlace;
 
   const cg = {
+    description: Description,
     latitude: Latitude,
     longitude: Longitude,
     name: Name,
-    campground_id: PlaceId,
+    legacy_id: PlaceId,
     source: 'rc',
     recarea_name: 'California State Park',
   };

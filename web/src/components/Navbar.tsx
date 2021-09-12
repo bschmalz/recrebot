@@ -7,9 +7,20 @@ import { isServer } from '../utils/isServer';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 
-interface NavbarProps {}
+const getGreeting = () => {
+  const hr = new Date().getHours();
+  if (hr < 12) {
+    return 'Good Morning';
+  } else if (hr < 18) {
+    return 'Good Afternoon';
+  } else {
+    return 'Good Evening';
+  }
+};
 
-export const Navbar: React.FC<NavbarProps> = ({}) => {
+const greeting = getGreeting();
+
+export const Navbar = () => {
   const router = useRouter();
   const [logout, { loading: logoutFetching }] = useLogoutMutation();
   const apolloClient = useApolloClient();
@@ -18,8 +29,6 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
   });
 
   let body;
-
-  console.log('loading?', loading);
 
   if (loading) {
   } else if (!data?.me) {
@@ -36,7 +45,7 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
   } else {
     body = (
       <Flex>
-        <Box mr={2}>{data.me.username}</Box>
+        <Box mr={2}>{`${greeting}, ${data.me.username}`}</Box>
         <Button
           variant="link"
           onClick={async () => {
@@ -52,8 +61,14 @@ export const Navbar: React.FC<NavbarProps> = ({}) => {
     );
   }
   return (
-    <Flex position="sticky" top={0} zIndex={1} bg="tan" p={4}>
-      <Flex flex={1} m="auto" align="center" maxW={800}>
+    <Flex
+      position="sticky"
+      top={0}
+      zIndex={1}
+      bg="rgba(210, 220, 240, 0.1)"
+      p={1}
+    >
+      <Flex flex={1} m="auto" align="center" maxW={1600} px={8}>
         <NextLink href="/">
           <Link>
             <Heading>RecreBot</Heading>

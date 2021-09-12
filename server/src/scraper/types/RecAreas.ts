@@ -1,6 +1,7 @@
 interface Facility {
   FacilityID: string;
   ParentRecAreaID: string;
+  FacilityDescription: string;
   FacilityName: string;
   FacilityTypeDescription: string;
   FacilityLongitude: string;

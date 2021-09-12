@@ -1,0 +1,28 @@
+query SearchTrailheads(
+  $searchTerm: String!
+  $mapBounds: String
+  $mapCenter: String
+  $filterOnBounds: Boolean
+) {
+  searchTrailheads(
+    input: {
+      searchTerm: $searchTerm
+      mapBounds: $mapBounds
+      mapCenter: $mapCenter
+      filterOnBounds: $filterOnBounds
+    }
+  ) {
+    trailheads {
+      id
+      name
+      source
+      latitude
+      longitude
+      recarea_name
+      legacy_id
+      district
+      description
+      facility_id
+    }
+  }
+}

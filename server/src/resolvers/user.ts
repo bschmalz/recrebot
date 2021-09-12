@@ -129,7 +129,6 @@ export class UserResolver {
     const user = await User.findOne({ where: { email } });
     if (!user) {
       // email is not in db
-      console.log('not in db');
       return true;
     }
 
@@ -211,8 +210,6 @@ export class UserResolver {
     @Arg('token') token: string,
     @Ctx() { req, redis }: MyContext
   ): Promise<UserResponse> {
-    console.log('mutate!');
-
     const key = REGISTER_USER_PREFIX + token;
     const user = (await redis.get(key)) as string;
     const { username, email, password } = JSON.parse(user);

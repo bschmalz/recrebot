@@ -23,11 +23,8 @@ const VerifyEmail: NextPage = ({}) => {
     try {
       res = await verifyEmail({ variables: { token } });
     } catch (e) {}
-    console.log('res', res);
     const { data } = res;
-    console.log('data', data);
     if (data?.verifyEmail?.errors) {
-      console.log('setting error');
       setError(true);
     } else if (data?.verifyEmail?.user?.id) {
       router.push('/');

@@ -1,38 +1,20 @@
-import { Entity, Column, Index, PrimaryGeneratedColumn } from 'typeorm';
+import { ObjectType, Field } from 'type-graphql';
+import { Entity, Column, Index } from 'typeorm';
+import { Reservable } from './Reservable';
 
+@ObjectType()
 @Entity()
-export class Trailhead {
-  @PrimaryGeneratedColumn()
-  id: number;
-
-  @Column('varchar')
-  trail_id: string;
-
-  @Index({ fulltext: true })
-  @Column('varchar')
-  recarea_name: string;
-
+export class Trailhead extends Reservable {
+  @Field()
   @Index({ fulltext: true })
   @Column('varchar')
   district: string;
 
-  @Index({ fulltext: true })
+  @Field()
   @Column('varchar')
-  name: string;
-
-  @Index({ fulltext: true })
-  @Column('varchar')
-  facility_name: string;
-
-  @Column('integer')
   facility_id: string;
 
-  @Column('double precision')
-  latitude: number;
-
-  @Column('double precision')
-  longitude: number;
-
+  @Field()
   @Column('varchar')
-  source: string;
+  facility_name: string;
 }

@@ -1,0 +1,26 @@
+query SearchCampgrounds(
+  $searchTerm: String!
+  $mapBounds: String
+  $mapCenter: String
+  $filterOnBounds: Boolean
+) {
+  searchCampgrounds(
+    input: {
+      searchTerm: $searchTerm
+      mapBounds: $mapBounds
+      mapCenter: $mapCenter
+      filterOnBounds: $filterOnBounds
+    }
+  ) {
+    campgrounds {
+      id
+      name
+      source
+      latitude
+      longitude
+      recarea_name
+      legacy_id
+      description
+    }
+  }
+}

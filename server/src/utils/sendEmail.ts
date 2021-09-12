@@ -7,14 +7,14 @@ export async function sendEmail(to: string, text: string, subject: string) {
     port: 465,
     secure: true, // use SSL
     auth: {
-      user: 'recrebot@gmail.com',
-      pass: 'RecreB0t!',
+      user: process.env.EMAIL_USER,
+      pass: process.env.EMAIL_PASS,
     },
   });
 
   await transporter.sendMail(
     {
-      from: 'recrebot@gmail.com',
+      from: process.env.EMAIL_USER,
       to,
       subject,
       html: text,

@@ -14,6 +14,28 @@ export type Scalars = {
   Float: number;
 };
 
+export type Campground = {
+  __typename?: 'Campground';
+  id: Scalars['Float'];
+  legacy_id: Scalars['String'];
+  recarea_name: Scalars['String'];
+  name: Scalars['String'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  source: Scalars['String'];
+  description: Scalars['String'];
+};
+
+export type CampgroundResponse = {
+  __typename?: 'CampgroundResponse';
+  campground: Campground;
+};
+
+export type CampgroundsResponse = {
+  __typename?: 'CampgroundsResponse';
+  campgrounds: Array<Campground>;
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -60,12 +82,68 @@ export type MutationLoginArgs = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  searchCampgrounds: CampgroundsResponse;
+  getCampground: CampgroundResponse;
+  searchTrailheads: TrailheadsResponse;
+  getTrailhead: TrailheadResponse;
+};
+
+
+export type QuerySearchCampgroundsArgs = {
+  input: SearchInput;
+};
+
+
+export type QueryGetCampgroundArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type QuerySearchTrailheadsArgs = {
+  input: SearchInput;
+};
+
+
+export type QueryGetTrailheadArgs = {
+  id: Scalars['Float'];
 };
 
 export type RegisterResponse = {
   __typename?: 'RegisterResponse';
   errors?: Maybe<Array<FieldError>>;
   success?: Maybe<Scalars['Boolean']>;
+};
+
+export type SearchInput = {
+  searchTerm: Scalars['String'];
+  mapCenter?: Maybe<Scalars['String']>;
+  mapBounds?: Maybe<Scalars['String']>;
+  filterOnBounds?: Maybe<Scalars['Boolean']>;
+};
+
+export type Trailhead = {
+  __typename?: 'Trailhead';
+  id: Scalars['Float'];
+  legacy_id: Scalars['String'];
+  recarea_name: Scalars['String'];
+  name: Scalars['String'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  source: Scalars['String'];
+  description: Scalars['String'];
+  district: Scalars['String'];
+  facility_id: Scalars['String'];
+  facility_name: Scalars['String'];
+};
+
+export type TrailheadResponse = {
+  __typename?: 'TrailheadResponse';
+  trailhead: Trailhead;
+};
+
+export type TrailheadsResponse = {
+  __typename?: 'TrailheadsResponse';
+  trailheads: Array<Trailhead>;
 };
 
 export type User = {
@@ -141,6 +219,26 @@ export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
 export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+
+export type SearchCampgroundsQueryVariables = Exact<{
+  searchTerm: Scalars['String'];
+  mapBounds?: Maybe<Scalars['String']>;
+  mapCenter?: Maybe<Scalars['String']>;
+  filterOnBounds?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type SearchCampgroundsQuery = { __typename?: 'Query', searchCampgrounds: { __typename?: 'CampgroundsResponse', campgrounds: Array<{ __typename?: 'Campground', id: number, name: string, source: string, latitude: number, longitude: number, recarea_name: string, legacy_id: string, description: string }> } };
+
+export type SearchTrailheadsQueryVariables = Exact<{
+  searchTerm: Scalars['String'];
+  mapBounds?: Maybe<Scalars['String']>;
+  mapCenter?: Maybe<Scalars['String']>;
+  filterOnBounds?: Maybe<Scalars['Boolean']>;
+}>;
+
+
+export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, source: string, latitude: number, longitude: number, recarea_name: string, legacy_id: string, district: string, description: string, facility_id: string }> } };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -397,3 +495,103 @@ export function useMeLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<MeQuery
 export type MeQueryHookResult = ReturnType<typeof useMeQuery>;
 export type MeLazyQueryHookResult = ReturnType<typeof useMeLazyQuery>;
 export type MeQueryResult = Apollo.QueryResult<MeQuery, MeQueryVariables>;
+export const SearchCampgroundsDocument = gql`
+    query SearchCampgrounds($searchTerm: String!, $mapBounds: String, $mapCenter: String, $filterOnBounds: Boolean) {
+  searchCampgrounds(
+    input: {searchTerm: $searchTerm, mapBounds: $mapBounds, mapCenter: $mapCenter, filterOnBounds: $filterOnBounds}
+  ) {
+    campgrounds {
+      id
+      name
+      source
+      latitude
+      longitude
+      recarea_name
+      legacy_id
+      description
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchCampgroundsQuery__
+ *
+ * To run a query within a React component, call `useSearchCampgroundsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchCampgroundsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchCampgroundsQuery({
+ *   variables: {
+ *      searchTerm: // value for 'searchTerm'
+ *      mapBounds: // value for 'mapBounds'
+ *      mapCenter: // value for 'mapCenter'
+ *      filterOnBounds: // value for 'filterOnBounds'
+ *   },
+ * });
+ */
+export function useSearchCampgroundsQuery(baseOptions: Apollo.QueryHookOptions<SearchCampgroundsQuery, SearchCampgroundsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchCampgroundsQuery, SearchCampgroundsQueryVariables>(SearchCampgroundsDocument, options);
+      }
+export function useSearchCampgroundsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchCampgroundsQuery, SearchCampgroundsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchCampgroundsQuery, SearchCampgroundsQueryVariables>(SearchCampgroundsDocument, options);
+        }
+export type SearchCampgroundsQueryHookResult = ReturnType<typeof useSearchCampgroundsQuery>;
+export type SearchCampgroundsLazyQueryHookResult = ReturnType<typeof useSearchCampgroundsLazyQuery>;
+export type SearchCampgroundsQueryResult = Apollo.QueryResult<SearchCampgroundsQuery, SearchCampgroundsQueryVariables>;
+export const SearchTrailheadsDocument = gql`
+    query SearchTrailheads($searchTerm: String!, $mapBounds: String, $mapCenter: String, $filterOnBounds: Boolean) {
+  searchTrailheads(
+    input: {searchTerm: $searchTerm, mapBounds: $mapBounds, mapCenter: $mapCenter, filterOnBounds: $filterOnBounds}
+  ) {
+    trailheads {
+      id
+      name
+      source
+      latitude
+      longitude
+      recarea_name
+      legacy_id
+      district
+      description
+      facility_id
+    }
+  }
+}
+    `;
+
+/**
+ * __useSearchTrailheadsQuery__
+ *
+ * To run a query within a React component, call `useSearchTrailheadsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useSearchTrailheadsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useSearchTrailheadsQuery({
+ *   variables: {
+ *      searchTerm: // value for 'searchTerm'
+ *      mapBounds: // value for 'mapBounds'
+ *      mapCenter: // value for 'mapCenter'
+ *      filterOnBounds: // value for 'filterOnBounds'
+ *   },
+ * });
+ */
+export function useSearchTrailheadsQuery(baseOptions: Apollo.QueryHookOptions<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>(SearchTrailheadsDocument, options);
+      }
+export function useSearchTrailheadsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>(SearchTrailheadsDocument, options);
+        }
+export type SearchTrailheadsQueryHookResult = ReturnType<typeof useSearchTrailheadsQuery>;
+export type SearchTrailheadsLazyQueryHookResult = ReturnType<typeof useSearchTrailheadsLazyQuery>;
+export type SearchTrailheadsQueryResult = Apollo.QueryResult<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>;

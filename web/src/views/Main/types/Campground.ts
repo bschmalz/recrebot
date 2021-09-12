@@ -1,12 +1,9 @@
 export interface Campground {
+  id: number;
   legacy_id: string;
   recarea_name: string;
   name: string;
-  longitude: number;
   latitude: number;
+  longitude: number;
   source: string;
-}
-
-export interface Campgrounds {
-  [key: string]: Campground;
 }

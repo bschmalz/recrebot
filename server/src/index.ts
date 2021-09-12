@@ -9,13 +9,14 @@ import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
 import cors from 'cors';
-import { createConnection, getConnection, getManager } from 'typeorm';
+import { createConnection } from 'typeorm';
 import { User } from './entities/User';
 import path from 'path';
 import { createUserLoader } from './utils/createUserLoader';
 import { Campground } from './entities/Campground';
 import { Trailhead } from './entities/Trailhead';
-import { scrapeRecData } from './scraper/scrapeRecData';
+import { CampgroundResolver } from './resolvers/campground';
+import { TrailheadResolver } from './resolvers/trailhead';
 
 const main = async () => {
   await createConnection({
@@ -26,7 +27,7 @@ const main = async () => {
     migrations: [path.join(__dirname, './migrations/*')],
     entities: [User, Campground, Trailhead],
   });
-  // await conn.runMigrations(); -
+  // await conn.runMigrations();
 
   const app = express();
 
@@ -63,7 +64,7 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver],
+      resolvers: [UserResolver, CampgroundResolver, TrailheadResolver],
       validate: false,
     }),
     context: ({ req, res }) => ({
@@ -79,47 +80,6 @@ const main = async () => {
   apolloServer.applyMiddleware({
     app,
     cors: false,
-  });
-
-  app.get('/testget', async (req, res) => {
-    console.log('checking it out');
-
-    const wawona = 'wawona';
-
-    const yosemite = 'yosemite';
-
-    const songs = await getManager()
-      .createQueryBuilder()
-      .select('campground')
-      .from(Campground, 'campground')
-      .where('campground.name ilike :name', {
-        name: `%${wawona}%`,
-      })
-      .orWhere('campground.recarea_name ilike :name', {
-        name: `%${yosemite}%`,
-      })
-      .getMany();
-    console.log('did it work?', songs);
-    res.send('should have got it');
-  });
-
-  app.get('/raw', async (req, res) => {
-    const rawData = await getManager().query(`
-    
-    select id, name, round((point(a.longitude,a.latitude) <@> point(11,11))::numeric, 3) as miles
-    from campground a
-    where (a.recarea_name ilike '%yosemite%')
-    and a.longitude < 50
-    order by point(a.longitude,a.latitude) <-> point(11, 11)
-    `);
-    console.log('cg', rawData);
-    res.send('raw');
-  });
-
-  app.get('/scrape', async (req, res) => {
-    console.log('server scrape');
-    // scrapeRecData();
-    res.send('Scaper here!');
   });
 
   app.listen(parseInt(process.env.PORT), () => {
