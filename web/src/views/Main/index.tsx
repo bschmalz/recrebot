@@ -21,8 +21,8 @@ export interface SelectedPlaceInterface {
   type: string;
   name: string;
   recarea_name: string;
-  longitude: string;
-  latitude: string;
+  longitude: number;
+  latitude: number;
   id: number;
   district?: string;
   description: string;
@@ -89,6 +89,8 @@ const Main = () => {
   const map = useRef(null);
   const mapRef = useRef(null);
   const markersRef = useRef({});
+  const sideBarRef = useRef(null);
+  const scrollRef = useRef(0);
   const trailheadsRef = useRef([]);
 
   const debounceTime = 800;
@@ -207,6 +209,13 @@ const Main = () => {
   };
 
   const handleCardClick = (id) => {
+    if (!id) {
+      safeSetState({ selectedCard: null });
+      requestAnimationFrame(
+        () => (sideBarRef.current.scrollTop = scrollRef.current)
+      );
+      return;
+    }
     let item, type;
     if (tripType === 'Camp') {
       item = campgrounds.find((cg) => cg.id === id);
@@ -215,6 +224,7 @@ const Main = () => {
       item = trailheads.find((th) => th.id === id);
       type = 'trailhead';
     }
+    scrollRef.current = sideBarRef.current.scrollTop;
     safeSetState({ selectedCard: { ...item, type } });
   };
 
@@ -354,9 +364,15 @@ const Main = () => {
     } catch (e) {}
   };
 
+  console.log('hmm', sideBarRef?.current?.scrollTop);
+
   return (
-    <Flex width="100%">
-      <Sidebar setMainState={safeSetState} sideBarView={sideBarView}>
+    <Flex width='100%'>
+      <Sidebar
+        setMainState={safeSetState}
+        sideBarView={sideBarView}
+        ref={sideBarRef}
+      >
         {sideBarView === 'MyTrips' ? (
           <MyTrips />
         ) : (
@@ -383,29 +399,29 @@ const Main = () => {
           />
         )}
       </Sidebar>
-      <Box ref={mapRef} w="100%" h="100%" id="recrebot-map" position="relative">
+      <Box ref={mapRef} w='100%' h='100%' id='recrebot-map' position='relative'>
         <Stack
           spacing={3}
-          direction="column"
-          position="absolute"
+          direction='column'
+          position='absolute'
           top={5}
           right={10}
           zIndex={10}
-          fontWeight="bold"
-          backgroundColor="rgba(240, 240, 240, .65)"
+          fontWeight='bold'
+          backgroundColor='rgba(240, 240, 240, .65)'
           p={2}
           borderRadius={6}
         >
           <Checkbox
             isChecked={filterOnMap}
-            borderColor="#3182CE"
+            borderColor='#3182CE'
             onChange={toggleMapFilter}
           >
             Filter Results From Map Boundaries
           </Checkbox>
           <Checkbox
             isChecked={repositionMap}
-            borderColor="#3182CE"
+            borderColor='#3182CE'
             onChange={toggleReposition}
           >
             Reposition Map On Search Results

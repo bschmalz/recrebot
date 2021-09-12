@@ -8,11 +8,10 @@ export interface PlaceInterface {
   handleCardClick: Function;
   handleCardMouseEnter: Function;
   handleCardMouseLeave: Function;
-  tripType: String;
+  tripType: string;
 }
 
 interface PlaceProps extends PlaceInterface {
-  district?: string;
   latitude: number;
   longitude: number;
   name: string;
@@ -22,7 +21,6 @@ interface PlaceProps extends PlaceInterface {
 
 export const Place: React.FC<PlaceProps> = ({
   addSelectedPlace,
-  district,
   handleCardClick,
   handleCardMouseEnter,
   handleCardMouseLeave,
@@ -63,7 +61,7 @@ export const Place: React.FC<PlaceProps> = ({
   };
 
   return (
-    <ListItem key={id} position="relative">
+    <ListItem key={id} position='relative'>
       <StyledContainer
         onBlur={blurCard}
         onClick={() => handleCardClick(id)}
@@ -73,23 +71,23 @@ export const Place: React.FC<PlaceProps> = ({
         key={id}
         tabIndex={0}
         padding={1}
-        cursor="pointer"
-        bg="white"
+        cursor='pointer'
+        bg='white'
         borderRadius={6}
-        position="relative"
+        position='relative'
       >
-        <Text fontSize="small" fontWeight="bold">
+        <Text fontSize='small' fontWeight='bold'>
           {name}
         </Text>
-        <Text fontSize="small">{recarea_name}</Text>
-        {tripType === 'Hike' && <Text fontSize="small">{district}</Text>}
+        <Text fontSize='small'>{recarea_name}</Text>
         {isActive && (
           <IconButton
-            colorScheme="green"
+            colorScheme='green'
             onBlur={() => {
               setActive(false);
             }}
-            onClick={() =>
+            onClick={(e) => {
+              e.stopPropagation();
               addSelectedPlace({
                 id,
                 name,
@@ -97,15 +95,15 @@ export const Place: React.FC<PlaceProps> = ({
                 latitude,
                 longitude,
                 type: tripType,
-              })
-            }
+              });
+            }}
             ref={buttonRef}
-            size="sm"
-            position="absolute"
-            bottom={district?.length > 0 ? 4 : 1.5}
-            right={1}
+            size='xs'
+            position='absolute'
+            bottom={2.5}
+            right={1.5}
             aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
-            icon={<MdAddCircle size={20} />}
+            icon={<MdAddCircle size={18} />}
             isRound={true}
           />
         )}

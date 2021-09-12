@@ -32,6 +32,8 @@ interface PlanTripProps extends PlacesInterface {
 }
 
 export const PlanTrip: React.FC<PlanTripProps> = ({
+  addSelectedPlace,
+  handleCardClick,
   removeSelectedPlace,
   selectedCard,
   selectedDates,
@@ -43,14 +45,14 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
 }) => {
   return (
     <Box>
-      <Flex justifyContent="center">
-        <Tabs align="center" width="100%">
+      <Flex justifyContent='center'>
+        <Tabs align='center' width='100%'>
           <Center>
             <TabList>
-              <Tab fontSize="small">Destination(s)</Tab>
-              <Tab fontSize="small">Trip Date(s)</Tab>
+              <Tab fontSize='small'>Destination(s)</Tab>
+              <Tab fontSize='small'>Trip Date(s)</Tab>
               <Tab
-                fontSize="small"
+                fontSize='small'
                 isDisabled={!selectedPlaces.length || !selectedDates.length}
               >
                 Summary
@@ -60,18 +62,18 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
 
           <TabPanels>
             <TabPanel paddingX={0}>
-              <Flex justifyContent="center" marginBottom={3}>
+              <Flex justifyContent='center' marginBottom={3}>
                 <Button
                   borderTopRightRadius={0}
                   borderBottomRightRadius={0}
                   variant={tripType === 'Camp' ? 'solid' : 'outline'}
-                  colorScheme="green"
+                  colorScheme='green'
                   onClick={() => {
                     toggleTripType('Camp');
                   }}
                 >
                   <FaCampground />
-                  <Text marginLeft={2} fontSize="sm">
+                  <Text marginLeft={2} fontSize='sm'>
                     Camping
                   </Text>
                 </Button>
@@ -79,28 +81,28 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
                   borderTopLeftRadius={0}
                   borderBottomLeftRadius={0}
                   variant={tripType === 'Hike' ? 'solid' : 'outline'}
-                  colorScheme="green"
+                  colorScheme='green'
                   onClick={() => {
                     toggleTripType('Hike');
                   }}
                 >
                   <FaWalking />
-                  <Text marginLeft={2} fontSize="sm">
+                  <Text marginLeft={2} fontSize='sm'>
                     Hiking
                   </Text>
                 </Button>
               </Flex>
               {selectedPlaces.length > 0 && (
-                <Text fontSize={13} fontWeight="bold" marginBottom={1}>
+                <Text fontSize={13} fontWeight='bold' marginBottom={1}>
                   Selected {tripType === 'Hike' ? 'Trailheads' : 'Campsites'}
                 </Text>
               )}
-              <Flex flexWrap="wrap" marginBottom={2}>
+              <Flex flexWrap='wrap' marginBottom={2}>
                 {selectedPlaces.map((sp) => (
                   <Tag
-                    size="md"
+                    size='md'
                     key={sp.id}
-                    variant="solid"
+                    variant='solid'
                     marginRight={2}
                     marginBottom={1}
                     fontSize={12}
@@ -113,9 +115,19 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
                 ))}
               </Flex>
               {selectedCard ? (
-                <SelectedCard {...selectedCard} />
+                <SelectedCard
+                  addSelectedPlace={addSelectedPlace}
+                  {...selectedCard}
+                  handleCardClick={handleCardClick}
+                  tripType={tripType}
+                />
               ) : (
-                <Places tripType={tripType} {...placesProps} />
+                <Places
+                  addSelectedPlace={addSelectedPlace}
+                  tripType={tripType}
+                  {...placesProps}
+                  handleCardClick={handleCardClick}
+                />
               )}
             </TabPanel>
             <TabPanel>

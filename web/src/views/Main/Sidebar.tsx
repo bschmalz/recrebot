@@ -3,23 +3,30 @@ import React from 'react';
 import { BACKGROUND_COLOR } from '../../constants';
 
 interface SidebarProps {
+  children: JSX.Element;
   setMainState: Function;
   sideBarView: String;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({
-  children,
-  setMainState,
-  sideBarView,
-}) => {
-  return (
-    <Box w={600} h={'100%'} bg={BACKGROUND_COLOR} p={4} overflowY="auto">
-      <Flex justify="center" align="center" marginBottom={3}>
+export const Sidebar = React.forwardRef(
+  (
+    { children, setMainState, sideBarView }: SidebarProps,
+    ref: React.Ref<HTMLDivElement>
+  ) => (
+    <Box
+      w={600}
+      h={'100%'}
+      bg={BACKGROUND_COLOR}
+      p={4}
+      overflowY='auto'
+      ref={ref}
+    >
+      <Flex justify='center' align='center' marginBottom={3}>
         <Button
           borderTopRightRadius={0}
           borderBottomRightRadius={0}
           variant={sideBarView === 'MyTrips' ? 'solid' : 'outline'}
-          colorScheme="green"
+          colorScheme='green'
           onClick={() => setMainState({ sideBarView: 'MyTrips' })}
         >
           My Trips
@@ -28,7 +35,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
           borderTopLeftRadius={0}
           borderBottomLeftRadius={0}
           variant={sideBarView === 'PlanATrip' ? 'solid' : 'outline'}
-          colorScheme="green"
+          colorScheme='green'
           onClick={() => setMainState({ sideBarView: 'PlanATrip' })}
         >
           Plan A Trip
@@ -36,5 +43,5 @@ export const Sidebar: React.FC<SidebarProps> = ({
       </Flex>
       {children}
     </Box>
-  );
-};
+  )
+);

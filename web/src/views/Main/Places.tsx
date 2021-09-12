@@ -1,18 +1,9 @@
-import {
-  IconButton,
-  Input,
-  List,
-  ListItem,
-  Spinner,
-  Text,
-} from '@chakra-ui/react';
-import React, { useRef, useState } from 'react';
-import { StyledContainer } from '../../components/StyledContainer';
+import { Input, List, Spinner } from '@chakra-ui/react';
+import React from 'react';
 import {
   Campground as CampgroundType,
   Trailhead as TrailheadType,
 } from '../../generated/graphql';
-import { MdAddCircle } from 'react-icons/md';
 import { Place, PlaceInterface } from './Place';
 
 export interface PlacesInterface extends PlaceInterface {
@@ -44,11 +35,11 @@ export const Places: React.FC<PlacesInterface> = ({
     if (loadingCampgrounds) {
       return (
         <Spinner
-          thickness="2px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="green.700"
-          size="lg"
+          thickness='2px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='green.700'
+          size='lg'
         />
       );
     }
@@ -74,11 +65,11 @@ export const Places: React.FC<PlacesInterface> = ({
     if (loadingTrailheads) {
       return (
         <Spinner
-          thickness="2px"
-          speed="0.65s"
-          emptyColor="gray.200"
-          color="green.700"
-          size="lg"
+          thickness='2px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='green.700'
+          size='lg'
         />
       );
     }
@@ -103,7 +94,7 @@ export const Places: React.FC<PlacesInterface> = ({
   return (
     <div>
       <Input
-        bg="white"
+        bg='white'
         marginBottom={4}
         placeholder={placeholder}
         onChange={(e) => onSearchTextChange(e.target.value)}
