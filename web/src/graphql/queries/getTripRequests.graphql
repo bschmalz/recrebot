@@ -1,0 +1,7 @@
+query GetTripRequests {
+  getTripRequests {
+    tripRequests {
+      custom_name
+    }
+  }
+}

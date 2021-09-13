@@ -6,10 +6,12 @@ import 'mapbox-gl/dist/mapbox-gl.css';
 import { Box, Checkbox, Flex, Stack } from '@chakra-ui/react';
 import {
   Campground,
-  Trailhead,
+  useCreateTripRequestMutation,
+  useGetTripRequestsQuery,
   useSearchCampgroundsLazyQuery,
   useSearchTrailheadsLazyQuery,
 } from '../../generated/graphql';
+import { Trailhead } from './types/Trailhead';
 import { debounce } from '../../utils/debounce';
 import { useSafeSetState } from '../../hooks/safeSetState';
 import ReactDOM from 'react-dom';
@@ -83,6 +85,20 @@ const Main = () => {
     { data: trailheadData, loading: loadingTrailheads },
   ] = useSearchTrailheadsLazyQuery();
 
+  const [createTrip] = useCreateTripRequestMutation();
+
+  const {
+    data: tripRequestsData,
+    loading: loadingTripRequests,
+    error,
+    refetch,
+  } = useGetTripRequestsQuery();
+
+  console.log('tr', tripRequestsData);
+  setTimeout(() => {
+    refetch();
+  }, 5000);
+
   // TODO - change state refs to be one object, not a giant list of refs we need to keep maintaining
   const campgroundsRef = useRef([]);
   const filterOnMapRef = useRef(false);
@@ -115,6 +131,8 @@ const Main = () => {
       )) ||
     [];
 
+  useEffect(() => {}, []);
+
   useEffect(() => {
     if (campgroundData && campgrounds !== campgroundsRef.current) {
       campgroundsRef.current = campgrounds;
@@ -145,16 +163,6 @@ const Main = () => {
     }
   }, [map, mapRef]);
 
-  const addPopup = (marker, { id }) => {
-    const placeholder = document.createElement('div');
-    const el = <Box onClick={() => console.log('yo', id)}>I'm a boxer</Box>;
-    ReactDOM.render(el, placeholder);
-
-    const popup = new MapboxGL.Popup().setDOMContent(placeholder);
-
-    marker.setPopup(popup);
-  };
-
   const addMarker = (m) => {
     if (!isValidCoord(m.latitude, m.longitude)) return;
 
@@ -162,9 +170,30 @@ const Main = () => {
       .setLngLat([m.longitude, m.latitude])
       .addTo(map.current);
 
-    addPopup(nm, m);
-
     markersRef.current[m.id] = { ...m, marker: nm };
+  };
+
+  const addSelectedCard = () => {
+    addSelectedPlace(selectedCard);
+    const markers =
+      tripType === 'Camp'
+        ? campgrounds.filter((cg) => cg.id !== selectedCard.id)
+        : trailheads.filter((th) => th.id !== selectedCard.id);
+    requestAnimationFrame(() => {
+      updateMapMarkers(markers);
+      sideBarRef.current.scrollTop = scrollRef.current;
+    });
+  };
+
+  const addSelectedPlace = (sp) => {
+    const newSelectedPlacesObj = { ...selectedPlacesObj };
+    newSelectedPlacesObj[sp.id] = sp;
+    safeSetState({
+      selectedCard: null,
+      selectedPlaces: [...selectedPlaces, sp],
+      selectedPlacesObj: newSelectedPlacesObj,
+    });
+    removeMarker(sp.id);
   };
 
   const checkMarker = (id) => {
@@ -181,15 +210,18 @@ const Main = () => {
     return marker;
   };
 
-  const addSelectedPlace = (sp) => {
-    const newSelectedPlacesObj = { ...selectedPlacesObj };
-    newSelectedPlacesObj[sp.id] = sp;
-    safeSetState({
-      selectedPlaces: [...selectedPlaces, sp],
-      selectedPlacesObj: newSelectedPlacesObj,
-    });
-    removeMarker(sp.id);
+  const createTripRequest = async (customName: string, minNights) => {
+    const tr = {
+      type: tripType,
+      dates: selectedDates,
+      locations: selectedPlaces.map((sp) => sp.id),
+      custom_name: customName,
+    };
+    if (minNights) tr['min_nights'] = parseInt(minNights);
+    const result = await createTrip({ variables: { input: tr } });
   };
+
+  const editTripRequest = () => {};
 
   const focusOnMarkers = () => {
     const boundingBox = new MapboxGL.LngLatBounds();
@@ -211,9 +243,11 @@ const Main = () => {
   const handleCardClick = (id) => {
     if (!id) {
       safeSetState({ selectedCard: null });
-      requestAnimationFrame(
-        () => (sideBarRef.current.scrollTop = scrollRef.current)
-      );
+      requestAnimationFrame(() => {
+        sideBarRef.current.scrollTop = scrollRef.current;
+        const markers = tripType === 'Camp' ? campgrounds : trailheads;
+        updateMapMarkers(markers);
+      });
       return;
     }
     let item, type;
@@ -225,7 +259,9 @@ const Main = () => {
       type = 'trailhead';
     }
     scrollRef.current = sideBarRef.current.scrollTop;
+    sideBarRef.current.scrollTop = 170;
     safeSetState({ selectedCard: { ...item, type } });
+    zoomOnSelectedCard(item);
   };
 
   const handleCardMouseEnter = (id) => {
@@ -256,7 +292,6 @@ const Main = () => {
     const center = JSON.stringify(map.current.getCenter());
     const bounds = JSON.stringify(map.current.getBounds());
 
-    //todo - this is a no-no
     const callback =
       type === 'Camp'
         ? debouncedCampgroundSearch.current
@@ -319,6 +354,14 @@ const Main = () => {
     }
   };
 
+  const saveTripRequest = (customName: string, minNights: number) => {
+    if (sideBarView === 'MyTrips') {
+      editTripRequest();
+    } else {
+      createTripRequest(customName, minNights);
+    }
+  };
+
   const toggleMapFilter = () => {
     if (filterOnMap) {
       safeSetState({ filterOnMap: false });
@@ -341,6 +384,7 @@ const Main = () => {
     if (newTripType !== tripType) {
       safeSetState({
         tripType: newTripType,
+        selectedCard: null,
         selectedPlaces: [],
         selectedPlacesObj: {},
       });
@@ -364,7 +408,9 @@ const Main = () => {
     } catch (e) {}
   };
 
-  console.log('hmm', sideBarRef?.current?.scrollTop);
+  const zoomOnSelectedCard = (item) => {
+    updateMapMarkers([item]);
+  };
 
   return (
     <Flex width='100%'>
@@ -377,6 +423,7 @@ const Main = () => {
           <MyTrips />
         ) : (
           <PlanTrip
+            addSelectedCard={addSelectedCard}
             addSelectedPlace={addSelectedPlace}
             campgrounds={campgrounds}
             handleCardClick={handleCardClick}
@@ -385,6 +432,7 @@ const Main = () => {
             loadingCampgrounds={loadingCampgrounds}
             loadingTrailheads={loadingTrailheads}
             removeSelectedPlace={removeSelectedPlace}
+            saveTripRequest={saveTripRequest}
             searchText={searchText}
             selectedCard={selectedCard}
             selectedDates={selectedDates}

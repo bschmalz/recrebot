@@ -100,7 +100,7 @@ export const Place: React.FC<PlaceProps> = ({
             ref={buttonRef}
             size='xs'
             position='absolute'
-            bottom={2.5}
+            bottom={3}
             right={1.5}
             aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
             icon={<MdAddCircle size={18} />}

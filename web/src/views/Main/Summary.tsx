@@ -9,12 +9,12 @@ import {
   NumberDecrementStepper,
 } from '@chakra-ui/number-input';
 import { Tag } from '@chakra-ui/tag';
-import React from 'react';
+import React, { MouseEventHandler, useState } from 'react';
 import { SelectedPlaceInterface } from '.';
-import { SelectedPlace } from '../../components/SelectedPlace';
 import { StyledContainer } from '../../components/StyledContainer';
 
-interface SummaryProps {
+export interface SummaryInterface {
+  saveTripRequest: Function;
   selectedDates: Date[];
   selectedPlaces: SelectedPlaceInterface[];
   tripType: String;
@@ -35,11 +35,14 @@ const dateNumToStr = {
   12: 'Dec',
 };
 
-export const Summary: React.FC<SummaryProps> = ({
+export const Summary: React.FC<SummaryInterface> = ({
+  saveTripRequest,
   selectedDates,
   selectedPlaces,
   tripType,
 }) => {
+  const [customName, setName] = useState('');
+  const [minNights, setNights] = useState('1');
   const dateObj = {};
 
   const datesToObj = () => {
@@ -61,7 +64,7 @@ export const Summary: React.FC<SummaryProps> = ({
       const data = dateObj[mk];
       return (
         <Box marginBottom={2} marginTop={2}>
-          <Flex alignItems="center" flexWrap="wrap">
+          <Flex alignItems='center' flexWrap='wrap'>
             <Text fontSize={13}>
               <Badge marginRight={1}>{dateNumToStr[mk]}</Badge>
               {renderMonth(data)}
@@ -128,26 +131,43 @@ export const Summary: React.FC<SummaryProps> = ({
   };
 
   return (
-    <>
+    <form>
       <StyledContainer
-        backgroundColor="white"
+        backgroundColor='white'
+        borderRadius={6}
+        padding={4}
+        textAlign='left'
+        marginBottom={4}
+      >
+        <Text
+          fontSize={14}
+          fontWeight='bold'
+          minWidth='160px'
+          marginLeft={1}
+          marginBottom={1}
+        >
+          Custom Name (optional)
+        </Text>
+        <Input value={customName} onChange={(e) => setName(e.target.value)} />
+      </StyledContainer>
+      <StyledContainer
+        backgroundColor='white'
         borderRadius={6}
         padding={4}
         marginBottom={4}
-        textAlign="left"
+        textAlign='left'
       >
-        <Text fontSize={14} fontWeight="bold">
+        <Text fontSize={14} fontWeight='bold'>
           Selected {tripType === 'Hike' ? 'Trailheads' : 'Campsites'}
         </Text>
         <Divider marginTop={1} marginBottom={2} />
 
-        <Flex flexWrap="wrap">
+        <Flex flexWrap='wrap'>
           {selectedPlaces.map((sp) => (
             <Tag
-              size="md"
+              size='md'
               key={sp.id}
-              variant="solid"
-              colorScheme="teal"
+              variant='solid'
               marginRight={0.5}
               marginBottom={1}
             >
@@ -157,13 +177,13 @@ export const Summary: React.FC<SummaryProps> = ({
         </Flex>
       </StyledContainer>
       <StyledContainer
-        backgroundColor="white"
+        backgroundColor='white'
         borderRadius={6}
         padding={4}
         marginBottom={4}
-        textAlign="left"
+        textAlign='left'
       >
-        <Text fontSize={14} fontWeight="bold" marginLeft={1} marginBottom={1}>
+        <Text fontSize={14} fontWeight='bold' marginLeft={1} marginBottom={1}>
           Seleted Dates
         </Text>
         <Divider marginTop={1} marginBottom={2} />
@@ -172,17 +192,25 @@ export const Summary: React.FC<SummaryProps> = ({
 
       {tripType === 'Camp' ? (
         <StyledContainer
-          backgroundColor="white"
+          backgroundColor='white'
           borderRadius={6}
           padding={4}
-          textAlign="left"
+          textAlign='left'
           marginBottom={4}
         >
-          <Flex alignItems="center">
-            <Text fontSize={14} fontWeight="bold" minWidth="160px">
-              Minimum # of Nights
+          <Flex alignItems='center'>
+            <Text fontSize={14} fontWeight='bold' minWidth='200px'>
+              Minimum Number of Nights
             </Text>
-            <NumberInput defaultValue={1} min={1} max={13}>
+            <NumberInput
+              defaultValue={1}
+              min={1}
+              max={13}
+              value={minNights}
+              onChange={(num) => {
+                setNights(num);
+              }}
+            >
               <NumberInputField />
               <NumberInputStepper>
                 <NumberIncrementStepper />
@@ -193,27 +221,19 @@ export const Summary: React.FC<SummaryProps> = ({
         </StyledContainer>
       ) : null}
 
-      <StyledContainer
-        backgroundColor="white"
-        borderRadius={6}
-        padding={4}
-        textAlign="left"
-        marginBottom={4}
+      <Button
+        colorScheme='green'
+        size='md'
+        width='100%'
+        onClick={() =>
+          saveTripRequest(
+            customName,
+            tripType === 'Camp' ? minNights : undefined
+          )
+        }
       >
-        <Text
-          fontSize={14}
-          fontWeight="bold"
-          minWidth="160px"
-          marginLeft={1}
-          marginBottom={1}
-        >
-          Custom Name (optional)
-        </Text>
-        <Input />
-      </StyledContainer>
-      <Button colorScheme="green" size="md" width="100%">
-        Save Trip
+        Save
       </Button>
-    </>
+    </form>
   );
 };

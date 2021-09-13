@@ -1,4 +1,4 @@
-import { IconButton } from '@chakra-ui/button';
+import { IconButton } from '@chakra-ui/react';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
 import React from 'react';
 import { StyledContainer } from '../../components/StyledContainer';
@@ -72,15 +72,36 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
     >
       <IconButton
         aria-label='Back To Search Results'
-        icon={<MdArrowBack />}
+        icon={<MdArrowBack size={24} />}
         isRound
         position='absolute'
         onClick={() => handleCardClick(null)}
-        size='lg'
         minWidth='35px'
         maxHeight='35px'
         top={0}
         left={0}
+        variant='ghost'
+      />
+      <IconButton
+        colorScheme='green'
+        onClick={() =>
+          addSelectedPlace({
+            id,
+            name,
+            recarea_name,
+            latitude,
+            longitude,
+            type: tripType,
+          })
+        }
+        position='absolute'
+        minWidth='35px'
+        maxHeight='35px'
+        top={0}
+        right={0}
+        aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
+        icon={<MdAddCircle size={24} />}
+        isRound={true}
         variant='ghost'
       />
       <img src={`/${type}/${id}.png`} alt={`Picture of ${name}`} />
@@ -100,26 +121,6 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
           </Link>
         </Text>
 
-        <IconButton
-          colorScheme='green'
-          onClick={() =>
-            addSelectedPlace({
-              id,
-              name,
-              recarea_name,
-              latitude,
-              longitude,
-              type: tripType,
-            })
-          }
-          size='xs'
-          position='absolute'
-          bottom={2.5}
-          right={1.5}
-          aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
-          icon={<MdAddCircle size={18} />}
-          isRound={true}
-        />
         {description ? (
           <Box
             className='recrebot-innerhtml'

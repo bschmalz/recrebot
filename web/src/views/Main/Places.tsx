@@ -1,9 +1,8 @@
 import { Input, List, Spinner } from '@chakra-ui/react';
 import React from 'react';
-import {
-  Campground as CampgroundType,
-  Trailhead as TrailheadType,
-} from '../../generated/graphql';
+import { Campground as CampgroundType } from '../../generated/graphql';
+
+import { Trailhead as TrailheadType } from './types/Trailhead';
 import { Place, PlaceInterface } from './Place';
 
 export interface PlacesInterface extends PlaceInterface {

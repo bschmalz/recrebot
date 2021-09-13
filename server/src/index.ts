@@ -17,6 +17,9 @@ import { Campground } from './entities/Campground';
 import { Trailhead } from './entities/Trailhead';
 import { CampgroundResolver } from './resolvers/campground';
 import { TrailheadResolver } from './resolvers/trailhead';
+import { createTripRequestLoader } from './utils/createTripRequestLoader';
+import { TripRequest } from './entities/TripRequest';
+import { TripRequestResolver } from './resolvers/tripRequest';
 
 const main = async () => {
   await createConnection({
@@ -25,7 +28,7 @@ const main = async () => {
     logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Campground, Trailhead],
+    entities: [User, Campground, Trailhead, TripRequest],
   });
   // await conn.runMigrations();
 
@@ -64,7 +67,12 @@ const main = async () => {
 
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
-      resolvers: [UserResolver, CampgroundResolver, TrailheadResolver],
+      resolvers: [
+        UserResolver,
+        CampgroundResolver,
+        TrailheadResolver,
+        TripRequestResolver,
+      ],
       validate: false,
     }),
     context: ({ req, res }) => ({
@@ -72,6 +80,7 @@ const main = async () => {
       res,
       redis,
       userLoader: createUserLoader(),
+      tripRequestLoader: createTripRequestLoader(),
     }),
   });
 

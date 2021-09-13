@@ -13,17 +13,19 @@ import {
   TagLabel,
   Text,
 } from '@chakra-ui/react';
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 
 import { FaWalking, FaCampground } from 'react-icons/fa';
 import { SelectedPlaceInterface } from '.';
 import { MultiDaypicker } from '../../components/MultiDaypicker';
 import { Places, PlacesInterface } from './Places';
 import { SelectedCard } from './SelectedCard';
-import { Summary } from './Summary';
+import { Summary, SummaryInterface } from './Summary';
 
 interface PlanTripProps extends PlacesInterface {
+  addSelectedCard: Function;
   removeSelectedPlace: Function;
+  saveTripRequest: Function;
   selectedCard: SelectedPlaceInterface;
   selectedDates: Date[];
   selectedPlaces: SelectedPlaceInterface[];
@@ -32,9 +34,11 @@ interface PlanTripProps extends PlacesInterface {
 }
 
 export const PlanTrip: React.FC<PlanTripProps> = ({
+  addSelectedCard,
   addSelectedPlace,
   handleCardClick,
   removeSelectedPlace,
+  saveTripRequest,
   selectedCard,
   selectedDates,
   selectedPlaces,
@@ -116,7 +120,7 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
               </Flex>
               {selectedCard ? (
                 <SelectedCard
-                  addSelectedPlace={addSelectedPlace}
+                  addSelectedPlace={addSelectedCard}
                   {...selectedCard}
                   handleCardClick={handleCardClick}
                   tripType={tripType}
@@ -130,11 +134,12 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
                 />
               )}
             </TabPanel>
-            <TabPanel>
+            <TabPanel paddingX={2}>
               <MultiDaypicker dates={selectedDates} setDates={setDates} />
             </TabPanel>
-            <TabPanel>
+            <TabPanel paddingX={2}>
               <Summary
+                saveTripRequest={saveTripRequest}
                 selectedDates={selectedDates}
                 selectedPlaces={selectedPlaces}
                 tripType={tripType}

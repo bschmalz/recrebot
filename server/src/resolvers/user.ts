@@ -62,6 +62,11 @@ export class UserResolver {
     }
   }
 
+  @FieldResolver(() => User)
+  tripRequests(@Root() user: User, @Ctx() { tripRequestLoader }: MyContext) {
+    return tripRequestLoader.load({ userId: user.id });
+  }
+
   @Mutation(() => UserResponse)
   async changePassword(
     @Arg('token') token: string,

@@ -12,6 +12,8 @@ export type Scalars = {
   Boolean: boolean;
   Int: number;
   Float: number;
+  /** The javascript `Date` as string. Type represents date and time as the ISO Date string. */
+  DateTime: any;
 };
 
 export type Campground = {
@@ -36,6 +38,7 @@ export type CampgroundsResponse = {
   campgrounds: Array<Campground>;
 };
 
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -50,6 +53,7 @@ export type Mutation = {
   verifyEmail: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
+  createTripRequest: TripRequest;
 };
 
 
@@ -79,6 +83,11 @@ export type MutationLoginArgs = {
   usernameOrEmail: Scalars['String'];
 };
 
+
+export type MutationCreateTripRequestArgs = {
+  input: TripRequestInput;
+};
+
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
@@ -86,6 +95,8 @@ export type Query = {
   getCampground: CampgroundResponse;
   searchTrailheads: TrailheadsResponse;
   getTrailhead: TrailheadResponse;
+  tripRequest: Scalars['String'];
+  getTripRequests: TripRequestsResponse;
 };
 
 
@@ -146,6 +157,33 @@ export type TrailheadsResponse = {
   trailheads: Array<Trailhead>;
 };
 
+export type TripRequest = {
+  __typename?: 'TripRequest';
+  id: Scalars['Float'];
+  userId: Scalars['Float'];
+  active: Scalars['Boolean'];
+  custom_name: Scalars['String'];
+  type: Scalars['String'];
+  dates: Array<Scalars['DateTime']>;
+  locations: Array<Scalars['Int']>;
+  min_nights: Scalars['Float'];
+  created_at: Scalars['String'];
+  updated_at: Scalars['String'];
+};
+
+export type TripRequestInput = {
+  custom_name: Scalars['String'];
+  type: Scalars['String'];
+  dates: Array<Scalars['DateTime']>;
+  locations: Array<Scalars['Int']>;
+  min_nights?: Maybe<Scalars['Float']>;
+};
+
+export type TripRequestsResponse = {
+  __typename?: 'TripRequestsResponse';
+  tripRequests?: Maybe<Array<TripRequest>>;
+};
+
 export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
@@ -153,6 +191,7 @@ export type User = {
   email: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
+  tripRequests: User;
 };
 
 export type UserResponse = {
@@ -180,6 +219,13 @@ export type ChangePasswordMutationVariables = Exact<{
 
 
 export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
+
+export type CreateTripRequestMutationVariables = Exact<{
+  input: TripRequestInput;
+}>;
+
+
+export type CreateTripRequestMutation = { __typename?: 'Mutation', createTripRequest: { __typename?: 'TripRequest', id: number } };
 
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String'];
@@ -214,6 +260,11 @@ export type VerifyEmailMutationVariables = Exact<{
 
 
 export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
+
+export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
+
+
+export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', custom_name: string }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -297,6 +348,39 @@ export function useChangePasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ChangePasswordMutationHookResult = ReturnType<typeof useChangePasswordMutation>;
 export type ChangePasswordMutationResult = Apollo.MutationResult<ChangePasswordMutation>;
 export type ChangePasswordMutationOptions = Apollo.BaseMutationOptions<ChangePasswordMutation, ChangePasswordMutationVariables>;
+export const CreateTripRequestDocument = gql`
+    mutation CreateTripRequest($input: TripRequestInput!) {
+  createTripRequest(input: $input) {
+    id
+  }
+}
+    `;
+export type CreateTripRequestMutationFn = Apollo.MutationFunction<CreateTripRequestMutation, CreateTripRequestMutationVariables>;
+
+/**
+ * __useCreateTripRequestMutation__
+ *
+ * To run a mutation, you first call `useCreateTripRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useCreateTripRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [createTripRequestMutation, { data, loading, error }] = useCreateTripRequestMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useCreateTripRequestMutation(baseOptions?: Apollo.MutationHookOptions<CreateTripRequestMutation, CreateTripRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<CreateTripRequestMutation, CreateTripRequestMutationVariables>(CreateTripRequestDocument, options);
+      }
+export type CreateTripRequestMutationHookResult = ReturnType<typeof useCreateTripRequestMutation>;
+export type CreateTripRequestMutationResult = Apollo.MutationResult<CreateTripRequestMutation>;
+export type CreateTripRequestMutationOptions = Apollo.BaseMutationOptions<CreateTripRequestMutation, CreateTripRequestMutationVariables>;
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email)
@@ -461,6 +545,42 @@ export function useVerifyEmailMutation(baseOptions?: Apollo.MutationHookOptions<
 export type VerifyEmailMutationHookResult = ReturnType<typeof useVerifyEmailMutation>;
 export type VerifyEmailMutationResult = Apollo.MutationResult<VerifyEmailMutation>;
 export type VerifyEmailMutationOptions = Apollo.BaseMutationOptions<VerifyEmailMutation, VerifyEmailMutationVariables>;
+export const GetTripRequestsDocument = gql`
+    query GetTripRequests {
+  getTripRequests {
+    tripRequests {
+      custom_name
+    }
+  }
+}
+    `;
+
+/**
+ * __useGetTripRequestsQuery__
+ *
+ * To run a query within a React component, call `useGetTripRequestsQuery` and pass it any options that fit your needs.
+ * When your component renders, `useGetTripRequestsQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useGetTripRequestsQuery({
+ *   variables: {
+ *   },
+ * });
+ */
+export function useGetTripRequestsQuery(baseOptions?: Apollo.QueryHookOptions<GetTripRequestsQuery, GetTripRequestsQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<GetTripRequestsQuery, GetTripRequestsQueryVariables>(GetTripRequestsDocument, options);
+      }
+export function useGetTripRequestsLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<GetTripRequestsQuery, GetTripRequestsQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<GetTripRequestsQuery, GetTripRequestsQueryVariables>(GetTripRequestsDocument, options);
+        }
+export type GetTripRequestsQueryHookResult = ReturnType<typeof useGetTripRequestsQuery>;
+export type GetTripRequestsLazyQueryHookResult = ReturnType<typeof useGetTripRequestsLazyQuery>;
+export type GetTripRequestsQueryResult = Apollo.QueryResult<GetTripRequestsQuery, GetTripRequestsQueryVariables>;
 export const MeDocument = gql`
     query Me {
   me {
