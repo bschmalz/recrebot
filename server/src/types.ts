@@ -1,8 +1,6 @@
 import { Request, Response } from 'express';
 import { Session, SessionData } from 'express-session';
 import { Redis } from 'ioredis';
-import { createTripRequestLoader } from './utils/createTripRequestLoader';
-import { createUserLoader } from './utils/createUserLoader';
 
 export type MyContext = {
   req: Request & {
@@ -10,6 +8,4 @@ export type MyContext = {
   };
   redis: Redis;
   res: Response;
-  userLoader: ReturnType<typeof createUserLoader>;
-  tripRequestLoader: ReturnType<typeof createTripRequestLoader>;
 };

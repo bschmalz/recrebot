@@ -39,6 +39,15 @@ export type CampgroundsResponse = {
 };
 
 
+export type EditTripRequestInput = {
+  custom_name: Scalars['String'];
+  type: Scalars['String'];
+  dates: Array<Scalars['DateTime']>;
+  locations: Array<Scalars['Int']>;
+  min_nights?: Maybe<Scalars['Float']>;
+  id: Scalars['Float'];
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -54,6 +63,8 @@ export type Mutation = {
   login: UserResponse;
   logout: Scalars['Boolean'];
   createTripRequest: TripRequest;
+  deleteTripRequest: Scalars['Boolean'];
+  editTripRequest: Scalars['Boolean'];
 };
 
 
@@ -86,6 +97,16 @@ export type MutationLoginArgs = {
 
 export type MutationCreateTripRequestArgs = {
   input: TripRequestInput;
+};
+
+
+export type MutationDeleteTripRequestArgs = {
+  id: Scalars['Float'];
+};
+
+
+export type MutationEditTripRequestArgs = {
+  input: EditTripRequestInput;
 };
 
 export type Query = {
@@ -123,6 +144,18 @@ export type RegisterResponse = {
   __typename?: 'RegisterResponse';
   errors?: Maybe<Array<FieldError>>;
   success?: Maybe<Scalars['Boolean']>;
+};
+
+export type Reservable = {
+  __typename?: 'Reservable';
+  id: Scalars['Float'];
+  legacy_id: Scalars['String'];
+  recarea_name: Scalars['String'];
+  name: Scalars['String'];
+  latitude: Scalars['Float'];
+  longitude: Scalars['Float'];
+  source: Scalars['String'];
+  description: Scalars['String'];
 };
 
 export type SearchInput = {
@@ -165,8 +198,8 @@ export type TripRequest = {
   custom_name: Scalars['String'];
   type: Scalars['String'];
   dates: Array<Scalars['DateTime']>;
-  locations: Array<Scalars['Int']>;
-  min_nights: Scalars['Float'];
+  locations: Array<Reservable>;
+  min_nights?: Maybe<Scalars['Float']>;
   created_at: Scalars['String'];
   updated_at: Scalars['String'];
 };
@@ -191,7 +224,6 @@ export type User = {
   email: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
-  tripRequests: User;
 };
 
 export type UserResponse = {
@@ -226,6 +258,20 @@ export type CreateTripRequestMutationVariables = Exact<{
 
 
 export type CreateTripRequestMutation = { __typename?: 'Mutation', createTripRequest: { __typename?: 'TripRequest', id: number } };
+
+export type DeleteTripRequestMutationVariables = Exact<{
+  id: Scalars['Float'];
+}>;
+
+
+export type DeleteTripRequestMutation = { __typename?: 'Mutation', deleteTripRequest: boolean };
+
+export type EditTripRequestMutationVariables = Exact<{
+  input: EditTripRequestInput;
+}>;
+
+
+export type EditTripRequestMutation = { __typename?: 'Mutation', editTripRequest: boolean };
 
 export type ForgotPasswordMutationVariables = Exact<{
   email: Scalars['String'];
@@ -264,7 +310,7 @@ export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __ty
 export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', custom_name: string }>> } };
+export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, locations: Array<{ __typename?: 'Reservable', name: string, id: number, latitude: number, longitude: number, recarea_name: string }> }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -381,6 +427,68 @@ export function useCreateTripRequestMutation(baseOptions?: Apollo.MutationHookOp
 export type CreateTripRequestMutationHookResult = ReturnType<typeof useCreateTripRequestMutation>;
 export type CreateTripRequestMutationResult = Apollo.MutationResult<CreateTripRequestMutation>;
 export type CreateTripRequestMutationOptions = Apollo.BaseMutationOptions<CreateTripRequestMutation, CreateTripRequestMutationVariables>;
+export const DeleteTripRequestDocument = gql`
+    mutation DeleteTripRequest($id: Float!) {
+  deleteTripRequest(id: $id)
+}
+    `;
+export type DeleteTripRequestMutationFn = Apollo.MutationFunction<DeleteTripRequestMutation, DeleteTripRequestMutationVariables>;
+
+/**
+ * __useDeleteTripRequestMutation__
+ *
+ * To run a mutation, you first call `useDeleteTripRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useDeleteTripRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [deleteTripRequestMutation, { data, loading, error }] = useDeleteTripRequestMutation({
+ *   variables: {
+ *      id: // value for 'id'
+ *   },
+ * });
+ */
+export function useDeleteTripRequestMutation(baseOptions?: Apollo.MutationHookOptions<DeleteTripRequestMutation, DeleteTripRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<DeleteTripRequestMutation, DeleteTripRequestMutationVariables>(DeleteTripRequestDocument, options);
+      }
+export type DeleteTripRequestMutationHookResult = ReturnType<typeof useDeleteTripRequestMutation>;
+export type DeleteTripRequestMutationResult = Apollo.MutationResult<DeleteTripRequestMutation>;
+export type DeleteTripRequestMutationOptions = Apollo.BaseMutationOptions<DeleteTripRequestMutation, DeleteTripRequestMutationVariables>;
+export const EditTripRequestDocument = gql`
+    mutation EditTripRequest($input: EditTripRequestInput!) {
+  editTripRequest(input: $input)
+}
+    `;
+export type EditTripRequestMutationFn = Apollo.MutationFunction<EditTripRequestMutation, EditTripRequestMutationVariables>;
+
+/**
+ * __useEditTripRequestMutation__
+ *
+ * To run a mutation, you first call `useEditTripRequestMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useEditTripRequestMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [editTripRequestMutation, { data, loading, error }] = useEditTripRequestMutation({
+ *   variables: {
+ *      input: // value for 'input'
+ *   },
+ * });
+ */
+export function useEditTripRequestMutation(baseOptions?: Apollo.MutationHookOptions<EditTripRequestMutation, EditTripRequestMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<EditTripRequestMutation, EditTripRequestMutationVariables>(EditTripRequestDocument, options);
+      }
+export type EditTripRequestMutationHookResult = ReturnType<typeof useEditTripRequestMutation>;
+export type EditTripRequestMutationResult = Apollo.MutationResult<EditTripRequestMutation>;
+export type EditTripRequestMutationOptions = Apollo.BaseMutationOptions<EditTripRequestMutation, EditTripRequestMutationVariables>;
 export const ForgotPasswordDocument = gql`
     mutation ForgotPassword($email: String!) {
   forgotPassword(email: $email)
@@ -549,7 +657,19 @@ export const GetTripRequestsDocument = gql`
     query GetTripRequests {
   getTripRequests {
     tripRequests {
+      id
       custom_name
+      dates
+      locations {
+        name
+        id
+        latitude
+        longitude
+        recarea_name
+      }
+      active
+      min_nights
+      type
     }
   }
 }

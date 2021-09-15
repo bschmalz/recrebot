@@ -3,21 +3,21 @@ import { withApollo } from '../../utils/withApollo';
 import { Sidebar } from './Sidebar';
 import MapboxGL from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Box, Checkbox, Flex, Stack } from '@chakra-ui/react';
+import { Box, Checkbox, Flex, Stack, Text } from '@chakra-ui/react';
 import {
   Campground,
-  useCreateTripRequestMutation,
-  useGetTripRequestsQuery,
   useSearchCampgroundsLazyQuery,
   useSearchTrailheadsLazyQuery,
 } from '../../generated/graphql';
 import { Trailhead } from './types/Trailhead';
 import { debounce } from '../../utils/debounce';
 import { useSafeSetState } from '../../hooks/safeSetState';
-import ReactDOM from 'react-dom';
 import React from 'react';
 import { MyTrips } from './MyTrips';
 import { PlanTrip } from './PlanTrip';
+import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
+import { useMap } from '../../contexts/MapContext';
+import { useTripRequests } from '../../contexts/TripRequestsContext';
 
 export interface SelectedPlaceInterface {
   type: string;
@@ -29,51 +29,26 @@ export interface SelectedPlaceInterface {
   district?: string;
   description: string;
   source: string;
-  legacy_id: number;
+  legacy_id: string;
 }
 
 interface State {
-  filterOnMap: boolean;
-  repositionMap: boolean;
   searchText: string;
-  selectedCard: SelectedPlaceInterface;
   selectedDates: Date[];
-  selectedPlaces: SelectedPlaceInterface[];
-  selectedPlacesObj: { [key: string]: SelectedPlaceInterface };
   sideBarView: 'MyTrips' | 'PlanATrip';
   tripType: 'Camp' | 'Hike';
 }
 
 const initialState: State = {
-  filterOnMap: false,
-  repositionMap: true,
   searchText: '',
-  selectedCard: null,
   selectedDates: [],
-  selectedPlaces: [],
-  selectedPlacesObj: {},
   sideBarView: 'MyTrips',
   tripType: 'Camp',
 };
 
-const MARKER_COLOR = '#F7C502';
-const MARKER_HIGHLIGHT_COLOR = '#38A169';
-
 const Main = () => {
-  const [
-    {
-      filterOnMap,
-      repositionMap,
-      searchText,
-      selectedCard,
-      selectedDates,
-      selectedPlaces,
-      selectedPlacesObj,
-      sideBarView,
-      tripType,
-    },
-    safeSetState,
-  ] = useSafeSetState(initialState);
+  const [{ searchText, selectedDates, sideBarView, tripType }, safeSetState] =
+    useSafeSetState(initialState);
 
   const [
     searchCampgrounds,
@@ -85,26 +60,7 @@ const Main = () => {
     { data: trailheadData, loading: loadingTrailheads },
   ] = useSearchTrailheadsLazyQuery();
 
-  const [createTrip] = useCreateTripRequestMutation();
-
-  const {
-    data: tripRequestsData,
-    loading: loadingTripRequests,
-    error,
-    refetch,
-  } = useGetTripRequestsQuery();
-
-  console.log('tr', tripRequestsData);
-  setTimeout(() => {
-    refetch();
-  }, 5000);
-
-  // TODO - change state refs to be one object, not a giant list of refs we need to keep maintaining
   const campgroundsRef = useRef([]);
-  const filterOnMapRef = useRef(false);
-  const map = useRef(null);
-  const mapRef = useRef(null);
-  const markersRef = useRef({});
   const sideBarRef = useRef(null);
   const scrollRef = useRef(0);
   const trailheadsRef = useRef([]);
@@ -116,6 +72,39 @@ const Main = () => {
   const debouncedTrailheadSearch = useRef(
     debounce(searchTrailheads, debounceTime)
   );
+
+  const {
+    addMarker,
+    filterOnMap,
+    map,
+    filterOnMapRef,
+    mapRef,
+    repositionMap,
+    removeMarker,
+    toggleMapFilter,
+    toggleReposition,
+    updateMapMarkers,
+    zoomOnSelectedCard,
+  } = useMap();
+
+  const {
+    addSelectedPlace,
+    removeSelectedPlace,
+    resetSelectedPlaces,
+    selectCard,
+    selectedCard,
+    selectedPlaces,
+    selectedPlacesObj,
+  } = useSelectedPlaces();
+
+  const {
+    createTrip,
+    deleteTripRequest,
+    editTripRequest,
+    errorTripRequests,
+    loadingTripRequests,
+    tripRequestsData,
+  } = useTripRequests();
 
   const campgrounds: Campground[] =
     (tripType === 'Camp' &&
@@ -130,8 +119,6 @@ const Main = () => {
         (th) => !selectedPlacesObj[th.id]
       )) ||
     [];
-
-  useEffect(() => {}, []);
 
   useEffect(() => {
     if (campgroundData && campgrounds !== campgroundsRef.current) {
@@ -163,18 +150,9 @@ const Main = () => {
     }
   }, [map, mapRef]);
 
-  const addMarker = (m) => {
-    if (!isValidCoord(m.latitude, m.longitude)) return;
-
-    const nm = new MapboxGL.Marker({ color: MARKER_COLOR })
-      .setLngLat([m.longitude, m.latitude])
-      .addTo(map.current);
-
-    markersRef.current[m.id] = { ...m, marker: nm };
-  };
-
   const addSelectedCard = () => {
     addSelectedPlace(selectedCard);
+    removeMarker(selectedCard.id);
     const markers =
       tripType === 'Camp'
         ? campgrounds.filter((cg) => cg.id !== selectedCard.id)
@@ -183,17 +161,6 @@ const Main = () => {
       updateMapMarkers(markers);
       sideBarRef.current.scrollTop = scrollRef.current;
     });
-  };
-
-  const addSelectedPlace = (sp) => {
-    const newSelectedPlacesObj = { ...selectedPlacesObj };
-    newSelectedPlacesObj[sp.id] = sp;
-    safeSetState({
-      selectedCard: null,
-      selectedPlaces: [...selectedPlaces, sp],
-      selectedPlacesObj: newSelectedPlacesObj,
-    });
-    removeMarker(sp.id);
   };
 
   const checkMarker = (id) => {
@@ -210,7 +177,7 @@ const Main = () => {
     return marker;
   };
 
-  const createTripRequest = async (customName: string, minNights) => {
+  const createTripRequestObj = async (customName: string, minNights) => {
     const tr = {
       type: tripType,
       dates: selectedDates,
@@ -218,31 +185,12 @@ const Main = () => {
       custom_name: customName,
     };
     if (minNights) tr['min_nights'] = parseInt(minNights);
-    const result = await createTrip({ variables: { input: tr } });
-  };
-
-  const editTripRequest = () => {};
-
-  const focusOnMarkers = () => {
-    const boundingBox = new MapboxGL.LngLatBounds();
-    for (let key in markersRef.current) {
-      const marker = markersRef.current[key].marker;
-      boundingBox.extend(marker.getLngLat());
-    }
-    map.current.fitBounds(boundingBox, {
-      maxZoom: 12,
-      padding: {
-        top: 150,
-        bottom: 150,
-        left: 150,
-        right: 150,
-      },
-    });
+    createTrip(tr);
   };
 
   const handleCardClick = (id) => {
     if (!id) {
-      safeSetState({ selectedCard: null });
+      selectCard(null);
       requestAnimationFrame(() => {
         sideBarRef.current.scrollTop = scrollRef.current;
         const markers = tripType === 'Camp' ? campgrounds : trailheads;
@@ -260,32 +208,8 @@ const Main = () => {
     }
     scrollRef.current = sideBarRef.current.scrollTop;
     sideBarRef.current.scrollTop = 170;
-    safeSetState({ selectedCard: { ...item, type } });
+    selectCard({ ...item, type });
     zoomOnSelectedCard(item);
-  };
-
-  const handleCardMouseEnter = (id) => {
-    const marker = markersRef.current[id]?.marker;
-    if (!marker) return;
-    let markerElement = marker.getElement();
-    markerElement
-      .querySelectorAll('svg g[fill="' + marker._color + '"]')[0]
-      .setAttribute('fill', MARKER_HIGHLIGHT_COLOR);
-
-    marker._color = MARKER_HIGHLIGHT_COLOR;
-
-    marker.remove();
-    marker.addTo(map.current);
-  };
-
-  const handleCardMouseLeave = (id) => {
-    const marker = markersRef.current[id]?.marker;
-    if (!marker) return;
-    let markerElement = marker.getElement();
-    markerElement
-      .querySelectorAll('svg g[fill="' + marker._color + '"]')[0]
-      .setAttribute('fill', MARKER_COLOR);
-    marker._color = MARKER_COLOR;
   };
 
   const handleSearch = (val, type) => {
@@ -306,8 +230,13 @@ const Main = () => {
     });
   };
 
-  const isValidCoord = (lat: number, lng: number) => {
-    return lat > 19.5 && lat < 64.85 && lng > -161.755 && lng < -68.011;
+  const handlePlanTripTabChange = (showSelected) => {
+    if (showSelected) {
+      updateMapMarkers(selectedPlaces);
+    } else {
+      const markers = tripType === 'Camp' ? campgrounds : trailheads;
+      updateMapMarkers(markers);
+    }
   };
 
   const initMap = () => {
@@ -326,28 +255,8 @@ const Main = () => {
     handleSearch(searchText, tripType);
   };
 
-  const removeMarker = (id) => {
-    if (markersRef.current[id]?.marker) {
-      markersRef.current[id].marker.remove();
-      delete markersRef.current[id];
-    }
-  };
-
-  const removeMarkers = () => {
-    for (let key in markersRef.current) {
-      markersRef.current[key].marker.remove();
-      delete markersRef.current[key];
-    }
-  };
-
-  const removeSelectedPlace = (id) => {
-    const newSelectedPlaces = selectedPlaces.filter((sp) => sp.id !== id);
-    const newSelectedPlacesObj = { ...selectedPlacesObj };
-    delete newSelectedPlacesObj[id];
-    safeSetState({
-      selectedPlaces: newSelectedPlaces,
-      selectedPlacesObj: newSelectedPlacesObj,
-    });
+  const removeSelectedPlaceTwo = (id) => {
+    removeSelectedPlace(id);
     const marker = checkMarker(id);
     if (marker) {
       addMarker(marker);
@@ -356,27 +265,9 @@ const Main = () => {
 
   const saveTripRequest = (customName: string, minNights: number) => {
     if (sideBarView === 'MyTrips') {
-      editTripRequest();
+      editTripRequest(88);
     } else {
-      createTripRequest(customName, minNights);
-    }
-  };
-
-  const toggleMapFilter = () => {
-    if (filterOnMap) {
-      safeSetState({ filterOnMap: false });
-      filterOnMapRef.current = false;
-    } else {
-      safeSetState({ filterOnMap: true, repositionMap: false });
-      filterOnMapRef.current = true;
-    }
-  };
-
-  const toggleReposition = () => {
-    if (repositionMap) safeSetState({ repositionMap: false });
-    else {
-      safeSetState({ repositionMap: true, filterOnMap: false });
-      filterOnMapRef.current = false;
+      createTripRequestObj(customName, minNights);
     }
   };
 
@@ -384,10 +275,9 @@ const Main = () => {
     if (newTripType !== tripType) {
       safeSetState({
         tripType: newTripType,
-        selectedCard: null,
-        selectedPlaces: [],
-        selectedPlacesObj: {},
       });
+
+      resetSelectedPlaces();
 
       const places =
         newTripType === 'Camp'
@@ -399,19 +289,6 @@ const Main = () => {
     }
   };
 
-  const updateMapMarkers = (newMarkers) => {
-    removeMarkers();
-    if (!newMarkers?.length) return;
-    try {
-      newMarkers.forEach(addMarker);
-      if (repositionMap) focusOnMarkers();
-    } catch (e) {}
-  };
-
-  const zoomOnSelectedCard = (item) => {
-    updateMapMarkers([item]);
-  };
-
   return (
     <Flex width='100%'>
       <Sidebar
@@ -420,18 +297,21 @@ const Main = () => {
         ref={sideBarRef}
       >
         {sideBarView === 'MyTrips' ? (
-          <MyTrips />
+          <MyTrips
+            deleteTripRequest={deleteTripRequest}
+            tripRequests={tripRequestsData?.getTripRequests?.tripRequests}
+            loading={loadingTripRequests}
+            error={errorTripRequests}
+          />
         ) : (
           <PlanTrip
             addSelectedCard={addSelectedCard}
-            addSelectedPlace={addSelectedPlace}
             campgrounds={campgrounds}
             handleCardClick={handleCardClick}
-            handleCardMouseEnter={handleCardMouseEnter}
-            handleCardMouseLeave={handleCardMouseLeave}
             loadingCampgrounds={loadingCampgrounds}
             loadingTrailheads={loadingTrailheads}
-            removeSelectedPlace={removeSelectedPlace}
+            onTabChange={handlePlanTripTabChange}
+            removeSelectedPlace={removeSelectedPlaceTwo}
             saveTripRequest={saveTripRequest}
             searchText={searchText}
             selectedCard={selectedCard}
@@ -453,7 +333,7 @@ const Main = () => {
           direction='column'
           position='absolute'
           top={5}
-          right={10}
+          right={5}
           zIndex={10}
           fontWeight='bold'
           backgroundColor='rgba(240, 240, 240, .65)'
@@ -465,14 +345,14 @@ const Main = () => {
             borderColor='#3182CE'
             onChange={toggleMapFilter}
           >
-            Filter Results From Map Boundaries
+            <Text fontSize={14}>Filter Results From Map Boundaries</Text>
           </Checkbox>
           <Checkbox
             isChecked={repositionMap}
             borderColor='#3182CE'
             onChange={toggleReposition}
           >
-            Reposition Map On Search Results
+            <Text fontSize={14}> Reposition Map On Search Results</Text>
           </Checkbox>
         </Stack>
       </Box>

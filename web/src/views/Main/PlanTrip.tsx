@@ -13,7 +13,7 @@ import {
   TagLabel,
   Text,
 } from '@chakra-ui/react';
-import React, { MouseEventHandler } from 'react';
+import React, { useState } from 'react';
 
 import { FaWalking, FaCampground } from 'react-icons/fa';
 import { SelectedPlaceInterface } from '.';
@@ -24,6 +24,7 @@ import { Summary, SummaryInterface } from './Summary';
 
 interface PlanTripProps extends PlacesInterface {
   addSelectedCard: Function;
+  onTabChange: Function;
   removeSelectedPlace: Function;
   saveTripRequest: Function;
   selectedCard: SelectedPlaceInterface;
@@ -35,8 +36,8 @@ interface PlanTripProps extends PlacesInterface {
 
 export const PlanTrip: React.FC<PlanTripProps> = ({
   addSelectedCard,
-  addSelectedPlace,
   handleCardClick,
+  onTabChange,
   removeSelectedPlace,
   saveTripRequest,
   selectedCard,
@@ -47,15 +48,33 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
   tripType,
   ...placesProps
 }) => {
+  const [summarySelected, setSummarySelected] = useState(false);
+  const handleTabChange = (val) => {
+    if (val === 3) {
+      if (summarySelected) return;
+      onTabChange(true);
+      setSummarySelected(true);
+    }
+    if (summarySelected) {
+      onTabChange(false);
+      setSummarySelected(false);
+    }
+  };
+
   return (
     <Box>
       <Flex justifyContent='center'>
         <Tabs align='center' width='100%'>
           <Center>
             <TabList>
-              <Tab fontSize='small'>Destination(s)</Tab>
-              <Tab fontSize='small'>Trip Date(s)</Tab>
+              <Tab fontSize='small' onClick={() => handleTabChange(1)}>
+                Destination(s)
+              </Tab>
+              <Tab fontSize='small' onClick={() => handleTabChange(2)}>
+                Trip Date(s)
+              </Tab>
               <Tab
+                onClick={() => handleTabChange(3)}
                 fontSize='small'
                 isDisabled={!selectedPlaces.length || !selectedDates.length}
               >
@@ -120,14 +139,13 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
               </Flex>
               {selectedCard ? (
                 <SelectedCard
-                  addSelectedPlace={addSelectedCard}
+                  addSelectedCard={addSelectedCard}
                   {...selectedCard}
                   handleCardClick={handleCardClick}
                   tripType={tripType}
                 />
               ) : (
                 <Places
-                  addSelectedPlace={addSelectedPlace}
                   tripType={tripType}
                   {...placesProps}
                   handleCardClick={handleCardClick}

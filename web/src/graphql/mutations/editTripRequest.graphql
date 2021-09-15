@@ -1,0 +1,3 @@
+mutation EditTripRequest($input: EditTripRequestInput!) {
+  editTripRequest(input: $input)
+}

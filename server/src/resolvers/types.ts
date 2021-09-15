@@ -33,6 +33,12 @@ export class TripRequestInput {
   min_nights: number;
 }
 
+@InputType()
+export class EditTripRequestInput extends TripRequestInput {
+  @Field()
+  id: number;
+}
+
 export interface handleSearchInterface {
   searchTerm: string;
   maxLng: number;

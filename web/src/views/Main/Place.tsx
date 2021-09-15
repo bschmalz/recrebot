@@ -2,12 +2,11 @@ import { IconButton, ListItem, Text } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
 import { StyledContainer } from '../../components/StyledContainer';
 import { MdAddCircle } from 'react-icons/md';
+import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
+import { useMap } from '../../contexts/MapContext';
 
 export interface PlaceInterface {
-  addSelectedPlace: Function;
   handleCardClick: Function;
-  handleCardMouseEnter: Function;
-  handleCardMouseLeave: Function;
   tripType: string;
 }
 
@@ -20,10 +19,7 @@ interface PlaceProps extends PlaceInterface {
 }
 
 export const Place: React.FC<PlaceProps> = ({
-  addSelectedPlace,
   handleCardClick,
-  handleCardMouseEnter,
-  handleCardMouseLeave,
   latitude,
   longitude,
   id,
@@ -31,6 +27,12 @@ export const Place: React.FC<PlaceProps> = ({
   recarea_name,
   tripType,
 }) => {
+  const { addSelectedPlace } = useSelectedPlaces();
+  const {
+    highlightMouseMarker,
+
+    unhighlightMouseMarker,
+  } = useMap();
   const [isActive, setActive] = useState(false);
   const [isFocused, setFocus] = useState(false);
   const buttonRef = useRef<HTMLInputElement>(null);
@@ -41,23 +43,23 @@ export const Place: React.FC<PlaceProps> = ({
       buttonRef.current.focus();
     } else {
       setFocus(false);
-      handleCardMouseLeave(id);
+      unhighlightMouseMarker(id);
     }
   };
 
   const focusCard = () => {
     setActive(true);
-    handleCardMouseEnter(id);
+    highlightMouseMarker(id);
   };
 
   const onMouseEnter = () => {
     setActive(true);
-    handleCardMouseEnter(id);
+    highlightMouseMarker(id);
   };
 
   const onMouseLeave = () => {
     setActive(false);
-    handleCardMouseLeave(id);
+    unhighlightMouseMarker(id);
   };
 
   return (

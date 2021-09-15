@@ -1,7 +1,19 @@
 query GetTripRequests {
   getTripRequests {
     tripRequests {
+      id
       custom_name
+      dates
+      locations {
+        name
+        id
+        latitude
+        longitude
+        recarea_name
+      }
+      active
+      min_nights
+      type
     }
   }
 }

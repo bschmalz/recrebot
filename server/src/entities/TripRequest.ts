@@ -10,6 +10,7 @@ import {
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
+import { Reservable } from './Reservable';
 import { User } from './User';
 
 @ObjectType()
@@ -39,11 +40,11 @@ export class TripRequest extends BaseEntity {
   @Column('date', { array: true })
   dates: Date[];
 
-  @Field(() => [Int])
+  @Field(() => [Reservable])
   @Column('int', { array: true })
   locations: number[];
 
-  @Field()
+  @Field({ nullable: true })
   @Column({ nullable: true })
   min_nights: number;
 

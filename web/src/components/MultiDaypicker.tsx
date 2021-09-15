@@ -1,5 +1,6 @@
 import React from 'react';
 import DayPicker, { DateUtils } from 'react-day-picker';
+import { StyledContainer } from './StyledContainer';
 
 interface MultiDaypickerInterface {
   selectedDates: Date[];
@@ -7,6 +8,8 @@ interface MultiDaypickerInterface {
 }
 
 const today = new Date();
+const sixMonths = new Date();
+sixMonths.setMonth(sixMonths.getMonth() + 6);
 
 export const MultiDaypicker: any = ({ dates, setDates }) => {
   const handleClick: any = (day, { selected }) => {
@@ -23,13 +26,15 @@ export const MultiDaypicker: any = ({ dates, setDates }) => {
   };
 
   return (
-    <div id="recrebot-date-picker">
-      <DayPicker
-        fromMonth={today}
-        selectedDays={dates}
-        onDayClick={handleClick}
-        disabledDays={{ before: today }}
-      />
+    <div id='recrebot-date-picker'>
+      <StyledContainer backgroundColor='white' borderRadius={6} width='320px'>
+        <DayPicker
+          fromMonth={today}
+          selectedDays={dates}
+          onDayClick={handleClick}
+          disabledDays={{ before: today, after: sixMonths }}
+        />
+      </StyledContainer>
     </div>
   );
 };

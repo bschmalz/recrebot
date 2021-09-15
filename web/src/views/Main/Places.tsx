@@ -15,11 +15,8 @@ export interface PlacesInterface extends PlaceInterface {
 }
 
 export const Places: React.FC<PlacesInterface> = ({
-  addSelectedPlace,
   campgrounds,
   handleCardClick,
-  handleCardMouseEnter,
-  handleCardMouseLeave,
   loadingCampgrounds,
   loadingTrailheads,
   onSearchTextChange,
@@ -49,10 +46,7 @@ export const Places: React.FC<PlacesInterface> = ({
           <Place
             {...cg}
             key={cg.id}
-            addSelectedPlace={addSelectedPlace}
             handleCardClick={handleCardClick}
-            handleCardMouseEnter={handleCardMouseEnter}
-            handleCardMouseLeave={handleCardMouseLeave}
             tripType={tripType}
           />
         );
@@ -78,11 +72,8 @@ export const Places: React.FC<PlacesInterface> = ({
         return (
           <Place
             {...th}
-            addSelectedPlace={addSelectedPlace}
             key={th.id}
             handleCardClick={handleCardClick}
-            handleCardMouseEnter={handleCardMouseEnter}
-            handleCardMouseLeave={handleCardMouseLeave}
             tripType={tripType}
           />
         );

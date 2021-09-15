@@ -12,12 +12,10 @@ import cors from 'cors';
 import { createConnection } from 'typeorm';
 import { User } from './entities/User';
 import path from 'path';
-import { createUserLoader } from './utils/createUserLoader';
 import { Campground } from './entities/Campground';
 import { Trailhead } from './entities/Trailhead';
 import { CampgroundResolver } from './resolvers/campground';
 import { TrailheadResolver } from './resolvers/trailhead';
-import { createTripRequestLoader } from './utils/createTripRequestLoader';
 import { TripRequest } from './entities/TripRequest';
 import { TripRequestResolver } from './resolvers/tripRequest';
 
@@ -79,8 +77,6 @@ const main = async () => {
       req,
       res,
       redis,
-      userLoader: createUserLoader(),
-      tripRequestLoader: createTripRequestLoader(),
     }),
   });
 

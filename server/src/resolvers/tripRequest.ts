@@ -1,9 +1,6 @@
-import { FORGET_PASSWORD_PREFIX } from 'src/constants';
 import { TripRequest } from '../entities/TripRequest';
-import { User } from '../entities/User';
 import { isAuth } from '../middleware/isAuth';
 import { MyContext } from '../types';
-import { sendEmail } from '../utils/sendEmail';
 import {
   Resolver,
   Query,
@@ -13,9 +10,15 @@ import {
   UseMiddleware,
   Field,
   ObjectType,
+  FieldResolver,
+  Root,
+  InputType,
+  Int,
 } from 'type-graphql';
-import { v4 } from 'uuid';
-import { TripRequestInput } from './types';
+import { EditTripRequestInput, TripRequestInput } from './types';
+import { Reservable } from '../entities/Reservable';
+import { Campground } from '../entities/Campground';
+import { Trailhead } from '../entities/Trailhead';
 
 // @ObjectType()
 // class FieldError {
@@ -32,8 +35,20 @@ class TripRequestsResponse {
   tripRequests?: TripRequest[];
 }
 
-@Resolver()
+@Resolver(TripRequest)
 export class TripRequestResolver {
+  @FieldResolver(() => [Reservable])
+  async locations(@Root() tripRequest: TripRequest) {
+    const { locations, type } = tripRequest;
+    if (type === 'Camp') {
+      return Campground.findByIds(locations);
+    } else {
+    }
+    if (type === 'Hike') {
+      return Trailhead.findByIds(locations);
+    } else return [];
+  }
+
   @Query(() => String)
   tripRequest() {
     return 'trip request';
@@ -61,5 +76,44 @@ export class TripRequestResolver {
     };
 
     return TripRequest.create(tr).save();
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async deleteTripRequest(
+    @Arg('id') id: number,
+    @Ctx() { req }: MyContext
+  ): Promise<Boolean> {
+    const tr = await TripRequest.findOne({ where: { id } });
+    console.log('me', req.session?.userId);
+    if (!tr || tr.userId !== req.session?.userId) {
+      throw Error();
+    }
+    try {
+      await TripRequest.delete({ id });
+      return true;
+    } catch (e) {
+      console.log('error', e);
+      return false;
+    }
+  }
+
+  @Mutation(() => Boolean)
+  @UseMiddleware(isAuth)
+  async editTripRequest(
+    @Arg('input') input: EditTripRequestInput,
+    @Ctx() { req }: MyContext
+  ): Promise<boolean> {
+    let tr = (await TripRequest.findOne({ where: { id: input.id } })) as any;
+    tr = {
+      ...tr,
+      ...input,
+    };
+    try {
+      await TripRequest.save(tr);
+      return true;
+    } catch (e) {
+      throw Error();
+    }
   }
 }

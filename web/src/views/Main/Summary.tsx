@@ -9,7 +9,7 @@ import {
   NumberDecrementStepper,
 } from '@chakra-ui/number-input';
 import { Tag } from '@chakra-ui/tag';
-import React, { MouseEventHandler, useState } from 'react';
+import React, { useState } from 'react';
 import { SelectedPlaceInterface } from '.';
 import { StyledContainer } from '../../components/StyledContainer';
 
@@ -43,10 +43,87 @@ export const Summary: React.FC<SummaryInterface> = ({
 }) => {
   const [customName, setName] = useState('');
   const [minNights, setNights] = useState('1');
+
+  return (
+    <form>
+      <StyledContainer
+        borderRadius={6}
+        padding={4}
+        backgroundColor='white'
+        textAlign='left'
+      >
+        <Box marginBottom={6}>
+          <Text
+            fontSize={14}
+            color='gray.600'
+            fontWeight='bold'
+            minWidth='160px'
+            marginLeft={1}
+            marginBottom={1}
+          >
+            Custom Name (optional)
+          </Text>
+          <Input value={customName} onChange={(e) => setName(e.target.value)} />
+        </Box>
+        <TripSelections
+          dates={selectedDates}
+          places={selectedPlaces}
+          tripType={tripType}
+        />
+        {tripType === 'Camp' ? (
+          <Box marginBottom={6}>
+            <Flex alignItems='center'>
+              <Text
+                fontSize={14}
+                color='gray.600'
+                fontWeight='bold'
+                minWidth='200px'
+              >
+                Minimum Number of Nights
+              </Text>
+              <NumberInput
+                defaultValue={1}
+                min={1}
+                max={13}
+                value={minNights}
+                onChange={(num) => {
+                  setNights(num);
+                }}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </Flex>
+          </Box>
+        ) : null}
+
+        <Button
+          colorScheme='green'
+          size='md'
+          width='100%'
+          onClick={() =>
+            saveTripRequest(
+              customName,
+              tripType === 'Camp' ? minNights : undefined
+            )
+          }
+        >
+          Save
+        </Button>
+      </StyledContainer>
+    </form>
+  );
+};
+
+export const TripSelections = ({ dates, places, tripType }) => {
   const dateObj = {};
 
   const datesToObj = () => {
-    selectedDates.forEach((sd) => {
+    dates.forEach((sdate) => {
+      const sd = new Date(sdate);
       const month = sd.getMonth() + 1;
       const date = sd.getDate();
       if (!dateObj[month]) {
@@ -63,7 +140,7 @@ export const Summary: React.FC<SummaryInterface> = ({
     return monthKeys.map((mk, i) => {
       const data = dateObj[mk];
       return (
-        <Box marginBottom={2} marginTop={2}>
+        <Box marginBottom={2} marginTop={2} key={mk}>
           <Flex alignItems='center' flexWrap='wrap'>
             <Text fontSize={13}>
               <Badge marginRight={1}>{dateNumToStr[mk]}</Badge>
@@ -129,41 +206,16 @@ export const Summary: React.FC<SummaryInterface> = ({
       else return res + ', ';
     });
   };
-
   return (
-    <form>
-      <StyledContainer
-        backgroundColor='white'
-        borderRadius={6}
-        padding={4}
-        textAlign='left'
-        marginBottom={4}
-      >
-        <Text
-          fontSize={14}
-          fontWeight='bold'
-          minWidth='160px'
-          marginLeft={1}
-          marginBottom={1}
-        >
-          Custom Name (optional)
-        </Text>
-        <Input value={customName} onChange={(e) => setName(e.target.value)} />
-      </StyledContainer>
-      <StyledContainer
-        backgroundColor='white'
-        borderRadius={6}
-        padding={4}
-        marginBottom={4}
-        textAlign='left'
-      >
-        <Text fontSize={14} fontWeight='bold'>
+    <>
+      <Box marginBottom={6}>
+        <Text fontSize={14} color='gray.600' fontWeight='bold'>
           Selected {tripType === 'Hike' ? 'Trailheads' : 'Campsites'}
         </Text>
         <Divider marginTop={1} marginBottom={2} />
 
         <Flex flexWrap='wrap'>
-          {selectedPlaces.map((sp) => (
+          {places.map((sp) => (
             <Tag
               size='md'
               key={sp.id}
@@ -175,65 +227,20 @@ export const Summary: React.FC<SummaryInterface> = ({
             </Tag>
           ))}
         </Flex>
-      </StyledContainer>
-      <StyledContainer
-        backgroundColor='white'
-        borderRadius={6}
-        padding={4}
-        marginBottom={4}
-        textAlign='left'
-      >
-        <Text fontSize={14} fontWeight='bold' marginLeft={1} marginBottom={1}>
+      </Box>
+      <Box marginBottom={6}>
+        <Text
+          fontSize={14}
+          color='gray.600'
+          fontWeight='bold'
+          marginLeft={1}
+          marginBottom={1}
+        >
           Seleted Dates
         </Text>
         <Divider marginTop={1} marginBottom={2} />
         {renderDates()}
-      </StyledContainer>
-
-      {tripType === 'Camp' ? (
-        <StyledContainer
-          backgroundColor='white'
-          borderRadius={6}
-          padding={4}
-          textAlign='left'
-          marginBottom={4}
-        >
-          <Flex alignItems='center'>
-            <Text fontSize={14} fontWeight='bold' minWidth='200px'>
-              Minimum Number of Nights
-            </Text>
-            <NumberInput
-              defaultValue={1}
-              min={1}
-              max={13}
-              value={minNights}
-              onChange={(num) => {
-                setNights(num);
-              }}
-            >
-              <NumberInputField />
-              <NumberInputStepper>
-                <NumberIncrementStepper />
-                <NumberDecrementStepper />
-              </NumberInputStepper>
-            </NumberInput>
-          </Flex>
-        </StyledContainer>
-      ) : null}
-
-      <Button
-        colorScheme='green'
-        size='md'
-        width='100%'
-        onClick={() =>
-          saveTripRequest(
-            customName,
-            tripType === 'Camp' ? minNights : undefined
-          )
-        }
-      >
-        Save
-      </Button>
-    </form>
+      </Box>
+    </>
   );
 };

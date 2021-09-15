@@ -5,10 +5,10 @@ import { StyledContainer } from '../../components/StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
 
 interface SelectedCardProps {
-  addSelectedPlace: Function;
+  addSelectedCard: Function;
   id: number;
   handleCardClick: Function;
-  legacy_id: number;
+  legacy_id: string;
   name: string;
   recarea_name: string;
   type: string;
@@ -22,7 +22,7 @@ interface SelectedCardProps {
 }
 
 export const SelectedCard: React.FC<SelectedCardProps> = ({
-  addSelectedPlace,
+  addSelectedCard,
   facility_id,
   handleCardClick,
   id,
@@ -85,7 +85,7 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
       <IconButton
         colorScheme='green'
         onClick={() =>
-          addSelectedPlace({
+          addSelectedCard({
             id,
             name,
             recarea_name,
