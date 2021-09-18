@@ -7,5 +7,8 @@ declare namespace NodeJS {
     CORS_ORIGIN: string;
     EMAIL_USER: string;
     EMAIL_PASS: string;
+    TWILIO_ACCOUNT_SID: string;
+    TWILIO_AUTH_TOKEN: string;
+    TWILIO_PHONE_NUMBER: string;
   }
 }

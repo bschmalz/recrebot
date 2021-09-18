@@ -20,6 +20,7 @@ import { TripRequest } from './entities/TripRequest';
 import { TripRequestResolver } from './resolvers/tripRequest';
 import { scrapeRecData } from './scraper/scrapeRecData';
 import { getImages } from './scraper/getImage';
+import { sendSMS } from './utils/sendSMS';
 
 const main = async () => {
   await createConnection({
