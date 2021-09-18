@@ -168,7 +168,7 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
               <Summary
                 customName={customName}
                 hasSearched={hasSearched}
-                minimumNights={editingTripRequest.min_nights}
+                minimumNights={editingTripRequest?.min_nights}
                 saveTripRequest={saveTripRequest}
                 selectedDates={selectedDates}
                 selectedPlaces={selectedPlaces}

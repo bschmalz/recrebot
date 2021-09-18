@@ -84,43 +84,42 @@ export const Place: React.FC<PlaceProps> = ({
         bg='white'
         borderRadius={6}
         position='relative'
-        className='aFunClass'
+        className='recrebot-search-result'
       >
         <Text fontSize='small' fontWeight='bold'>
           {name}
         </Text>
         <Text fontSize='small'>{parent_name}</Text>
-        {isActive && (
-          <IconButton
-            colorScheme='green'
-            onBlur={() => {
-              setActive(false);
-            }}
-            onClick={(e) => {
-              e.stopPropagation();
-              addSelectedPlace({
-                id,
-                name,
-                parent_name,
-                legacy_id,
-                latitude,
-                longitude,
-                subparent_id,
-                sub_type,
-                type: tripType,
-              });
-              removeMarker(id);
-            }}
-            ref={buttonRef}
-            size='xs'
-            position='absolute'
-            bottom={3}
-            right={1.5}
-            aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
-            icon={<MdAddCircle size={18} />}
-            isRound={true}
-          />
-        )}
+        <IconButton
+          colorScheme='green'
+          onBlur={() => {
+            setActive(false);
+          }}
+          onClick={(e) => {
+            e.stopPropagation();
+            addSelectedPlace({
+              id,
+              name,
+              parent_name,
+              legacy_id,
+              latitude,
+              longitude,
+              subparent_id,
+              sub_type,
+              type: tripType,
+            });
+            removeMarker(id);
+          }}
+          display={!isActive ? 'none' : undefined}
+          ref={buttonRef}
+          size='xs'
+          position='absolute'
+          bottom={3}
+          right={1.5}
+          aria-label={tripType === 'Camp' ? 'Add Camground' : 'Add Trailhead'}
+          icon={<MdAddCircle size={18} />}
+          isRound={true}
+        />
       </StyledContainer>
     </ListItem>
   );
