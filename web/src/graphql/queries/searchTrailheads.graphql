@@ -15,14 +15,14 @@ query SearchTrailheads(
     trailheads {
       id
       name
-      source
       latitude
       longitude
-      recarea_name
+      parent_name
       legacy_id
-      district
+      parent_name
       description
-      facility_id
+      subparent_name
+      subparent_id
     }
   }
 }

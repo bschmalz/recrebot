@@ -18,6 +18,8 @@ import { CampgroundResolver } from './resolvers/campground';
 import { TrailheadResolver } from './resolvers/trailhead';
 import { TripRequest } from './entities/TripRequest';
 import { TripRequestResolver } from './resolvers/tripRequest';
+import { scrapeRecData } from './scraper/scrapeRecData';
+import { getImages } from './scraper/getImage';
 
 const main = async () => {
   await createConnection({

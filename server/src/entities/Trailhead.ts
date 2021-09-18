@@ -4,17 +4,4 @@ import { Reservable } from './Reservable';
 
 @ObjectType()
 @Entity()
-export class Trailhead extends Reservable {
-  @Field()
-  @Index({ fulltext: true })
-  @Column('varchar')
-  district: string;
-
-  @Field()
-  @Column('varchar')
-  facility_id: string;
-
-  @Field()
-  @Column('varchar')
-  facility_name: string;
-}
+export class Trailhead extends Reservable {}

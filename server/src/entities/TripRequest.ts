@@ -1,17 +1,13 @@
-import { Field, Float, Int, ObjectType } from 'type-graphql';
+import { Field, ObjectType } from 'type-graphql';
 import {
   Entity,
   Column,
-  Index,
   PrimaryGeneratedColumn,
   BaseEntity,
-  PrimaryColumn,
-  ManyToOne,
   CreateDateColumn,
   UpdateDateColumn,
 } from 'typeorm';
 import { Reservable } from './Reservable';
-import { User } from './User';
 
 @ObjectType()
 @Entity()
@@ -21,7 +17,7 @@ export class TripRequest extends BaseEntity {
   id: number;
 
   @Field()
-  @PrimaryColumn()
+  @Column()
   userId: number;
 
   @Field()

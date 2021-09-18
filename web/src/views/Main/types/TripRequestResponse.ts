@@ -4,7 +4,7 @@ type Location = {
   latitude: number;
   longitude: number;
   name: string;
-  recarea_name: string;
+  parent_name: string;
 };
 
 export interface TripRequestResponse {

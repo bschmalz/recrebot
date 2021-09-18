@@ -21,7 +21,20 @@ export class Reservable extends BaseEntity {
   @Field()
   @Index({ fulltext: true })
   @Column('varchar')
-  recarea_name: string;
+  parent_name: string;
+
+  @Field({ nullable: true })
+  @Column('varchar', { nullable: true })
+  parent_id: string;
+
+  @Field({ nullable: true })
+  @Index({ fulltext: true })
+  @Column('varchar', { nullable: true })
+  subparent_name: string;
+
+  @Field({ nullable: true })
+  @Column('varchar', { nullable: true })
+  subparent_id: string;
 
   @Field()
   @Index({ fulltext: true })
@@ -38,9 +51,13 @@ export class Reservable extends BaseEntity {
 
   @Field()
   @Column('varchar')
-  source: string;
+  type: string;
 
   @Field()
   @Column('varchar')
+  sub_type: string;
+
+  @Field({ nullable: true })
+  @Column('varchar', { nullable: true })
   description: string;
 }

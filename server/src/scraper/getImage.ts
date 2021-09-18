@@ -1,6 +1,7 @@
 import { Campground } from '../entities/Campground';
 import { getRepository } from 'typeorm';
 import { Trailhead } from '../entities/Trailhead';
+import { delay } from './delay';
 
 const puppeteer = require('puppeteer');
 const fs = require('fs');
@@ -40,17 +41,17 @@ export const getImage = async (
 };
 
 export const getImages = async () => {
-  //   const campgrounds = await getRepository(Campground)
-  //     .createQueryBuilder('campground')
-  //     .getMany();
+  const campgrounds = await getRepository(Campground)
+    .createQueryBuilder('campground')
+    .getMany();
 
-  //   for (let i = 0; i < campgrounds.length; i++) {
-  //     const cg = campgrounds[i];
-  //     const str = `${cg.name} campground${
-  //       cg.recarea_name ? ` ${cg.recarea_name}` : ''
-  //     }`;
-  //     await getImage(str, 'campground', cg.id);
-  //   }
+  for (let i = 0; i < campgrounds.length; i++) {
+    const cg = campgrounds[i];
+    const str = `${cg.name} campground${
+      cg.parent_name ? ` ${cg.parent_name}` : ''
+    }`;
+    await tryToGetImage(str, 'campground', cg.id);
+  }
 
   const trailheads = await getRepository(Trailhead)
     .createQueryBuilder('trailhead')
@@ -58,9 +59,26 @@ export const getImages = async () => {
 
   for (let i = 0; i < trailheads.length; i++) {
     const th = trailheads[i];
-    const str = `${th.name} trail${
-      th.recarea_name ? ` ${th.recarea_name}` : ''
-    }${th.district ? ` ${th.district}` : ''}`;
-    await getImage(str, 'trailhead', th.id);
+    const str = `${th.name} trail${th.parent_name ? ` ${th.parent_name}` : ''}`;
+    await tryToGetImage(str, 'trailhead', th.id);
+  }
+};
+
+const tryToGetImage = async (
+  searchString: string,
+  type: string,
+  id: number
+) => {
+  let tries = 1;
+  while (tries < 3) {
+    if (tries > 1) {
+      await delay();
+    }
+    try {
+      await getImage(searchString, type, id);
+      tries = 5;
+    } catch (e) {
+      tries++;
+    }
   }
 };

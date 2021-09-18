@@ -85,9 +85,8 @@ export class TripRequestResolver {
     @Ctx() { req }: MyContext
   ): Promise<Boolean> {
     const tr = await TripRequest.findOne({ where: { id } });
-    console.log('me', req.session?.userId);
     if (!tr || tr.userId !== req.session?.userId) {
-      throw Error();
+      throw Error('Could not find trip record.');
     }
     try {
       await TripRequest.delete({ id });
@@ -105,6 +104,9 @@ export class TripRequestResolver {
     @Ctx() { req }: MyContext
   ): Promise<boolean> {
     let tr = (await TripRequest.findOne({ where: { id: input.id } })) as any;
+    if (!tr || tr.userId !== req.session?.userId) {
+      throw Error('Could not find trip record.');
+    }
     tr = {
       ...tr,
       ...input,

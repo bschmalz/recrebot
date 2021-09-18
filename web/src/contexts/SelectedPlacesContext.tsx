@@ -10,6 +10,7 @@ interface SelectedPlaceContextInterface {
   selectedCard: SelectedPlaceInterface;
   selectedPlaces: SelectedPlaceInterface[];
   selectedPlacesObj: { [key: string]: SelectedPlaceInterface };
+  setSelectedPlaces: ({}) => void;
 }
 
 const initialState: SelectedPlaceContextInterface = {
@@ -20,6 +21,7 @@ const initialState: SelectedPlaceContextInterface = {
   selectedCard: null,
   selectedPlaces: [],
   selectedPlacesObj: {},
+  setSelectedPlaces: () => {},
 };
 
 const SelectedPlaceContext = React.createContext(initialState);
@@ -38,6 +40,7 @@ function SelectedPlaceProvider(props) {
 
   const addSelectedPlace = (sp) => {
     const newSelectedPlacesObj = { ...selectedPlacesObj };
+    if (newSelectedPlacesObj[sp.id]) return;
     newSelectedPlacesObj[sp.id] = sp;
     safeSetState({
       selectedCard: null,
@@ -60,10 +63,18 @@ function SelectedPlaceProvider(props) {
     });
   };
 
+  const setSelectedPlaces = (sp) => {
+    const newPlacesObj = {};
+    sp.forEach((p) => {
+      newPlacesObj[p.id] = p;
+    });
+    safeSetState({ selectedPlaces: sp, selectedPlacesObj: newPlacesObj });
+  };
+
   const selectCard = (card) => {
     if (!card) {
       safeSetState({ selectedCard: null });
-    } else {
+    } else if (!selectedPlaces.find((sp) => sp.id === card.id)) {
       safeSetState({ selectedCard: card });
     }
   };
@@ -76,6 +87,7 @@ function SelectedPlaceProvider(props) {
     selectedCard,
     selectedPlaces,
     selectedPlacesObj,
+    setSelectedPlaces,
   };
   return <SelectedPlaceContext.Provider value={value} {...props} />;
 }

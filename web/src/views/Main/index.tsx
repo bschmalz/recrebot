@@ -3,13 +3,22 @@ import { withApollo } from '../../utils/withApollo';
 import { Sidebar } from './Sidebar';
 import MapboxGL from 'mapbox-gl';
 import 'mapbox-gl/dist/mapbox-gl.css';
-import { Box, Checkbox, Flex, Stack, Text } from '@chakra-ui/react';
 import {
-  Campground,
+  Box,
+  Breadcrumb,
+  BreadcrumbItem,
+  BreadcrumbLink,
+  Checkbox,
+  Flex,
+  Stack,
+  Text,
+  useToast,
+} from '@chakra-ui/react';
+import {
+  TripRequest,
   useSearchCampgroundsLazyQuery,
   useSearchTrailheadsLazyQuery,
 } from '../../generated/graphql';
-import { Trailhead } from './types/Trailhead';
 import { debounce } from '../../utils/debounce';
 import { useSafeSetState } from '../../hooks/safeSetState';
 import React from 'react';
@@ -18,11 +27,13 @@ import { PlanTrip } from './PlanTrip';
 import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
 import { useMap } from '../../contexts/MapContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
+import { Campground } from './types/Campground';
+import { Trailhead } from './types/Trailhead';
 
 export interface SelectedPlaceInterface {
   type: string;
   name: string;
-  recarea_name: string;
+  parent_name: string;
   longitude: number;
   latitude: number;
   id: number;
@@ -33,6 +44,8 @@ export interface SelectedPlaceInterface {
 }
 
 interface State {
+  customName: string;
+  editingTripRequest: TripRequest | null;
   searchText: string;
   selectedDates: Date[];
   sideBarView: 'MyTrips' | 'PlanATrip';
@@ -40,6 +53,8 @@ interface State {
 }
 
 const initialState: State = {
+  customName: '',
+  editingTripRequest: null,
   searchText: '',
   selectedDates: [],
   sideBarView: 'MyTrips',
@@ -47,8 +62,17 @@ const initialState: State = {
 };
 
 const Main = () => {
-  const [{ searchText, selectedDates, sideBarView, tripType }, safeSetState] =
-    useSafeSetState(initialState);
+  const [
+    {
+      customName,
+      editingTripRequest,
+      searchText,
+      selectedDates,
+      sideBarView,
+      tripType,
+    },
+    safeSetState,
+  ] = useSafeSetState(initialState);
 
   const [
     searchCampgrounds,
@@ -61,9 +85,11 @@ const Main = () => {
   ] = useSearchTrailheadsLazyQuery();
 
   const campgroundsRef = useRef([]);
+  const searchTextRef = useRef('');
   const sideBarRef = useRef(null);
   const scrollRef = useRef(0);
   const trailheadsRef = useRef([]);
+  const tripTypeRef = useRef('Camp');
 
   const debounceTime = 800;
   const debouncedCampgroundSearch = useRef(
@@ -95,6 +121,7 @@ const Main = () => {
     selectedCard,
     selectedPlaces,
     selectedPlacesObj,
+    setSelectedPlaces,
   } = useSelectedPlaces();
 
   const {
@@ -105,6 +132,8 @@ const Main = () => {
     loadingTripRequests,
     tripRequestsData,
   } = useTripRequests();
+
+  const toast = useToast();
 
   const campgrounds: Campground[] =
     (tripType === 'Camp' &&
@@ -150,6 +179,12 @@ const Main = () => {
     }
   }, [map, mapRef]);
 
+  useEffect(() => {
+    if (filterOnMap && (editingTripRequest || tripType === 'PlanATrip')) {
+      handleSearch(searchText, tripType);
+    }
+  }, [filterOnMap]);
+
   const addSelectedCard = () => {
     addSelectedPlace(selectedCard);
     removeMarker(selectedCard.id);
@@ -177,7 +212,7 @@ const Main = () => {
     return marker;
   };
 
-  const createTripRequestObj = async (customName: string, minNights) => {
+  const createTripRequestObj = (customName: string, minNights) => {
     const tr = {
       type: tripType,
       dates: selectedDates,
@@ -185,7 +220,7 @@ const Main = () => {
       custom_name: customName,
     };
     if (minNights) tr['min_nights'] = parseInt(minNights);
-    createTrip(tr);
+    return tr;
   };
 
   const handleCardClick = (id) => {
@@ -246,16 +281,17 @@ const Main = () => {
 
   const onMapUpdate = () => {
     if (filterOnMapRef.current) {
-      handleSearch(searchText, tripType);
+      handleSearch(searchTextRef.current, tripTypeRef.current);
     }
   };
 
   const onSearchTextChange = (searchText) => {
     safeSetState({ searchText });
     handleSearch(searchText, tripType);
+    searchTextRef.current = searchText;
   };
 
-  const removeSelectedPlaceTwo = (id) => {
+  const removePlace = (id) => {
     removeSelectedPlace(id);
     const marker = checkMarker(id);
     if (marker) {
@@ -263,11 +299,61 @@ const Main = () => {
     }
   };
 
-  const saveTripRequest = (customName: string, minNights: number) => {
-    if (sideBarView === 'MyTrips') {
-      editTripRequest(88);
-    } else {
-      createTripRequestObj(customName, minNights);
+  const resetSelections = () => {
+    safeSetState({
+      customName: '',
+      editingTripRequest: null,
+      searchText: '',
+      selectedDates: [],
+    });
+    resetSelectedPlaces();
+  };
+
+  const saveTripRequest = async (customName: string, minNights: number) => {
+    const tr = createTripRequestObj(customName, minNights);
+    updateMapMarkers([]);
+    try {
+      if (sideBarView === 'MyTrips') {
+        await editTripRequest({ ...tr, id: editingTripRequest.id });
+      } else {
+        await createTrip(tr);
+      }
+      toast({
+        title: 'Trip request saved.',
+        description: "We'll let you know if it gets any hits!",
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      });
+      if (editingTripRequest) {
+        safeSetState({ editingTripRequest: null });
+      }
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'We were unable to save the trip request.',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
+  const setEditingTripRequest = (tr) => {
+    setSelectedPlaces(tr.locations);
+    safeSetState({
+      customName: tr.custom_name,
+      editingTripRequest: tr,
+      selectedDates: tr.dates.map((d) => new Date(d)),
+      tripType: tr.type,
+    });
+    tripTypeRef.current = tr.type;
+  };
+
+  const setSidebar = (newView) => {
+    if (newView !== sideBarView) {
+      safeSetState({ sideBarView: newView });
+      resetSelections();
     }
   };
 
@@ -277,7 +363,9 @@ const Main = () => {
         tripType: newTripType,
       });
 
-      resetSelectedPlaces();
+      setSelectedPlaces([]);
+
+      tripTypeRef.current = newTripType;
 
       const places =
         newTripType === 'Camp'
@@ -292,40 +380,71 @@ const Main = () => {
   return (
     <Flex width='100%'>
       <Sidebar
-        setMainState={safeSetState}
+        setSidebar={setSidebar}
         sideBarView={sideBarView}
         ref={sideBarRef}
       >
-        {sideBarView === 'MyTrips' ? (
-          <MyTrips
-            deleteTripRequest={deleteTripRequest}
-            tripRequests={tripRequestsData?.getTripRequests?.tripRequests}
-            loading={loadingTripRequests}
-            error={errorTripRequests}
-          />
-        ) : (
-          <PlanTrip
-            addSelectedCard={addSelectedCard}
-            campgrounds={campgrounds}
-            handleCardClick={handleCardClick}
-            loadingCampgrounds={loadingCampgrounds}
-            loadingTrailheads={loadingTrailheads}
-            onTabChange={handlePlanTripTabChange}
-            removeSelectedPlace={removeSelectedPlaceTwo}
-            saveTripRequest={saveTripRequest}
-            searchText={searchText}
-            selectedCard={selectedCard}
-            selectedDates={selectedDates}
-            selectedPlaces={selectedPlaces}
-            setDates={(selectedDates) => {
-              safeSetState({ selectedDates });
-            }}
-            onSearchTextChange={onSearchTextChange}
-            toggleTripType={toggleTripType}
-            trailheads={trailheads}
-            tripType={tripType}
-          />
-        )}
+        <>
+          {sideBarView === 'MyTrips' && (
+            <Breadcrumb
+              mb={2}
+              ml={2}
+              fontSize={14}
+              fontWeight='bold'
+              onClick={() => {
+                if (editingTripRequest) resetSelections();
+              }}
+            >
+              <BreadcrumbItem>
+                <BreadcrumbLink>All Trips</BreadcrumbLink>
+              </BreadcrumbItem>
+
+              {editingTripRequest ? (
+                <BreadcrumbItem>
+                  <BreadcrumbLink>Trip Edit</BreadcrumbLink>
+                </BreadcrumbItem>
+              ) : null}
+            </Breadcrumb>
+          )}
+          {sideBarView === 'MyTrips' && !editingTripRequest ? (
+            <>
+              <MyTrips
+                deleteTripRequest={deleteTripRequest}
+                tripRequests={tripRequestsData?.getTripRequests?.tripRequests}
+                loading={loadingTripRequests}
+                error={errorTripRequests}
+                setEditingTripRequest={setEditingTripRequest}
+              />
+            </>
+          ) : (
+            <PlanTrip
+              addSelectedCard={addSelectedCard}
+              campgrounds={campgrounds}
+              customName={customName}
+              editingTripRequest={editingTripRequest}
+              handleCardClick={handleCardClick}
+              loadingCampgrounds={loadingCampgrounds}
+              loadingTrailheads={loadingTrailheads}
+              onTabChange={handlePlanTripTabChange}
+              removeSelectedPlace={removePlace}
+              saveTripRequest={saveTripRequest}
+              searchText={searchText}
+              selectedCard={selectedCard}
+              selectedDates={selectedDates}
+              selectedPlaces={selectedPlaces}
+              setDates={(selectedDates) => {
+                safeSetState({ selectedDates });
+              }}
+              setName={(customName) => {
+                safeSetState({ customName });
+              }}
+              onSearchTextChange={onSearchTextChange}
+              toggleTripType={toggleTripType}
+              trailheads={trailheads}
+              tripType={tripType}
+            />
+          )}
+        </>
       </Sidebar>
       <Box ref={mapRef} w='100%' h='100%' id='recrebot-map' position='relative'>
         <Stack

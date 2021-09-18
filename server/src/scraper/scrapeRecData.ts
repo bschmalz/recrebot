@@ -1,46 +1,44 @@
 import * as fs from 'fs';
 import * as path from 'path';
 import { parse } from '@fast-csv/parse';
-import { Campground, Campgrounds } from './types/Campground';
 import {
   Division,
   PermitGroup,
   PermitGroupResponse,
 } from './types/PermitGroups';
 import fetch from 'node-fetch';
-import { TrailHead as TrailHeadType } from './types/Trailhead';
 import { fetchCaliCamppgrounds } from './scrapeCaliData';
-import { Campground as CampgroundEntity } from '../entities/Campground';
 import { getConnection } from 'typeorm';
 import { Trailhead } from '../entities/Trailhead';
 import { delay } from './delay';
 import { validateCoords } from './validateCoords';
+import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
+import { Campground } from '../entities/Campground';
 
 export const scrapeRecData = () => {
   const recAreas: RecAreas = {};
-  const campgroundsArray: Campground[] = [];
-  const campgrounds: Campgrounds = {};
+  const campgroundsArray: ScrapedData[] = [];
+  const campgrounds: ScrapedDataObj = {};
   const permitGroups: PermitGroup[] = [];
-  const trailheads: TrailHeadType[] = [];
+  const trailheads: ScrapedData[] = [];
 
   const parsePermitGroups = async () => {
-    // console.log('validating rec gov cg coords');
-    // const campsWithValidCoords = await validateCoords(
-    //   campgroundsArray,
-    //   'Campground'
-    // );
+    console.log('validating rec gov cg coords');
+    const campsWithValidCoords = await validateCoords(
+      campgroundsArray,
+      'Campground'
+    );
 
-    // console.log(
-    //   'there are ' + campsWithValidCoords.length + 'rec gov camps being added'
-    // );
+    console.log('adding to db');
+    await getConnection()
+      .createQueryBuilder()
+      .insert()
+      .into(Campground)
+      .values(campsWithValidCoords)
+      .returning('*')
+      .execute();
 
-    // await getConnection()
-    //   .createQueryBuilder()
-    //   .insert()
-    //   .into(CampgroundEntity)
-    //   .values(campsWithValidCoords)
-    //   .returning('*')
-    //   .execute();
+    console.log(campsWithValidCoords.length + 'rec gov camps were added');
 
     console.log('getting trailheads');
 
@@ -66,7 +64,7 @@ export const scrapeRecData = () => {
       .returning('*')
       .execute();
     console.log('there are ' + trailheads.length + ' trailheads');
-    // fetchCaliCamppgrounds();
+    fetchCaliCamppgrounds();
   };
 
   const getTrailheads = async (pg: PermitGroup) => {
@@ -82,15 +80,17 @@ export const scrapeRecData = () => {
       if (item.type === 'Entry Point') {
         const t = {
           description: item.description,
-          facility_id: pg.FacilityID,
-          facility_name: pg.FacilityName,
+          subparent_id: pg.FacilityID,
+          subparent_name: pg.FacilityName,
           legacy_id: item.id,
           district: item.district || '',
           latitude: item.latitude,
           longitude: item.longitude,
           name: item.name,
-          recarea_name: pg.RecAreaName || '',
-          source: 'rg',
+          parent_name: pg.RecAreaName || '',
+          parent_id: pg.ParentRecAreaID,
+          type: 'trailhead',
+          sub_type: 'rec_gov',
         };
         trailheads.push(t);
       }
@@ -114,8 +114,10 @@ export const scrapeRecData = () => {
               name: row.FacilityName,
               latitude: lat,
               longitude: lng,
-              recarea_name: recAreaName,
-              source: 'rg',
+              parent_name: recAreaName,
+              sub_type: 'rec_gov',
+              parent_id: row.ParentRecAreaID,
+              type: 'campground',
             };
             campgrounds[row.FacilityID] = cg;
             campgroundsArray.push(cg);
@@ -128,6 +130,7 @@ export const scrapeRecData = () => {
               Latitude: lat,
               Longitude: lng,
               RecAreaName: recAreaName,
+              ParentRecAreaID: row.ParentRecAreaID,
             });
           }
         }

@@ -6,6 +6,6 @@ export interface TrailHead {
   latitude: number;
   longitude: number;
   name: string;
-  recarea_name: string;
+  parent_name: string;
   source: string;
 }

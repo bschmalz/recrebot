@@ -7,27 +7,34 @@ import { useMap } from '../../contexts/MapContext';
 
 export interface PlaceInterface {
   handleCardClick: Function;
-  tripType: string;
+  tripType: 'Camp' | 'Hike';
 }
 
 interface PlaceProps extends PlaceInterface {
   latitude: number;
   longitude: number;
+  legacy_id: string;
   name: string;
   id: number;
-  recarea_name: string;
+  parent_name: string;
+  subparent_id?: string;
+  sub_type?: string;
 }
 
 export const Place: React.FC<PlaceProps> = ({
   handleCardClick,
+  legacy_id,
   latitude,
   longitude,
   id,
   name,
-  recarea_name,
+  parent_name,
+  subparent_id,
+  sub_type,
   tripType,
 }) => {
   const { addSelectedPlace } = useSelectedPlaces();
+  const { removeMarker } = useMap();
   const {
     highlightMouseMarker,
 
@@ -77,11 +84,12 @@ export const Place: React.FC<PlaceProps> = ({
         bg='white'
         borderRadius={6}
         position='relative'
+        className='aFunClass'
       >
         <Text fontSize='small' fontWeight='bold'>
           {name}
         </Text>
-        <Text fontSize='small'>{recarea_name}</Text>
+        <Text fontSize='small'>{parent_name}</Text>
         {isActive && (
           <IconButton
             colorScheme='green'
@@ -93,11 +101,15 @@ export const Place: React.FC<PlaceProps> = ({
               addSelectedPlace({
                 id,
                 name,
-                recarea_name,
+                parent_name,
+                legacy_id,
                 latitude,
                 longitude,
+                subparent_id,
+                sub_type,
                 type: tripType,
               });
+              removeMarker(id);
             }}
             ref={buttonRef}
             size='xs'

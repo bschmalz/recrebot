@@ -20,12 +20,16 @@ export type Campground = {
   __typename?: 'Campground';
   id: Scalars['Float'];
   legacy_id: Scalars['String'];
-  recarea_name: Scalars['String'];
+  parent_name: Scalars['String'];
+  parent_id?: Maybe<Scalars['String']>;
+  subparent_name?: Maybe<Scalars['String']>;
+  subparent_id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
-  source: Scalars['String'];
-  description: Scalars['String'];
+  type: Scalars['String'];
+  sub_type: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type CampgroundResponse = {
@@ -150,12 +154,16 @@ export type Reservable = {
   __typename?: 'Reservable';
   id: Scalars['Float'];
   legacy_id: Scalars['String'];
-  recarea_name: Scalars['String'];
+  parent_name: Scalars['String'];
+  parent_id?: Maybe<Scalars['String']>;
+  subparent_name?: Maybe<Scalars['String']>;
+  subparent_id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
-  source: Scalars['String'];
-  description: Scalars['String'];
+  type: Scalars['String'];
+  sub_type: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type SearchInput = {
@@ -169,15 +177,16 @@ export type Trailhead = {
   __typename?: 'Trailhead';
   id: Scalars['Float'];
   legacy_id: Scalars['String'];
-  recarea_name: Scalars['String'];
+  parent_name: Scalars['String'];
+  parent_id?: Maybe<Scalars['String']>;
+  subparent_name?: Maybe<Scalars['String']>;
+  subparent_id?: Maybe<Scalars['String']>;
   name: Scalars['String'];
   latitude: Scalars['Float'];
   longitude: Scalars['Float'];
-  source: Scalars['String'];
-  description: Scalars['String'];
-  district: Scalars['String'];
-  facility_id: Scalars['String'];
-  facility_name: Scalars['String'];
+  type: Scalars['String'];
+  sub_type: Scalars['String'];
+  description?: Maybe<Scalars['String']>;
 };
 
 export type TrailheadResponse = {
@@ -310,7 +319,7 @@ export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __ty
 export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, locations: Array<{ __typename?: 'Reservable', name: string, id: number, latitude: number, longitude: number, recarea_name: string }> }>> } };
+export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, locations: Array<{ __typename?: 'Reservable', name: string, id: number, legacy_id: string, latitude: number, longitude: number, parent_name: string, subparent_id?: Maybe<string> }> }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -325,7 +334,7 @@ export type SearchCampgroundsQueryVariables = Exact<{
 }>;
 
 
-export type SearchCampgroundsQuery = { __typename?: 'Query', searchCampgrounds: { __typename?: 'CampgroundsResponse', campgrounds: Array<{ __typename?: 'Campground', id: number, name: string, source: string, latitude: number, longitude: number, recarea_name: string, legacy_id: string, description: string }> } };
+export type SearchCampgroundsQuery = { __typename?: 'Query', searchCampgrounds: { __typename?: 'CampgroundsResponse', campgrounds: Array<{ __typename?: 'Campground', id: number, name: string, sub_type: string, latitude: number, longitude: number, legacy_id: string, description?: Maybe<string>, parent_name: string }> } };
 
 export type SearchTrailheadsQueryVariables = Exact<{
   searchTerm: Scalars['String'];
@@ -335,7 +344,7 @@ export type SearchTrailheadsQueryVariables = Exact<{
 }>;
 
 
-export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, source: string, latitude: number, longitude: number, recarea_name: string, legacy_id: string, district: string, description: string, facility_id: string }> } };
+export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, latitude: number, longitude: number, parent_name: string, legacy_id: string, description?: Maybe<string>, subparent_name?: Maybe<string>, subparent_id?: Maybe<string> }> } };
 
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
@@ -663,9 +672,11 @@ export const GetTripRequestsDocument = gql`
       locations {
         name
         id
+        legacy_id
         latitude
         longitude
-        recarea_name
+        parent_name
+        subparent_id
       }
       active
       min_nights
@@ -743,12 +754,12 @@ export const SearchCampgroundsDocument = gql`
     campgrounds {
       id
       name
-      source
+      sub_type
       latitude
       longitude
-      recarea_name
       legacy_id
       description
+      parent_name
     }
   }
 }
@@ -792,14 +803,14 @@ export const SearchTrailheadsDocument = gql`
     trailheads {
       id
       name
-      source
       latitude
       longitude
-      recarea_name
+      parent_name
       legacy_id
-      district
+      parent_name
       description
-      facility_id
+      subparent_name
+      subparent_id
     }
   }
 }

@@ -15,12 +15,12 @@ query SearchCampgrounds(
     campgrounds {
       id
       name
-      source
+      sub_type
       latitude
       longitude
-      recarea_name
       legacy_id
       description
+      parent_name
     }
   }
 }

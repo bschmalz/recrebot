@@ -3,6 +3,7 @@ import { useSafeSetState } from '../hooks/safeSetState';
 import MapboxGL from 'mapbox-gl';
 
 import { isValidCoord } from '../utils/isValidCoord';
+import { useSelectedPlaces } from './SelectedPlacesContext';
 
 const MARKER_COLOR = '#F7C502';
 const MARKER_HIGHLIGHT_COLOR = '#38A169';
@@ -49,12 +50,21 @@ function MapProvider(props) {
   const mapRef = useRef(null);
   const markersRef = useRef({});
 
+  const { selectCard } = useSelectedPlaces();
+
   const addMarker = (m) => {
     if (!isValidCoord(m.latitude, m.longitude)) return;
 
     const nm = new MapboxGL.Marker({ color: MARKER_COLOR })
       .setLngLat([m.longitude, m.latitude])
       .addTo(map.current);
+
+    const type = m.__typename === 'Trailhead' ? 'trailhead' : 'campground';
+
+    const el = nm.getElement();
+    el.onclick = (e) => {
+      selectCard({ ...m, type });
+    };
 
     markersRef.current[m.id] = { ...m, marker: nm };
   };

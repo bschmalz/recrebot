@@ -80,7 +80,7 @@ const handleSearch = async ({
   from campground a
   ${
     textSearch && searchTerm?.length
-      ? `where (a.recarea_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')`
+      ? `where (a.parent_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')`
       : ''
   }
   ${locationSearch && textSearch ? 'and' : ''}${

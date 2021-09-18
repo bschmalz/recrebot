@@ -1,14 +1,25 @@
 import React, { createContext, useContext } from 'react';
 import {
+  Reservable,
+  TripRequest,
   useCreateTripRequestMutation,
   useDeleteTripRequestMutation,
+  useEditTripRequestMutation,
   useGetTripRequestsQuery,
 } from '../generated/graphql';
+
+type Trip = {
+  min_nights?: number;
+  dates: Date[];
+  locations: number[];
+  id: number;
+  custom_name: string;
+};
 
 interface TripRequestInterface {
   createTrip: ({}) => void;
   deleteTripRequest: (id: number) => void;
-  editTripRequest: (id: number) => void;
+  editTripRequest: (input: Trip) => void;
 
   errorTripRequests: Error | null;
   loadingTripRequests: boolean;
@@ -52,8 +63,13 @@ function TripRequestsProvider(props) {
 
   const [
     deleteTripRequestMutation,
-    { data: deletingTripRequestResponse, loading: deletingTripRequest, error },
+    { data: deletingTripRequestResponse, loading: deletingTripRequest },
   ] = useDeleteTripRequestMutation();
+
+  const [
+    editTripMutation,
+    { data: editingTripRequestResponse, loading: editingTripRequest },
+  ] = useEditTripRequestMutation();
 
   const createTrip = async (tr) => {
     await createTripMutation({ variables: { input: tr } });
@@ -65,7 +81,10 @@ function TripRequestsProvider(props) {
     refetchTripRequests();
   };
 
-  const editTripRequest = () => {};
+  const editTripRequest = async (tr) => {
+    await editTripMutation({ variables: { input: tr } });
+    refetchTripRequests();
+  };
 
   const value = {
     createTrip,

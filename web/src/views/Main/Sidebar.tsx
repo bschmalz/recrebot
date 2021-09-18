@@ -4,13 +4,13 @@ import { BACKGROUND_COLOR } from '../../constants';
 
 interface SidebarProps {
   children: JSX.Element;
-  setMainState: Function;
+  setSidebar: Function;
   sideBarView: String;
 }
 
 export const Sidebar = React.forwardRef(
   (
-    { children, setMainState, sideBarView }: SidebarProps,
+    { children, setSidebar, sideBarView }: SidebarProps,
     ref: React.Ref<HTMLDivElement>
   ) => (
     <Box
@@ -27,7 +27,7 @@ export const Sidebar = React.forwardRef(
           borderBottomRightRadius={0}
           variant={sideBarView === 'MyTrips' ? 'solid' : 'outline'}
           colorScheme='green'
-          onClick={() => setMainState({ sideBarView: 'MyTrips' })}
+          onClick={() => setSidebar('MyTrips')}
         >
           My Trips
         </Button>
@@ -36,7 +36,7 @@ export const Sidebar = React.forwardRef(
           borderBottomLeftRadius={0}
           variant={sideBarView === 'PlanATrip' ? 'solid' : 'outline'}
           colorScheme='green'
-          onClick={() => setMainState({ sideBarView: 'PlanATrip' })}
+          onClick={() => setSidebar('PlanATrip')}
         >
           Plan A Trip
         </Button>

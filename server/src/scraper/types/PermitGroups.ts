@@ -4,6 +4,7 @@ export interface PermitGroup {
   RecAreaName: string;
   Longitude: number;
   Latitude: number;
+  ParentRecAreaID: string;
 }
 
 export interface PermitGroupResponse {

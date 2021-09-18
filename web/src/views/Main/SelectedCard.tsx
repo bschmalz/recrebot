@@ -10,7 +10,7 @@ interface SelectedCardProps {
   handleCardClick: Function;
   legacy_id: string;
   name: string;
-  recarea_name: string;
+  parent_name: string;
   type: string;
   source: string;
   district?: string;
@@ -30,7 +30,7 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
   legacy_id,
   longitude,
   name,
-  recarea_name,
+  parent_name,
   type,
   source,
   district,
@@ -88,7 +88,7 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
           addSelectedCard({
             id,
             name,
-            recarea_name,
+            parent_name,
             latitude,
             longitude,
             type: tripType,
@@ -109,9 +109,9 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
         <Heading as='h1' size='md'>
           {name}
         </Heading>
-        {recarea_name ? (
+        {parent_name ? (
           <Text fontSize='sm'>
-            {recarea_name}
+            {parent_name}
             {district ? `, ${district}` : ''}
           </Text>
         ) : null}

@@ -3,7 +3,8 @@ import { Campground as CampgroundEntity } from '../entities/Campground';
 import { getConnection } from 'typeorm';
 import { delay } from './delay';
 import { CaliCampResponse, ReserveCaliRequest } from './types/CaliCampgroud';
-import { Campground, Campgrounds } from './types/Campground';
+import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
+import { getImages } from './getImage';
 
 const url = 'https://calirdr.usedirect.com/RDR/rdr/search/place';
 
@@ -39,8 +40,8 @@ const getReqBody = (PlaceId: number) => {
   };
 };
 
-const caliCamps: Campgrounds = {};
-const caliCampsArray: Campground[] = [];
+const caliCamps: ScrapedDataObj = {};
+const caliCampsArray: ScrapedData[] = [];
 const campsToCheckObj: { [key: string]: boolean } = {};
 const campsToCheckAr: number[] = [];
 
@@ -65,6 +66,7 @@ export const fetchCaliCamppgrounds = async () => {
     .returning('*')
     .execute();
   console.log('added camps to db');
+  getImages();
   return caliCamps;
 };
 
@@ -85,20 +87,21 @@ const checkCampground = async (id: number) => {
   const { Latitude, Longitude, PlaceId, Name, Description } = res.SelectedPlace;
 
   const cg = {
-    description: Description,
-    latitude: Latitude,
-    longitude: Longitude,
-    name: Name,
-    legacy_id: PlaceId,
-    source: 'rc',
-    recarea_name: 'California State Park',
+    description: Description as string,
+    latitude: Latitude as number,
+    longitude: Longitude as number,
+    name: Name as string,
+    legacy_id: PlaceId as string,
+    type: 'campground',
+    sub_type: 'res_ca',
+    parent_name: 'California State Park',
   };
 
   caliCamps[id] = cg;
   caliCampsArray.push(cg);
 
   res.NearbyPlaces?.forEach((place: CaliCampResponse) => {
-    if (!campsToCheckObj[place.PlaceId]) {
+    if (!campsToCheckObj[place.PlaceId] && place.PlaceId !== initialPlaceId) {
       campsToCheckObj[place.PlaceId] = true;
       campsToCheckAr.push(place.PlaceId);
     }

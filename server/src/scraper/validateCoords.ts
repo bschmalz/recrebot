@@ -1,16 +1,9 @@
 import { getCoords } from './getCoords';
 import { isValidCoord } from './isValidCoord';
-
-interface coordArrayItem {
-  latitude: number;
-  longitude: number;
-  recarea_name: string;
-  legacy_id: string;
-  name: string;
-}
+import { ScrapedData } from './types/ScrapedData';
 
 export const validateCoords = async (
-  itemArray: coordArrayItem[],
+  itemArray: ScrapedData[],
   searchType: string
 ) => {
   const then: Date = new Date();
@@ -19,11 +12,11 @@ export const validateCoords = async (
   const itemsWithBadCoords: { id: string; searchStr: string }[] = [];
 
   itemArray.forEach((item) => {
-    if (!isValidCoord(item.latitude, item.longitude) && item.recarea_name) {
+    if (!isValidCoord(item.latitude, item.longitude) && item.parent_name) {
       itemsWithBadCoords.push({
         id: item.legacy_id,
         searchStr: `${item.name} ${searchType}${
-          item.recarea_name ? ` ${item.recarea_name}` : ''
+          item.parent_name ? ` ${item.parent_name}` : ''
         }`,
       });
     }
@@ -45,7 +38,7 @@ export const validateCoords = async (
     }
   }
 
-  const itemsWithValidCoords: coordArrayItem[] = [];
+  const itemsWithValidCoords: ScrapedData[] = [];
   itemArray.forEach((item) => {
     if (item.name) {
       if (isValidCoord(item.latitude, item.longitude)) {

@@ -6,6 +6,7 @@ import { isServer } from '../utils/isServer';
 import { LandingPage } from '../components/LandingPage';
 import { SelectedPlaceProvider } from '../contexts/SelectedPlacesContext';
 import { MapProvider } from '../contexts/MapContext';
+import { TripRequestsProvider } from '../contexts/TripRequestsContext';
 
 const Index = () => {
   const { data, loading } = useMeQuery({
@@ -17,11 +18,13 @@ const Index = () => {
       {loading || !data?.me ? (
         <LandingPage />
       ) : (
-        <MapProvider>
-          <SelectedPlaceProvider>
-            <Main />
-          </SelectedPlaceProvider>
-        </MapProvider>
+        <SelectedPlaceProvider>
+          <TripRequestsProvider>
+            <MapProvider>
+              <Main />
+            </MapProvider>
+          </TripRequestsProvider>
+        </SelectedPlaceProvider>
       )}
     </Layout>
   );

@@ -80,7 +80,7 @@ const handleSearch = async ({
   from trailhead a
   ${
     textSearch && searchTerm?.length
-      ? `where (a.name ilike '%${searchTerm}%' or a.recarea_name ilike '%${searchTerm}%' or a.district ilike '%${searchTerm}%' )`
+      ? `where (a.name ilike '%${searchTerm}%' or a.parent_name ilike '%${searchTerm}%')`
       : ''
   }
   ${locationSearch && textSearch ? 'and' : ''}${

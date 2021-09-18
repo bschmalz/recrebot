@@ -18,12 +18,14 @@ import React, { useState } from 'react';
 import { FaWalking, FaCampground } from 'react-icons/fa';
 import { SelectedPlaceInterface } from '.';
 import { MultiDaypicker } from '../../components/MultiDaypicker';
+import { TripRequest } from '../../generated/graphql';
 import { Places, PlacesInterface } from './Places';
 import { SelectedCard } from './SelectedCard';
 import { Summary, SummaryInterface } from './Summary';
 
-interface PlanTripProps extends PlacesInterface {
+interface PlanTripProps extends PlacesInterface, SummaryInterface {
   addSelectedCard: Function;
+  editingTripRequest: TripRequest | null;
   onTabChange: Function;
   removeSelectedPlace: Function;
   saveTripRequest: Function;
@@ -36,6 +38,8 @@ interface PlanTripProps extends PlacesInterface {
 
 export const PlanTrip: React.FC<PlanTripProps> = ({
   addSelectedCard,
+  customName,
+  editingTripRequest,
   handleCardClick,
   onTabChange,
   removeSelectedPlace,
@@ -44,16 +48,19 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
   selectedDates,
   selectedPlaces,
   setDates,
+  setName,
   toggleTripType,
   tripType,
   ...placesProps
 }) => {
   const [summarySelected, setSummarySelected] = useState(false);
+  const [hasSearched, toggleSearched] = useState(false);
   const handleTabChange = (val) => {
     if (val === 3) {
       if (summarySelected) return;
       onTabChange(true);
       setSummarySelected(true);
+      toggleSearched(false);
     }
     if (summarySelected) {
       onTabChange(false);
@@ -85,36 +92,38 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
 
           <TabPanels>
             <TabPanel paddingX={0}>
-              <Flex justifyContent='center' marginBottom={3}>
-                <Button
-                  borderTopRightRadius={0}
-                  borderBottomRightRadius={0}
-                  variant={tripType === 'Camp' ? 'solid' : 'outline'}
-                  colorScheme='green'
-                  onClick={() => {
-                    toggleTripType('Camp');
-                  }}
-                >
-                  <FaCampground />
-                  <Text marginLeft={2} fontSize='sm'>
-                    Camping
-                  </Text>
-                </Button>
-                <Button
-                  borderTopLeftRadius={0}
-                  borderBottomLeftRadius={0}
-                  variant={tripType === 'Hike' ? 'solid' : 'outline'}
-                  colorScheme='green'
-                  onClick={() => {
-                    toggleTripType('Hike');
-                  }}
-                >
-                  <FaWalking />
-                  <Text marginLeft={2} fontSize='sm'>
-                    Hiking
-                  </Text>
-                </Button>
-              </Flex>
+              {!editingTripRequest && (
+                <Flex justifyContent='center' marginBottom={3}>
+                  <Button
+                    borderTopRightRadius={0}
+                    borderBottomRightRadius={0}
+                    variant={tripType === 'Camp' ? 'solid' : 'outline'}
+                    colorScheme='green'
+                    onClick={() => {
+                      toggleTripType('Camp');
+                    }}
+                  >
+                    <FaCampground />
+                    <Text marginLeft={2} fontSize='sm'>
+                      Camping
+                    </Text>
+                  </Button>
+                  <Button
+                    borderTopLeftRadius={0}
+                    borderBottomLeftRadius={0}
+                    variant={tripType === 'Hike' ? 'solid' : 'outline'}
+                    colorScheme='green'
+                    onClick={() => {
+                      toggleTripType('Hike');
+                    }}
+                  >
+                    <FaWalking />
+                    <Text marginLeft={2} fontSize='sm'>
+                      Hiking
+                    </Text>
+                  </Button>
+                </Flex>
+              )}
               {selectedPlaces.length > 0 && (
                 <Text fontSize={13} fontWeight='bold' marginBottom={1}>
                   Selected {tripType === 'Hike' ? 'Trailheads' : 'Campsites'}
@@ -157,9 +166,14 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
             </TabPanel>
             <TabPanel paddingX={2}>
               <Summary
+                customName={customName}
+                hasSearched={hasSearched}
+                minimumNights={editingTripRequest.min_nights}
                 saveTripRequest={saveTripRequest}
                 selectedDates={selectedDates}
                 selectedPlaces={selectedPlaces}
+                setName={setName}
+                toggleSearched={toggleSearched}
                 tripType={tripType}
               />
             </TabPanel>

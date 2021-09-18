@@ -1,17 +1,17 @@
 import { Input, List, Spinner } from '@chakra-ui/react';
 import React from 'react';
-import { Campground as CampgroundType } from '../../generated/graphql';
 
-import { Trailhead as TrailheadType } from './types/Trailhead';
+import { Campground } from './types/Campground';
+import { Trailhead } from './types/Trailhead';
 import { Place, PlaceInterface } from './Place';
 
 export interface PlacesInterface extends PlaceInterface {
-  campgrounds: CampgroundType[];
+  campgrounds: Campground[];
   loadingCampgrounds: boolean;
   loadingTrailheads: boolean;
   onSearchTextChange: Function;
   searchText: string;
-  trailheads: TrailheadType[];
+  trailheads: Trailhead[];
 }
 
 export const Places: React.FC<PlacesInterface> = ({
