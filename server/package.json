@@ -45,6 +45,7 @@
     "express-session": "^1.17.2",
     "graphql": "^15.5.1",
     "graphql-tag": "^2.12.5",
+    "handlebars": "^4.7.7",
     "ioredis": "^4.27.7",
     "node-fetch": "^2.6.1",
     "nodemailer": "^6.6.3",

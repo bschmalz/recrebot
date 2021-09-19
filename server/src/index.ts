@@ -21,6 +21,7 @@ import { TripRequestResolver } from './resolvers/tripRequest';
 import { scrapeRecData } from './scraper/scrapeRecData';
 import { getImages } from './scraper/getImage';
 import { sendSMS } from './utils/sendSMS';
+import { sendEmail } from './utils/sendEmail';
 
 const main = async () => {
   await createConnection({
