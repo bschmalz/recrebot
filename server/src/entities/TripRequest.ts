@@ -44,6 +44,9 @@ export class TripRequest extends BaseEntity {
   @Column({ nullable: true })
   min_nights: number;
 
+  @Column({ nullable: true })
+  last_success: Date;
+
   @Field(() => String)
   @CreateDateColumn()
   created_at: Date;

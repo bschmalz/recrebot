@@ -33,7 +33,10 @@ const renderText = (custom_name: string, dates: Date[]) => {
     if (dates.length === 1) {
       return renderDate(dates[0]);
     } else {
-      return `${renderDate(dates[0])} -  ${renderDate(dates.length - 1)}`;
+      const sortedDates = [...dates].sort();
+      return `${renderDate(sortedDates[0])} -  ${renderDate(
+        sortedDates[dates.length - 1]
+      )}`;
     }
   }
 };

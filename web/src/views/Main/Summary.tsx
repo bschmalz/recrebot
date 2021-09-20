@@ -75,7 +75,7 @@ export const Summary: React.FC<Props> = ({
   tripType,
 }) => {
   const toast = useToast();
-  const [minNights, setNights] = useState(minimumNights.toString());
+  const [minNights, setNights] = useState(minimumNights?.toString() || '1');
   const [results, setResults] = useState({});
   const [checking, setChecking] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();

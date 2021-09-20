@@ -35,8 +35,10 @@ export class CampgroundResolver {
         filterOnBounds,
       });
     }
+    if (!mapBounds) return handleTextOnlySearch(searchTerm);
     const { boundsAreValid, minLat, maxLat, minLng, maxLng } =
       getLatLng(mapBounds);
+    if (!boundsAreValid) return handleTextOnlySearch(searchTerm);
     const { lat, lng }: { lat: number; lng: number } = JSON.parse(mapCenter);
     const orderByCenter = shouldOrderByCenter({ lat, lng });
 
@@ -91,10 +93,24 @@ const handleSearch = async ({
   ${locationSearch ? `and a.latitude < ${maxLat}` : ''}
   ${locationSearch ? `and a.latitude > ${minLat}` : ''}
   ${
-    lng && lat
+    orderByCenter
       ? `order by point(a.longitude,a.latitude) <-> point(${lng}, ${lat})`
       : ''
   }
+  limit 400`;
+
+  const campgrounds = (await getManager().query(searchStr)) as Campground[];
+
+  return {
+    campgrounds,
+  };
+};
+
+const handleTextOnlySearch = async (searchTerm: string) => {
+  const searchStr = `
+  select *
+  from campground a
+  where (a.parent_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')
   limit 400`;
 
   const campgrounds = (await getManager().query(searchStr)) as Campground[];

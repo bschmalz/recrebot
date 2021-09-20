@@ -12,6 +12,7 @@ import {
   Flex,
   Stack,
   Text,
+  useMediaQuery,
   useToast,
 } from '@chakra-ui/react';
 import {
@@ -133,6 +134,8 @@ const Main = () => {
     tripRequestsData,
   } = useTripRequests();
 
+  const [shouldRenderMap] = useMediaQuery('(min-width: 700px)');
+
   const toast = useToast();
 
   const campgrounds: Campground[] =
@@ -164,7 +167,7 @@ const Main = () => {
   }, [trailheadData]);
 
   useEffect(() => {
-    if (!map?.current) {
+    if (!map.current && mapRef.current && shouldRenderMap) {
       MapboxGL.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
       map.current = new MapboxGL.Map({
         container: mapRef.current,
@@ -176,8 +179,10 @@ const Main = () => {
       map.current.on('load', () => {
         initMap();
       });
+    } else if (map.current && !shouldRenderMap) {
+      map.current = null;
     }
-  }, [map, mapRef]);
+  }, [map, mapRef, shouldRenderMap]);
 
   useEffect(() => {
     if (filterOnMap && (editingTripRequest || tripType === 'PlanATrip')) {
@@ -248,8 +253,11 @@ const Main = () => {
   };
 
   const handleSearch = (val, type) => {
-    const center = JSON.stringify(map.current.getCenter());
-    const bounds = JSON.stringify(map.current.getBounds());
+    let center, bounds;
+    if (shouldRenderMap) {
+      center = JSON.stringify(map.current.getCenter());
+      bounds = JSON.stringify(map.current.getBounds());
+    }
 
     const callback =
       type === 'Camp'
@@ -446,35 +454,43 @@ const Main = () => {
           )}
         </>
       </Sidebar>
-      <Box ref={mapRef} w='100%' h='100%' id='recrebot-map' position='relative'>
-        <Stack
-          spacing={3}
-          direction='column'
-          position='absolute'
-          top={5}
-          right={5}
-          zIndex={10}
-          fontWeight='bold'
-          backgroundColor='rgba(240, 240, 240, .65)'
-          p={2}
-          borderRadius={6}
+      {shouldRenderMap && (
+        <Box
+          ref={mapRef}
+          w='100%'
+          h='100%'
+          id='recrebot-map'
+          position='relative'
         >
-          <Checkbox
-            isChecked={filterOnMap}
-            borderColor='#3182CE'
-            onChange={toggleMapFilter}
+          <Stack
+            spacing={3}
+            direction='column'
+            position='absolute'
+            top={5}
+            right={5}
+            zIndex={10}
+            fontWeight='bold'
+            backgroundColor='rgba(240, 240, 240, .65)'
+            p={2}
+            borderRadius={6}
           >
-            <Text fontSize={14}>Filter Results From Map Boundaries</Text>
-          </Checkbox>
-          <Checkbox
-            isChecked={repositionMap}
-            borderColor='#3182CE'
-            onChange={toggleReposition}
-          >
-            <Text fontSize={14}> Reposition Map On Search Results</Text>
-          </Checkbox>
-        </Stack>
-      </Box>
+            <Checkbox
+              isChecked={filterOnMap}
+              borderColor='#3182CE'
+              onChange={toggleMapFilter}
+            >
+              <Text fontSize={14}>Filter Results From Map Boundaries</Text>
+            </Checkbox>
+            <Checkbox
+              isChecked={repositionMap}
+              borderColor='#3182CE'
+              onChange={toggleReposition}
+            >
+              <Text fontSize={14}> Reposition Map On Search Results</Text>
+            </Checkbox>
+          </Stack>
+        </Box>
+      )}
     </Flex>
   );
 };

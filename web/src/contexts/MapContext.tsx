@@ -71,11 +71,11 @@ function MapProvider(props) {
 
   const focusOnMarkers = () => {
     const boundingBox = new MapboxGL.LngLatBounds();
-    for (let key in markersRef.current) {
+    for (let key in markersRef?.current) {
       const marker = markersRef.current[key].marker;
       boundingBox.extend(marker.getLngLat());
     }
-    map.current.fitBounds(boundingBox, {
+    map.current?.fitBounds(boundingBox, {
       maxZoom: 12,
       padding: {
         top: 150,
@@ -87,7 +87,7 @@ function MapProvider(props) {
   };
 
   const highlightMouseMarker = (id) => {
-    const marker = markersRef.current[id]?.marker;
+    const marker = markersRef?.current[id]?.marker;
     if (!marker) return;
     let markerElement = marker.getElement();
     markerElement
@@ -109,8 +109,8 @@ function MapProvider(props) {
 
   const removeMarkers = () => {
     for (let key in markersRef.current) {
-      markersRef.current[key].marker.remove();
-      delete markersRef.current[key];
+      markersRef?.current[key]?.marker.remove();
+      delete markersRef?.current[key];
     }
   };
 

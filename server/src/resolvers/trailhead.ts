@@ -35,6 +35,7 @@ export class TrailheadResolver {
         filterOnBounds,
       });
     }
+    if (!mapBounds) return handleTextOnlySearch(searchTerm);
     const { boundsAreValid, minLat, maxLat, minLng, maxLng } =
       getLatLng(mapBounds);
     const { lat, lng }: { lat: number; lng: number } = JSON.parse(mapCenter);
@@ -91,10 +92,24 @@ const handleSearch = async ({
   ${locationSearch ? `and a.latitude < ${maxLat}` : ''}
   ${locationSearch ? `and a.latitude > ${minLat}` : ''}
   ${
-    lng && lat
+    orderByCenter
       ? `order by point(a.longitude,a.latitude) <-> point(${lng}, ${lat})`
       : ''
   }
+  limit 400`;
+
+  const trailheads = (await getManager().query(searchStr)) as Trailhead[];
+
+  return {
+    trailheads,
+  };
+};
+
+const handleTextOnlySearch = async (searchTerm: string) => {
+  const searchStr = `
+  select *
+  from trailhead a
+  where (a.parent_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')
   limit 400`;
 
   const trailheads = (await getManager().query(searchStr)) as Trailhead[];

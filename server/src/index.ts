@@ -22,6 +22,8 @@ import { scrapeRecData } from './scraper/scrapeRecData';
 import { getImages } from './scraper/getImage';
 import { sendSMS } from './utils/sendSMS';
 import { sendEmail } from './utils/sendEmail';
+import { scrapeWatcher } from './scraper/scrapeWatcher';
+import { checkCaliCamps } from './scraper/checkTripRequest';
 
 const main = async () => {
   await createConnection({
@@ -67,6 +69,8 @@ const main = async () => {
     })
   );
 
+  app.use(express.json());
+
   const apolloServer = new ApolloServer({
     schema: await buildSchema({
       resolvers: [
@@ -91,8 +95,19 @@ const main = async () => {
     cors: false,
   });
 
+  app.post('/rc-check', async (req, res) => {
+    const result = await checkCaliCamps(
+      req.body.reserveCaliCamps,
+      req.body.datesToCheck,
+      req.body.min_nights
+    );
+    console.log('hmm', result);
+    res.send(result);
+  });
+
   app.listen(parseInt(process.env.PORT), () => {
     console.log('server started');
+    // scrapeWatcher();
   });
 };
 
