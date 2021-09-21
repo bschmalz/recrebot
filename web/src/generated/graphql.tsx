@@ -319,7 +319,7 @@ export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __ty
 export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, locations: Array<{ __typename?: 'Reservable', name: string, id: number, legacy_id: string, latitude: number, longitude: number, parent_name: string, subparent_id?: Maybe<string> }> }>> } };
+export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, locations: Array<{ __typename?: 'Reservable', name: string, id: number, legacy_id: string, latitude: number, longitude: number, parent_name: string, subparent_id?: Maybe<string>, sub_type: string }> }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -677,6 +677,7 @@ export const GetTripRequestsDocument = gql`
         longitude
         parent_name
         subparent_id
+        sub_type
       }
       active
       min_nights

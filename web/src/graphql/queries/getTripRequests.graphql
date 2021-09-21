@@ -12,6 +12,7 @@ query GetTripRequests {
         longitude
         parent_name
         subparent_id
+        sub_type
       }
       active
       min_nights

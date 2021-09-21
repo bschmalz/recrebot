@@ -16,7 +16,7 @@ import { FaWalking, FaCampground } from 'react-icons/fa';
 import { renderDate } from '../../utils/renderDate';
 import { MdDeleteForever, MdEdit } from 'react-icons/md';
 import { DeleteModal } from '../../components/DeleteModal';
-import { TripSelections } from './Summary';
+import { TripSelections } from '../../components/Summary';
 import { TripRequest } from '../../generated/graphql';
 
 interface MyTripsProps {

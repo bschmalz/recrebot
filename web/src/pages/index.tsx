@@ -7,6 +7,7 @@ import { LandingPage } from '../components/LandingPage';
 import { SelectedPlaceProvider } from '../contexts/SelectedPlacesContext';
 import { MapProvider } from '../contexts/MapContext';
 import { TripRequestsProvider } from '../contexts/TripRequestsContext';
+import { TripTypeProvider } from '../contexts/TripTypeContext';
 
 const Index = () => {
   const { data, loading } = useMeQuery({
@@ -18,13 +19,15 @@ const Index = () => {
       {loading || !data?.me ? (
         <LandingPage />
       ) : (
-        <SelectedPlaceProvider>
-          <TripRequestsProvider>
-            <MapProvider>
-              <Main />
-            </MapProvider>
-          </TripRequestsProvider>
-        </SelectedPlaceProvider>
+        <TripTypeProvider>
+          <SelectedPlaceProvider>
+            <TripRequestsProvider>
+              <MapProvider>
+                <Main />
+              </MapProvider>
+            </TripRequestsProvider>
+          </SelectedPlaceProvider>
+        </TripTypeProvider>
       )}
     </Layout>
   );

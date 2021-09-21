@@ -21,7 +21,7 @@ import { TripRequestResolver } from './resolvers/tripRequest';
 import { scrapeRecData } from './scraper/scrapeRecData';
 import { getImages } from './scraper/getImage';
 import { sendSMS } from './utils/sendSMS';
-import { sendEmail } from './utils/sendEmail';
+import { sendSuccessEmail } from './utils/sendEmail';
 import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
 
@@ -29,7 +29,7 @@ const main = async () => {
   await createConnection({
     type: 'postgres',
     url: process.env.DATABASE_URL,
-    logging: true,
+    // logging: true,
     synchronize: true,
     migrations: [path.join(__dirname, './migrations/*')],
     entities: [User, Campground, Trailhead, TripRequest],
@@ -96,6 +96,7 @@ const main = async () => {
   });
 
   app.post('/rc-check', async (req, res) => {
+    console.log('req', req.body);
     const result = await checkCaliCamps(
       req.body.reserveCaliCamps,
       req.body.datesToCheck,
@@ -103,6 +104,11 @@ const main = async () => {
     );
     console.log('hmm', result);
     res.send(result);
+  });
+
+  app.get('/scrapewatch', (req, res) => {
+    scrapeWatcher();
+    res.send('Scrapin it up');
   });
 
   app.listen(parseInt(process.env.PORT), () => {

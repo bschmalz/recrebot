@@ -1,8 +1,8 @@
 import { Input, List, Spinner } from '@chakra-ui/react';
 import React from 'react';
 
-import { Campground } from './types/Campground';
-import { Trailhead } from './types/Trailhead';
+import { Campground } from '../views/Main/types/Campground';
+import { Trailhead } from '../views/Main/types/Trailhead';
 import { Place, PlaceInterface } from './Place';
 
 export interface PlacesInterface extends PlaceInterface {
@@ -12,6 +12,7 @@ export interface PlacesInterface extends PlaceInterface {
   onSearchTextChange: Function;
   searchText: string;
   trailheads: Trailhead[];
+  tripType: string;
 }
 
 export const Places: React.FC<PlacesInterface> = ({

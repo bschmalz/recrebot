@@ -4,7 +4,7 @@ import { NextPageContext } from 'next';
 
 const createClient = (ctx: NextPageContext) =>
   new ApolloClient({
-    uri: process.env.NEXT_PUBLIC_API_URL,
+    uri: `${process.env.NEXT_PUBLIC_API_URL}/graphql`,
     headers: {
       cookie:
         typeof window === 'undefined' ? ctx?.req?.headers.cookie : undefined,

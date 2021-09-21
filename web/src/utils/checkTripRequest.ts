@@ -28,10 +28,6 @@ interface ReserveCaliRequest {
   WebOnly: boolean;
 }
 
-interface CaliCampResponse {
-  PlaceId: number;
-}
-
 const sampleBody: ReserveCaliRequest = {
   Nights: 1,
   IsADA: false,
@@ -90,8 +86,8 @@ const checkCampgrounds = async ({
 }: checkCampgroundsInterface) => {
   const datesToCheck = dates.map((d) => dayjs(d));
   // Group together campsites by type so we can batch our searches more easily
-  const reserveCaliCamps = [];
-  const recGovCamps = [];
+  const reserveCaliCamps: Reservable[] = [];
+  const recGovCamps: Reservable[] = [];
   locations.forEach((loc) => {
     if (loc.sub_type === 'res_ca') {
       reserveCaliCamps.push(loc);
@@ -100,14 +96,17 @@ const checkCampgrounds = async ({
     }
   });
 
-  const reserveCaliCampResults = await fetch('http://localhost:4000/rc-check', {
-    method: 'POST',
-    headers: {
-      Accept: 'application/json',
-      'Content-Type': 'application/json',
-    },
-    body: JSON.stringify({ reserveCaliCamps, datesToCheck, min_nights }),
-  }).then((r) => r.json());
+  const reserveCaliCampResults = await fetch(
+    `${process.env.NEXT_PUBLIC_API_URL}/rc-check`,
+    {
+      method: 'POST',
+      headers: {
+        Accept: 'application/json',
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify({ reserveCaliCamps, datesToCheck, min_nights }),
+    }
+  ).then((r) => r.json());
 
   for (let camp in reserveCaliCampResults) {
     reserveCaliCampResults[camp].dates = reserveCaliCampResults[camp].dates.map(
@@ -130,8 +129,7 @@ const checkRecGovCamps = async (
   min_nights: number
 ) => {
   const result = {};
-  for (let c = 0; c < camps.length; c++) {
-    const camp = camps[c];
+  for (const camp of camps) {
     const monthsToCheck = {};
     recdates.forEach((d) => {
       const yearMonth = `${d.year()}-${d.month()}}`;
@@ -145,7 +143,7 @@ const checkRecGovCamps = async (
       const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
       const url = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${firstDay}T00%3A00%3A00.000Z`;
       const curMonth = await memoRecGovCampCheck(url);
-      delay();
+      await delay();
       const nextMonthFirstDay = arr[0]
         .startOf('month')
         .add(1, 'month')
@@ -153,12 +151,13 @@ const checkRecGovCamps = async (
 
       const nextUrl = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${nextMonthFirstDay}T00%3A00%3A00.000Z`;
       const nextMonth = await memoRecGovCampCheck(nextUrl);
-      delay();
+      await delay();
 
       let curStreak = 0;
       // Loop through every campsite on the response, make a map of previous nights of availability and then compare that to selections to
       // make a list of valid dates for the campground
-      (Object.keys(curMonth?.campsites) || []).forEach((key) => {
+      const keys = Object.keys(curMonth?.campsites) || [];
+      for (let key in keys) {
         const campsite = curMonth.campsites[key];
         const dates = Object.keys(campsite.availabilities);
         dates.forEach((d) => {
@@ -175,7 +174,7 @@ const checkRecGovCamps = async (
           }
         });
         if (curStreak > 0 && min_nights > 1) {
-          delay();
+          await delay();
           const newCampsite = nextMonth?.campsites[key] || [];
           const newDates = Object.keys(newCampsite.availabilities);
           for (let i = 0; i < min_nights - 1; i++) {
@@ -195,7 +194,7 @@ const checkRecGovCamps = async (
             }
           }
         }
-      });
+      }
       arr.forEach((d) => {
         const date = d.format('YYYY-MM-DD');
         if (validDaysInMonth[date]) {
@@ -231,31 +230,28 @@ const checkTrailheads = async ({
     const arr = monthsToCheck[key];
     const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
     const lastDay = arr[0].endOf('month').format('YYYY-MM-DD');
-    for (let x = 0; x < locations.length; x++) {
-      const loc = locations[x];
+    for (const loc of locations) {
       const url = `https://www.recreation.gov/api/permitinyo/${loc.subparent_id}/availability?start_date=${firstDay}&end_date=${lastDay}&commercial_acct=false`;
       const res = await memoTrailheadCheck(url);
-      for (let i = 0; i < arr.length; i++) {
-        const date = arr[i].format('YYYY-MM-DD');
+
+      arr.forEach((d) => {
+        const date = d.format('YYYY-MM-DD');
         if (res?.payload[date]) {
           const d = res.payload[date];
           if (d[loc.legacy_id]?.remaining) {
             if (results[loc.name]) {
-              results[loc.name].dates.push(arr[i]);
+              results[loc.name].dates.push(d);
             } else {
               results[loc.name] = {
                 location: loc,
-                dates: [arr[i]],
-                url: `https://www.recreation.gov/permits/${
-                  loc.subparent_id
-                }/registration/detailed-availability?type=overnight-permit&date=${arr[
-                  i
-                ].format('YYYY-MM-DD')}2021-09-16`,
+                dates: [d],
+                url: `https://www.recreation.gov/permits/${loc.subparent_id}/registration/detailed-availability?type=overnight-permit&date=${date}`,
               };
             }
           }
         }
-      }
+      });
+
       await delay();
     }
   }

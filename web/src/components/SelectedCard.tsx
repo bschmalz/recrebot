@@ -1,7 +1,7 @@
 import { IconButton } from '@chakra-ui/react';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
 import React from 'react';
-import { StyledContainer } from '../../components/StyledContainer';
+import { StyledContainer } from './StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
 
 interface SelectedCardProps {

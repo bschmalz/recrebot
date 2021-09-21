@@ -1,7 +1,0 @@
-#recrebot-date-picker .DayPicker-Day--selected {
-  background-color: #38a169;
-}
-
-#recrebot-date-picker .DayPicker-Day--disabled {
-  pointer-events: none;
-}

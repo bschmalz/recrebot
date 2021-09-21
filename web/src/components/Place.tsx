@@ -1,13 +1,12 @@
 import { IconButton, ListItem, Text } from '@chakra-ui/react';
 import React, { useRef, useState } from 'react';
-import { StyledContainer } from '../../components/StyledContainer';
+import { StyledContainer } from './StyledContainer';
 import { MdAddCircle } from 'react-icons/md';
-import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
-import { useMap } from '../../contexts/MapContext';
+import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
+import { useMap } from '../contexts/MapContext';
 
 export interface PlaceInterface {
   handleCardClick: Function;
-  tripType: 'Camp' | 'Hike';
 }
 
 interface PlaceProps extends PlaceInterface {
@@ -19,6 +18,7 @@ interface PlaceProps extends PlaceInterface {
   parent_name: string;
   subparent_id?: string;
   sub_type?: string;
+  tripType: string;
 }
 
 export const Place: React.FC<PlaceProps> = ({

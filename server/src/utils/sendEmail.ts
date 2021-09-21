@@ -1,7 +1,8 @@
 import nodemailer from 'nodemailer';
 import fs from 'fs';
-import path from 'path';
 import handlebars from 'handlebars';
+import { ScrapeResult, TripRequestInterface } from 'src/scraper/scrapeWatcher';
+import dayjs from 'dayjs';
 
 const readHTMLFile = (path: string, callback: Function) => {
   fs.readFile(path, { encoding: 'utf-8' }, function (err, html) {
@@ -15,8 +16,8 @@ const readHTMLFile = (path: string, callback: Function) => {
 };
 
 // async..await is not allowed in global scope, must use a wrapper
-export async function sendEmail(to: string, text: string, subject: string) {
-  let transporter = await nodemailer.createTransport({
+export const sendEmail = async (to: string, text: string, subject: string) => {
+  const transporter = await nodemailer.createTransport({
     host: 'smtp.gmail.com',
     port: 465,
     secure: true, // use SSL
@@ -26,23 +27,35 @@ export async function sendEmail(to: string, text: string, subject: string) {
     },
   });
 
+  await transporter.sendMail(
+    {
+      from: process.env.EMAIL_USER,
+      to,
+      subject,
+      html: text,
+    },
+    (err) => console.error('Error sending email', err)
+  );
+};
+
+export const sendSuccessEmail = async (to: string, result: ScrapeResult) => {
+  const hits: { name: string; dates: string; url: string }[] = [];
+  for (let name in result) {
+    const dates = result[name].dates
+      .map((d) => dayjs(d).format('MM/DD'))
+      .join(',');
+    hits.push({ name, dates, url: result[name].url });
+  }
+
   readHTMLFile(
-    path.join(__dirname + '/templates/test.html'),
-    function (err: Error, html: string) {
+    __dirname + '/templates/success.html',
+    function (err: Error, html: any) {
       var template = handlebars.compile(html);
       var replacements = {
-        name: 'John Doe',
+        hits,
       };
       var htmlToSend = template(replacements);
-      transporter.sendMail(
-        {
-          from: process.env.EMAIL_USER,
-          to,
-          subject,
-          html: htmlToSend,
-        },
-        (err) => console.log("here's an error", err)
-      );
+      sendEmail(to, htmlToSend, 'We Found An Opening From Your Saved Trips');
     }
   );
-}
+};

@@ -71,7 +71,7 @@ interface checkCampgroundsInterface extends checkTrailheadsInterface {
 
 interface checkTripRequestInterface {
   type: string;
-  min_nights: string;
+  min_nights?: any;
   dates: Date[];
   locations: Reservable[];
 }
@@ -148,7 +148,7 @@ export const checkCaliCamps = async (
         },
         body: JSON.stringify(req),
       }).then((r) => r.json());
-      delay();
+      await delay(123, 456);
       const facilities = res?.SelectedPlace?.Facilities || {};
       for (let key in facilities) {
         const f = facilities[key];
@@ -198,7 +198,7 @@ const checkRecGovCamps = async (
       const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
       const url = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${firstDay}T00%3A00%3A00.000Z`;
       const curMonth = await memoRecGovCampCheck(url);
-      delay();
+      await delay();
       const nextMonthFirstDay = arr[0]
         .startOf('month')
         .add(1, 'month')
@@ -206,49 +206,53 @@ const checkRecGovCamps = async (
 
       const nextUrl = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${nextMonthFirstDay}T00%3A00%3A00.000Z`;
       const nextMonth = await memoRecGovCampCheck(nextUrl);
-      delay();
+      await delay();
 
       let curStreak = 0;
       // Loop through every campsite on the response, make a map of previous nights of availability and then compare that to selections to
       // make a list of valid dates for the campground
-      (Object.keys(curMonth?.campsites) || []).forEach((key) => {
-        const campsite = curMonth.campsites[key];
-        const dates = Object.keys(campsite.availabilities);
-        dates.forEach((d) => {
-          if (campsite.availabilities[d] === 'Available') {
-            curStreak++;
-            if (curStreak >= min_nights) {
-              const newDate = dayjs(d)
-                .subtract(min_nights - 2, 'day')
-                .format('YYYY-MM-DD');
-              validDaysInMonth[newDate] = true;
-            }
-          } else {
-            curStreak = 0;
-          }
-        });
-        if (curStreak > 0 && min_nights > 1) {
-          delay();
-          const newCampsite = nextMonth?.campsites[key] || [];
-          const newDates = Object.keys(newCampsite.availabilities);
-          for (let i = 0; i < min_nights - 1; i++) {
-            if (curStreak === 0) return;
-            const d = dayjs(newDates[i]).add(1, 'day').date();
-            if (
-              d === i + 1 &&
-              newCampsite.availabilities[newDates[i]] === 'Available'
-            ) {
+      if (curMonth.campsites) {
+        for (let key in curMonth.campsites) {
+          const campsite = curMonth.campsites[key];
+          const dates = Object.keys(campsite.availabilities);
+          dates.forEach((d) => {
+            if (campsite.availabilities[d] === 'Available') {
               curStreak++;
-              const newDate = dayjs(newDates[i])
-                .subtract(min_nights - 2, 'day')
-                .format('YYYY-MM-DD');
-              validDaysInMonth[newDate] = true;
+              if (curStreak >= min_nights) {
+                const newDate = dayjs(d)
+                  .subtract(min_nights - 2, 'day')
+                  .format('YYYY-MM-DD');
+                validDaysInMonth[newDate] = true;
+              }
             } else {
               curStreak = 0;
             }
+          });
+          if (curStreak > 0 && min_nights > 1) {
+            await delay();
+
+            const newCampsite = nextMonth?.campsites[key] || [];
+            const newDates = Object.keys(newCampsite.availabilities);
+            for (let i = 0; i < min_nights - 1; i++) {
+              if (curStreak === 0) return;
+              const d = dayjs(newDates[i]).add(1, 'day').date();
+              if (
+                d === i + 1 &&
+                newCampsite.availabilities[newDates[i]] === 'Available'
+              ) {
+                curStreak++;
+                const newDate = dayjs(newDates[i])
+                  .subtract(min_nights - 2, 'day')
+                  .format('YYYY-MM-DD');
+                validDaysInMonth[newDate] = true;
+              } else {
+                curStreak = 0;
+              }
+            }
           }
         }
-      });
+      }
+
       arr.forEach((d) => {
         const date = d.format('YYYY-MM-DD');
         if (validDaysInMonth[date]) {

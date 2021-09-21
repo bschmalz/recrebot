@@ -19,9 +19,9 @@ import { FaWalking, FaCampground } from 'react-icons/fa';
 import { SelectedPlaceInterface } from '.';
 import { MultiDaypicker } from '../../components/MultiDaypicker';
 import { TripRequest } from '../../generated/graphql';
-import { Places, PlacesInterface } from './Places';
-import { SelectedCard } from './SelectedCard';
-import { Summary, SummaryInterface } from './Summary';
+import { Places, PlacesInterface } from '../../components/Places';
+import { SelectedCard } from '../../components/SelectedCard';
+import { Summary, SummaryInterface } from '../../components/Summary';
 
 interface PlanTripProps extends PlacesInterface, SummaryInterface {
   addSelectedCard: Function;

@@ -20,9 +20,9 @@ import {
 } from '@chakra-ui/number-input';
 import { Tag } from '@chakra-ui/tag';
 import React, { useState } from 'react';
-import { SelectedPlaceInterface } from '.';
-import { StyledContainer } from '../../components/StyledContainer';
-import { checkTripRequest } from '../../utils/checkTripRequest';
+import { SelectedPlaceInterface } from '../views/Main';
+import { StyledContainer } from './StyledContainer';
+import { checkTripRequest } from '../utils/checkTripRequest';
 import {
   Modal,
   ModalBody,
