@@ -209,6 +209,7 @@ export type TripRequest = {
   dates: Array<Scalars['DateTime']>;
   locations: Array<Reservable>;
   min_nights?: Maybe<Scalars['Float']>;
+  last_success?: Maybe<Scalars['DateTime']>;
   created_at: Scalars['String'];
   updated_at: Scalars['String'];
 };

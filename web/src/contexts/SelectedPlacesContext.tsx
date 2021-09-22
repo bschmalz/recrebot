@@ -1,6 +1,20 @@
 import * as React from 'react';
 import { useSafeSetState } from '../hooks/safeSetState';
-import { SelectedPlaceInterface } from '../views/Main';
+
+export interface SelectedPlaceInterface {
+  type: string;
+  name: string;
+  parent_name: string;
+  longitude: number;
+  latitude: number;
+  id: number;
+  district?: string;
+  description: string;
+  sub_type: string;
+  legacy_id: string;
+  facility_id?: string;
+  subparent_id?: string;
+}
 
 interface SelectedPlaceContextInterface {
   addSelectedPlace: ({}) => void;
@@ -8,8 +22,10 @@ interface SelectedPlaceContextInterface {
   resetSelectedPlaces: () => void;
   selectCard: ({}) => void;
   selectedCard: SelectedPlaceInterface;
+  selectedDates: Date[];
   selectedPlaces: SelectedPlaceInterface[];
   selectedPlacesObj: { [key: string]: SelectedPlaceInterface };
+  setDates: (dates: Date[]) => void;
   setSelectedPlaces: ({}) => void;
 }
 
@@ -19,9 +35,11 @@ const initialState: SelectedPlaceContextInterface = {
   resetSelectedPlaces: () => {},
   selectCard: () => {},
   selectedCard: null,
+  selectedDates: [],
   selectedPlaces: [],
   selectedPlacesObj: {},
   setSelectedPlaces: () => {},
+  setDates: (dates) => {},
 };
 
 const SelectedPlaceContext = React.createContext(initialState);
@@ -35,8 +53,10 @@ function useSelectedPlaces() {
 }
 
 function SelectedPlaceProvider(props) {
-  const [{ selectedCard, selectedPlaces, selectedPlacesObj }, safeSetState] =
-    useSafeSetState(initialState);
+  const [
+    { selectedCard, selectedDates, selectedPlaces, selectedPlacesObj },
+    safeSetState,
+  ] = useSafeSetState(initialState);
 
   const addSelectedPlace = (sp) => {
     const newSelectedPlacesObj = { ...selectedPlacesObj };
@@ -79,14 +99,20 @@ function SelectedPlaceProvider(props) {
     }
   };
 
+  const setDates = (dates) => {
+    safeSetState({ selectedDates: dates });
+  };
+
   const value = {
     addSelectedPlace,
     removeSelectedPlace,
     resetSelectedPlaces,
     selectCard,
     selectedCard,
+    selectedDates,
     selectedPlaces,
     selectedPlacesObj,
+    setDates,
     setSelectedPlaces,
   };
   return <SelectedPlaceContext.Provider value={value} {...props} />;

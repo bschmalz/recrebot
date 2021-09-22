@@ -1,32 +1,28 @@
 import { Input, List, Spinner } from '@chakra-ui/react';
 import React from 'react';
+import { useMain } from '../contexts/MainContext';
+import { useMainFinal } from '../contexts/MainFinalContext';
+import { useSearchLocations } from '../contexts/SearchLocationsContext';
+import { useTripType } from '../contexts/TripTypeContext';
+import { Place } from './Place';
 
-import { Campground } from '../views/Main/types/Campground';
-import { Trailhead } from '../views/Main/types/Trailhead';
-import { Place, PlaceInterface } from './Place';
+export const Places = () => {
+  const { campgrounds, loadingCampgrounds, loadingTrailheads, trailheads } =
+    useSearchLocations();
 
-export interface PlacesInterface extends PlaceInterface {
-  campgrounds: Campground[];
-  loadingCampgrounds: boolean;
-  loadingTrailheads: boolean;
-  onSearchTextChange: Function;
-  searchText: string;
-  trailheads: Trailhead[];
-  tripType: string;
-}
+  const { searchText, setSearchText, searchTextRef } = useMain();
+  const { handleSearch } = useMainFinal();
 
-export const Places: React.FC<PlacesInterface> = ({
-  campgrounds,
-  handleCardClick,
-  loadingCampgrounds,
-  loadingTrailheads,
-  onSearchTextChange,
-  searchText,
-  trailheads,
-  tripType,
-}) => {
+  const { tripType } = useTripType();
+
   const placeholder =
     tripType === 'Camp' ? 'Search for campgrounds' : 'Search for trailheads';
+
+  const onSearchTextChange = (searchText) => {
+    setSearchText(searchText);
+    handleSearch(searchText, tripType);
+    searchTextRef.current = searchText;
+  };
 
   const renderCampgrounds = () => {
     if (loadingCampgrounds) {
@@ -43,14 +39,7 @@ export const Places: React.FC<PlacesInterface> = ({
     return (
       Array.isArray(campgrounds) &&
       campgrounds.map((cg) => {
-        return (
-          <Place
-            {...cg}
-            key={cg.id}
-            handleCardClick={handleCardClick}
-            tripType={tripType}
-          />
-        );
+        return <Place {...cg} key={cg.id} />;
       })
     );
   };
@@ -70,14 +59,7 @@ export const Places: React.FC<PlacesInterface> = ({
     return (
       Array.isArray(trailheads) &&
       trailheads.map((th) => {
-        return (
-          <Place
-            {...th}
-            key={th.id}
-            handleCardClick={handleCardClick}
-            tripType={tripType}
-          />
-        );
+        return <Place {...th} key={th.id} />;
       })
     );
   };
@@ -91,6 +73,7 @@ export const Places: React.FC<PlacesInterface> = ({
         onChange={(e) => onSearchTextChange(e.target.value)}
         value={searchText}
         marginTop={1}
+        data-cy='search-input'
       />
       <List spacing={4}>
         {tripType === 'Camp' ? renderCampgrounds() : renderTrailheads()}

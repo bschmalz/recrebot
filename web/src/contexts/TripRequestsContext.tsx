@@ -1,4 +1,4 @@
-import React, { createContext, useContext } from 'react';
+import React, { createContext, useContext, useState } from 'react';
 import {
   Reservable,
   TripRequest,
@@ -14,31 +14,41 @@ type Trip = {
   locations: number[];
   id: number;
   custom_name: string;
+  type: string;
 };
 
 interface TripRequestInterface {
   createTrip: ({}) => void;
+  customName: string;
   deleteTripRequest: (id: number) => void;
   editTripRequest: (input: Trip) => void;
-
+  editingTripRequest: TripRequest | null;
   errorTripRequests: Error | null;
   loadingTripRequests: boolean;
+  tripRequests: Trip[];
   tripRequestsData: {
     getTripRequests: {
       tripRequests: [];
     };
   } | null;
   refetchTripRequests: () => void;
+  setCustomName: (id: string) => void;
+  setEditingTripRequest: (tr: {} | null) => void;
 }
 
 const initialState: TripRequestInterface = {
   createTrip: () => {},
+  customName: '',
   deleteTripRequest: () => {},
   editTripRequest: () => {},
+  editingTripRequest: null,
   errorTripRequests: null,
   loadingTripRequests: false,
+  tripRequests: [],
   tripRequestsData: null,
   refetchTripRequests: () => {},
+  setCustomName: (id) => {},
+  setEditingTripRequest: (tr) => {},
 };
 
 const TripRequestsContext = createContext(initialState);
@@ -53,6 +63,7 @@ function useTripRequests() {
 
 function TripRequestsProvider(props) {
   const [createTripMutation] = useCreateTripRequestMutation();
+  const [customName, setCustomName] = useState('');
 
   const {
     data: tripRequestsData,
@@ -86,14 +97,25 @@ function TripRequestsProvider(props) {
     refetchTripRequests();
   };
 
+  const setEditingTripRequest = (isEditing) => {
+    setEditingTripRequest(isEditing);
+  };
+
+  const tripRequests = tripRequestsData?.getTripRequests?.tripRequests || [];
+
   const value = {
     createTrip,
+    customName,
     deleteTripRequest,
     editTripRequest,
+    editingTripRequest,
     errorTripRequests,
     loadingTripRequests,
+    tripRequests,
     tripRequestsData,
     refetchTripRequests,
+    setCustomName,
+    setEditingTripRequest,
   };
   return <TripRequestsContext.Provider value={value} {...props} />;
 }

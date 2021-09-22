@@ -16,54 +16,33 @@ import {
 import React, { useState } from 'react';
 
 import { FaWalking, FaCampground } from 'react-icons/fa';
-import { SelectedPlaceInterface } from '.';
 import { MultiDaypicker } from '../../components/MultiDaypicker';
-import { TripRequest } from '../../generated/graphql';
-import { Places, PlacesInterface } from '../../components/Places';
+import { Places } from '../../components/Places';
 import { SelectedCard } from '../../components/SelectedCard';
-import { Summary, SummaryInterface } from '../../components/Summary';
+import { Summary } from '../../components/Summary';
+import { useTripType } from '../../contexts/TripTypeContext';
+import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
+import { useTripRequests } from '../../contexts/TripRequestsContext';
+import { useMainFinal } from '../../contexts/MainFinalContext';
 
-interface PlanTripProps extends PlacesInterface, SummaryInterface {
-  addSelectedCard: Function;
-  editingTripRequest: TripRequest | null;
-  onTabChange: Function;
-  removeSelectedPlace: Function;
-  saveTripRequest: Function;
-  selectedCard: SelectedPlaceInterface;
-  selectedDates: Date[];
-  selectedPlaces: SelectedPlaceInterface[];
-  setDates: Function;
-  toggleTripType: Function;
-}
+export const PlanTrip: React.FC = () => {
+  const { tripType } = useTripType();
+  const { handlePlanTripChange, toggleTripType } = useMainFinal();
 
-export const PlanTrip: React.FC<PlanTripProps> = ({
-  addSelectedCard,
-  customName,
-  editingTripRequest,
-  handleCardClick,
-  onTabChange,
-  removeSelectedPlace,
-  saveTripRequest,
-  selectedCard,
-  selectedDates,
-  selectedPlaces,
-  setDates,
-  setName,
-  toggleTripType,
-  tripType,
-  ...placesProps
-}) => {
+  const { removeSelectedPlace, selectedCard, selectedDates, selectedPlaces } =
+    useSelectedPlaces();
+  const { editingTripRequest } = useTripRequests();
   const [summarySelected, setSummarySelected] = useState(false);
   const [hasSearched, toggleSearched] = useState(false);
   const handleTabChange = (val) => {
     if (val === 3) {
       if (summarySelected) return;
-      onTabChange(true);
+      handlePlanTripChange(true);
       setSummarySelected(true);
       toggleSearched(false);
     }
     if (summarySelected) {
-      onTabChange(false);
+      handlePlanTripChange(false);
       setSummarySelected(false);
     }
   };
@@ -146,35 +125,16 @@ export const PlanTrip: React.FC<PlanTripProps> = ({
                   </Tag>
                 ))}
               </Flex>
-              {selectedCard ? (
-                <SelectedCard
-                  addSelectedCard={addSelectedCard}
-                  {...selectedCard}
-                  handleCardClick={handleCardClick}
-                  tripType={tripType}
-                />
-              ) : (
-                <Places
-                  tripType={tripType}
-                  {...placesProps}
-                  handleCardClick={handleCardClick}
-                />
-              )}
+              {selectedCard ? <SelectedCard /> : <Places />}
             </TabPanel>
             <TabPanel paddingX={2}>
-              <MultiDaypicker dates={selectedDates} setDates={setDates} />
+              <MultiDaypicker />
             </TabPanel>
             <TabPanel paddingX={2}>
               <Summary
-                customName={customName}
                 hasSearched={hasSearched}
                 minimumNights={editingTripRequest?.min_nights}
-                saveTripRequest={saveTripRequest}
-                selectedDates={selectedDates}
-                selectedPlaces={selectedPlaces}
-                setName={setName}
                 toggleSearched={toggleSearched}
-                tripType={tripType}
               />
             </TabPanel>
           </TabPanels>

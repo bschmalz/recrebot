@@ -22,7 +22,9 @@ export const Navbar = () => {
     body = (
       <>
         <NextLink href='/login'>
-          <Link mr={2}>login</Link>
+          <Link mr={2} data-cy='login-link'>
+            login
+          </Link>
         </NextLink>
         <NextLink href='/register'>
           <Link>register</Link>
@@ -33,6 +35,7 @@ export const Navbar = () => {
     body = (
       <Flex>
         <Button
+          data-cy='logout-link'
           variant='link'
           onClick={async () => {
             await logout();

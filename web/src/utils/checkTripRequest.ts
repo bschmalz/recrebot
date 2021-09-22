@@ -143,6 +143,7 @@ const checkRecGovCamps = async (
       const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
       const url = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${firstDay}T00%3A00%3A00.000Z`;
       const curMonth = await memoRecGovCampCheck(url);
+      console.log('curMonth', curMonth);
       await delay();
       const nextMonthFirstDay = arr[0]
         .startOf('month')
@@ -159,6 +160,9 @@ const checkRecGovCamps = async (
       const keys = Object.keys(curMonth?.campsites) || [];
       for (let key in keys) {
         const campsite = curMonth.campsites[key];
+        if (!campsite?.availabilities) {
+          continue;
+        }
         const dates = Object.keys(campsite.availabilities);
         dates.forEach((d) => {
           if (campsite.availabilities[d] === 'Available') {
@@ -240,11 +244,11 @@ const checkTrailheads = async ({
           const d = res.payload[date];
           if (d[loc.legacy_id]?.remaining) {
             if (results[loc.name]) {
-              results[loc.name].dates.push(d);
+              results[loc.name].dates.push(date);
             } else {
               results[loc.name] = {
                 location: loc,
-                dates: [d],
+                dates: [date],
                 url: `https://www.recreation.gov/permits/${loc.subparent_id}/registration/detailed-availability?type=overnight-permit&date=${date}`,
               };
             }

@@ -3,49 +3,79 @@ import { Box, Heading, Link, Text } from '@chakra-ui/layout';
 import React from 'react';
 import { StyledContainer } from './StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
+import { useTripType } from '../contexts/TripTypeContext';
+import { useSearchLocations } from '../contexts/SearchLocationsContext';
+import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
+import { useMap } from '../contexts/MapContext';
+import { useMain } from '../contexts/MainContext';
 
-interface SelectedCardProps {
-  addSelectedCard: Function;
-  id: number;
-  handleCardClick: Function;
-  legacy_id: string;
-  name: string;
-  parent_name: string;
-  type: string;
-  source: string;
-  district?: string;
-  description: string;
-  facility_id?: string;
-  latitude: number;
-  longitude: number;
-  tripType: string;
-}
+export const SelectedCard = () => {
+  const { campgrounds, trailheads } = useSearchLocations();
+  const { addSelectedPlace, selectCard, selectedCard } = useSelectedPlaces();
+  const { removeMarker, updateMapMarkers, zoomOnSelectedCard } = useMap();
+  const { sideBarRef, scrollRef } = useMain();
+  const { tripType } = useTripType();
 
-export const SelectedCard: React.FC<SelectedCardProps> = ({
-  addSelectedCard,
-  facility_id,
-  handleCardClick,
-  id,
-  latitude,
-  legacy_id,
-  longitude,
-  name,
-  parent_name,
-  type,
-  source,
-  district,
-  description,
-  tripType,
-}) => {
+  const {
+    id,
+    latitude,
+    legacy_id,
+    longitude,
+    name,
+    parent_name,
+    type,
+    sub_type,
+    district,
+    description,
+    subparent_id,
+  } = selectedCard;
+
   const createMarkup = () => {
     return { __html: description };
+  };
+
+  const addSelectedCard = (selectedCard) => {
+    addSelectedPlace(selectedCard);
+    removeMarker(selectedCard.id);
+    const markers =
+      tripType === 'Camp'
+        ? campgrounds.filter((cg) => cg.id !== selectedCard.id)
+        : trailheads.filter((th) => th.id !== selectedCard.id);
+    requestAnimationFrame(() => {
+      updateMapMarkers(markers);
+      sideBarRef.current.scrollTop = scrollRef.current;
+    });
+  };
+
+  const handleCardClick = (id) => {
+    if (!id) {
+      selectCard(null);
+      requestAnimationFrame(() => {
+        sideBarRef.current.scrollTop = scrollRef.current;
+        const markers = tripType === 'Camp' ? campgrounds : trailheads;
+        updateMapMarkers(markers);
+      });
+      return;
+    }
+    let item, type;
+    if (tripType === 'Camp') {
+      item = campgrounds.find((cg) => cg.id === id);
+      type = 'campground';
+    } else {
+      item = trailheads.find((th) => th.id === id);
+      type = 'trailhead';
+    }
+    scrollRef.current = sideBarRef.current.scrollTop;
+    sideBarRef.current.scrollTop = 170;
+    selectCard({ ...item, type });
+    zoomOnSelectedCard(item);
   };
 
   const renderLinkHref = () => {
     if (type === 'trailhead') {
       return renderRGTrailhead();
     } else {
-      if (source === 'rc') return renderCACamp();
+      if (sub_type === 'res_ca') return renderCACamp();
       else return renderRGCamp();
     }
   };
@@ -59,7 +89,7 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
   };
 
   const renderRGTrailhead = () => {
-    return `https://www.recreation.gov/permits/${facility_id}`;
+    return `https://www.recreation.gov/permits/${subparent_id}`;
   };
 
   return (
@@ -84,16 +114,7 @@ export const SelectedCard: React.FC<SelectedCardProps> = ({
       />
       <IconButton
         colorScheme='green'
-        onClick={() =>
-          addSelectedCard({
-            id,
-            name,
-            parent_name,
-            latitude,
-            longitude,
-            type: tripType,
-          })
-        }
+        onClick={() => addSelectedCard(selectedCard)}
         position='absolute'
         minWidth='35px'
         maxHeight='35px'

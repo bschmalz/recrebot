@@ -37,6 +37,7 @@ export const Sidebar = React.forwardRef(
           variant={sideBarView === 'PlanATrip' ? 'solid' : 'outline'}
           colorScheme='green'
           onClick={() => setSidebar('PlanATrip')}
+          data-cy='plan-trip'
         >
           Plan A Trip
         </Button>

@@ -29,9 +29,13 @@ yarn-error.log*
 .env.development.local
 .env.test.local
 .env.production.local
+.cypress.json
 
 # vercel
 .vercel
+
+/cypress/videos
+/cypress/screenshots
 
 /public/campground/*
 /public/trailhead/*

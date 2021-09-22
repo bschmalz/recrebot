@@ -13,7 +13,7 @@ const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
   const [login] = useLoginMutation();
   return (
-    <Wrapper variant="small">
+    <Wrapper variant='small'>
       <Formik
         initialValues={{ usernameOrEmail: '', password: '' }}
         onSubmit={async (values, { setErrors }) => {
@@ -44,28 +44,31 @@ const Login: React.FC<{}> = ({}) => {
         {({ values, handleChange, isSubmitting }) => (
           <Form>
             <InputField
-              name="usernameOrEmail"
-              placeholder="Username or Email"
-              label="Username or Email"
+              name='usernameOrEmail'
+              placeholder='Username or Email'
+              label='Username or Email'
+              data-cy='username-input'
             />
             <Box mt={4}>
               <InputField
-                name="password"
-                placeholder="password"
-                label="Password"
-                type="password"
+                name='password'
+                placeholder='password'
+                label='Password'
+                type='password'
+                data-cy='password-input'
               />
             </Box>
             <Button
-              type="submit"
+              type='submit'
               mt={4}
               isLoading={isSubmitting}
-              colorScheme="teal"
+              colorScheme='teal'
+              data-cy='login-button'
             >
               login
             </Button>
             <Box>
-              <NextLink href="/forgot-password">
+              <NextLink href='/forgot-password'>
                 <Link>Forgot Password?</Link>
               </NextLink>
             </Box>

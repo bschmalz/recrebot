@@ -11,21 +11,14 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
-import { TripRequestResponse } from './types/TripRequestResponse';
 import { FaWalking, FaCampground } from 'react-icons/fa';
 import { renderDate } from '../../utils/renderDate';
 import { MdDeleteForever, MdEdit } from 'react-icons/md';
 import { DeleteModal } from '../../components/DeleteModal';
 import { TripSelections } from '../../components/Summary';
-import { TripRequest } from '../../generated/graphql';
-
-interface MyTripsProps {
-  deleteTripRequest: (id: number) => void;
-  tripRequests: TripRequestResponse[] | null;
-  error: Error;
-  loading: boolean;
-  setEditingTripRequest: ({}) => void;
-}
+import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
+import { useTripRequests } from '../../contexts/TripRequestsContext';
+import { useTripType } from '../../contexts/TripTypeContext';
 
 const renderText = (custom_name: string, dates: Date[]) => {
   if (custom_name) return custom_name;
@@ -41,13 +34,19 @@ const renderText = (custom_name: string, dates: Date[]) => {
   }
 };
 
-export const MyTrips: React.FC<MyTripsProps> = ({
-  deleteTripRequest,
-  error,
-  loading,
-  tripRequests,
-  setEditingTripRequest,
-}) => {
+export const MyTrips: React.FC = () => {
+  const { setTripType, tripType } = useTripType();
+  const { selectedDates, selectedPlaces, setDates, setSelectedPlaces } =
+    useSelectedPlaces();
+  const {
+    customName,
+    deleteTripRequest,
+    loadingTripRequests,
+    errorTripRequests,
+    tripRequests,
+    setCustomName,
+    setEditingTripRequest,
+  } = useTripRequests();
   const {
     isOpen: isDeleteModalOpen,
     onOpen: openDeleteModal,
@@ -71,8 +70,16 @@ export const MyTrips: React.FC<MyTripsProps> = ({
     openDeleteModal();
   };
 
+  const handleEditTripRequest = (tr) => {
+    setSelectedPlaces(tr.locations);
+    setCustomName(tr.custom_name);
+    setDates(tr.dates.map((d) => new Date(d)));
+    setEditingTripRequest(tr);
+    setTripType(tr.type);
+  };
+
   const renderBody = () => {
-    if (loading)
+    if (loadingTripRequests)
       return (
         <Box textAlign='center'>
           <Spinner
@@ -87,9 +94,10 @@ export const MyTrips: React.FC<MyTripsProps> = ({
         </Box>
       );
 
-    if (error) return <Text>There was an error fetching trip requests.</Text>;
+    if (errorTripRequests)
+      return <Text>There was an error fetching trip requests.</Text>;
 
-    return !tripRequests?.length ? (
+    return !tripRequests.length ? (
       <Text>It looks like you haven't planned any trips yet.</Text>
     ) : (
       <Accordion width='100%' backgroundColor='white' allowToggle>
@@ -127,7 +135,7 @@ export const MyTrips: React.FC<MyTripsProps> = ({
                       marginLeft={2}
                       onClick={(e) => {
                         e.stopPropagation();
-                        setEditingTripRequest(tr);
+                        handleEditTripRequest(tr);
                       }}
                     />
                   </Flex>

@@ -7,4 +7,5 @@ export interface Reservable {
   longitude: number;
   subparent_id?: string;
   sub_type?: string;
+  type?: string;
 }

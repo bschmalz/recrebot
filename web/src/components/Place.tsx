@@ -4,12 +4,12 @@ import { StyledContainer } from './StyledContainer';
 import { MdAddCircle } from 'react-icons/md';
 import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { useMap } from '../contexts/MapContext';
+import { useTripType } from '../contexts/TripTypeContext';
+import { useMain } from '../contexts/MainContext';
+import { useSearchLocations } from '../contexts/SearchLocationsContext';
 
-export interface PlaceInterface {
-  handleCardClick: Function;
-}
-
-interface PlaceProps extends PlaceInterface {
+interface PlaceProps {
+  facility_id?: string;
   latitude: number;
   longitude: number;
   legacy_id: string;
@@ -18,23 +18,15 @@ interface PlaceProps extends PlaceInterface {
   parent_name: string;
   subparent_id?: string;
   sub_type?: string;
-  tripType: string;
 }
 
-export const Place: React.FC<PlaceProps> = ({
-  handleCardClick,
-  legacy_id,
-  latitude,
-  longitude,
-  id,
-  name,
-  parent_name,
-  subparent_id,
-  sub_type,
-  tripType,
-}) => {
-  const { addSelectedPlace } = useSelectedPlaces();
-  const { removeMarker } = useMap();
+export const Place: React.FC<PlaceProps> = (props) => {
+  const { id, name, parent_name } = props;
+  const { addSelectedPlace, selectCard } = useSelectedPlaces();
+  const { campgrounds, trailheads } = useSearchLocations();
+  const { removeMarker, updateMapMarkers, zoomOnSelectedCard } = useMap();
+  const { scrollRef, sideBarRef } = useMain();
+  const { tripType } = useTripType();
   const {
     highlightMouseMarker,
 
@@ -57,6 +49,30 @@ export const Place: React.FC<PlaceProps> = ({
   const focusCard = () => {
     setActive(true);
     highlightMouseMarker(id);
+  };
+
+  const handleCardClick = (id) => {
+    if (!id) {
+      selectCard(null);
+      requestAnimationFrame(() => {
+        sideBarRef.current.scrollTop = scrollRef.current;
+        const markers = tripType === 'Camp' ? campgrounds : trailheads;
+        updateMapMarkers(markers);
+      });
+      return;
+    }
+    let item, type;
+    if (tripType === 'Camp') {
+      item = campgrounds.find((cg) => cg.id === id);
+      type = 'campground';
+    } else {
+      item = trailheads.find((th) => th.id === id);
+      type = 'trailhead';
+    }
+    scrollRef.current = sideBarRef.current.scrollTop;
+    sideBarRef.current.scrollTop = 170;
+    selectCard({ ...item, type });
+    zoomOnSelectedCard(item);
   };
 
   const onMouseEnter = () => {
@@ -97,17 +113,7 @@ export const Place: React.FC<PlaceProps> = ({
           }}
           onClick={(e) => {
             e.stopPropagation();
-            addSelectedPlace({
-              id,
-              name,
-              parent_name,
-              legacy_id,
-              latitude,
-              longitude,
-              subparent_id,
-              sub_type,
-              type: tripType,
-            });
+            addSelectedPlace(props);
             removeMarker(id);
           }}
           display={!isActive ? 'none' : undefined}

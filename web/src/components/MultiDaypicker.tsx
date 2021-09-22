@@ -1,19 +1,16 @@
 import React from 'react';
 import DayPicker, { DateUtils } from 'react-day-picker';
+import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { StyledContainer } from './StyledContainer';
-
-interface MultiDaypickerInterface {
-  selectedDates: Date[];
-  setDates: Function;
-}
 
 const today = new Date();
 const sixMonths = new Date();
 sixMonths.setMonth(sixMonths.getMonth() + 6);
 
-export const MultiDaypicker: any = ({ dates, setDates }) => {
+export const MultiDaypicker = () => {
+  const { selectedDates, setDates } = useSelectedPlaces();
   const handleClick: any = (day, { selected }) => {
-    const selectedDays = [...dates];
+    const selectedDays = [...selectedDates];
     if (selected) {
       const selectedIndex = selectedDays.findIndex((selectedDay) =>
         DateUtils.isSameDay(selectedDay, day)
@@ -30,7 +27,7 @@ export const MultiDaypicker: any = ({ dates, setDates }) => {
       <StyledContainer backgroundColor='white' borderRadius={6} width='320px'>
         <DayPicker
           fromMonth={today}
-          selectedDays={dates}
+          selectedDays={selectedDates}
           onDayClick={handleClick}
           disabledDays={{ before: today, after: sixMonths }}
         />

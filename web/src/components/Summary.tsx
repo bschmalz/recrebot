@@ -11,6 +11,7 @@ import {
   ListItem,
   Text,
 } from '@chakra-ui/layout';
+import dayjs from 'dayjs';
 import {
   NumberInput,
   NumberInputField,
@@ -20,7 +21,6 @@ import {
 } from '@chakra-ui/number-input';
 import { Tag } from '@chakra-ui/tag';
 import React, { useState } from 'react';
-import { SelectedPlaceInterface } from '../views/Main';
 import { StyledContainer } from './StyledContainer';
 import { checkTripRequest } from '../utils/checkTripRequest';
 import {
@@ -32,17 +32,13 @@ import {
   useDisclosure,
   useToast,
 } from '@chakra-ui/react';
+import { useTripType } from '../contexts/TripTypeContext';
+import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
+import { useTripRequests } from '../contexts/TripRequestsContext';
+import { useMain } from '../contexts/MainContext';
+import { useMap } from '../contexts/MapContext';
 
-export interface SummaryInterface {
-  customName: string;
-  saveTripRequest: Function;
-  selectedDates: Date[];
-  selectedPlaces: SelectedPlaceInterface[];
-  setName: (id: string) => void;
-  tripType: 'Camp' | 'Hike';
-}
-
-interface Props extends SummaryInterface {
+interface Props {
   hasSearched: boolean;
   minimumNights?: number;
   toggleSearched: Function;
@@ -64,23 +60,77 @@ const dateNumToStr = {
 };
 
 export const Summary: React.FC<Props> = ({
-  customName,
   hasSearched,
   minimumNights = '1',
-  saveTripRequest,
-  selectedDates,
-  selectedPlaces,
-  setName,
   toggleSearched,
-  tripType,
 }) => {
   const toast = useToast();
+  const { sideBarView } = useMain();
+  const { updateMapMarkers } = useMap();
+  const { tripType } = useTripType();
+  const { selectedDates, selectedPlaces, setDates, setSelectedPlaces } =
+    useSelectedPlaces();
+  const {
+    customName,
+    setCustomName,
+    setEditingTripRequest,
+    createTrip,
+    editTripRequest,
+    editingTripRequest,
+  } = useTripRequests();
   const [minNights, setNights] = useState(minimumNights?.toString() || '1');
   const [results, setResults] = useState({});
   const [checking, setChecking] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
 
+  const createTripRequestObj = (customName: string, minNights) => {
+    const tr = {
+      type: tripType,
+      dates: selectedDates,
+      locations: selectedPlaces.map((sp) => sp.id),
+      custom_name: customName,
+    };
+    if (minNights) tr['min_nights'] = parseInt(minNights);
+    return tr;
+  };
+
+  const saveTripRequest = async (customName: string, minNights: number) => {
+    const tr = createTripRequestObj(customName, minNights);
+    updateMapMarkers([]);
+    try {
+      if (sideBarView === 'MyTrips') {
+        await editTripRequest({ ...tr, id: editingTripRequest.id });
+      } else {
+        await createTrip(tr);
+      }
+      toast({
+        title: 'Trip request saved.',
+        description: "We'll let you know if it gets any hits!",
+        status: 'success',
+        duration: 4000,
+        isClosable: true,
+      });
+      if (editingTripRequest) {
+        setEditingTripRequest(null);
+      }
+    } catch (e) {
+      toast({
+        title: 'Error',
+        description: 'We were unable to save the trip request.',
+        status: 'error',
+        duration: 4000,
+        isClosable: true,
+      });
+    }
+  };
+
   const handleTripCheck = async () => {
+    console.log({
+      tripType,
+      selectedDates,
+      selectedPlaces,
+      minNights,
+    });
     setChecking(true);
     const res = await checkTripRequest({
       type: tripType,
@@ -89,6 +139,7 @@ export const Summary: React.FC<Props> = ({
       min_nights: parseInt(minNights),
     });
     if (res && Object.keys(res).length) {
+      console.log('res', res);
       setResults(res);
       onOpen();
     } else {
@@ -127,7 +178,7 @@ export const Summary: React.FC<Props> = ({
             </Text>
             <Input
               value={customName}
-              onChange={(e) => setName(e.target.value)}
+              onChange={(e) => setCustomName(e.target.value)}
             />
           </Box>
           <TripSelections
@@ -190,7 +241,7 @@ export const Summary: React.FC<Props> = ({
               onClick={() =>
                 saveTripRequest(
                   customName,
-                  tripType === 'Camp' ? minNights : undefined
+                  tripType === 'Camp' ? parseInt(minNights) : undefined
                 )
               }
             >
@@ -222,7 +273,7 @@ export const Summary: React.FC<Props> = ({
                           </Link>
                           <Box as='span' ml={2}>
                             {results[name].dates.map((d, i) => {
-                              return `${d.format('MM/DD')}${
+                              return `${dayjs(d).format('MM/DD')}${
                                 i !== results[name].dates.length - 1 ? ', ' : ''
                               }`;
                             })}{' '}
