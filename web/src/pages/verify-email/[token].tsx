@@ -2,12 +2,7 @@ import { NextPage } from 'next';
 import { useRouter } from 'next/router';
 import React, { useEffect } from 'react';
 import { Wrapper } from '../../components/Wrapper';
-import {
-  useChangePasswordMutation,
-  useVerifyEmailMutation,
-} from '../../generated/graphql';
-import { toErrorMap } from '../../utils/toErrorMap';
-import NextLink from 'next/link';
+import { useVerifyEmailMutation } from '../../generated/graphql';
 import { withApollo } from '../../utils/withApollo';
 import { Box } from '@chakra-ui/react';
 import { useState } from 'react';
@@ -50,7 +45,7 @@ const VerifyEmail: NextPage = ({}) => {
     );
   }
 
-  return <Wrapper variant="small"></Wrapper>;
+  return <Wrapper variant='small'></Wrapper>;
 };
 
 export default withApollo({ ssr: false })(VerifyEmail);

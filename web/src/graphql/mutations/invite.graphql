@@ -1,0 +1,8 @@
+mutation Invite($options: EmailInput!) {
+  invite(options: $options) {
+    errors {
+      ...RegularError
+    }
+    success
+  }
+}

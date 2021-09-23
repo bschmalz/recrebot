@@ -15,13 +15,16 @@ import argon2 from 'argon2';
 import {
   COOKIE_NAME,
   FORGET_PASSWORD_PREFIX,
+  INVITE_USER_PREFIX,
   REGISTER_USER_PREFIX,
 } from '../constants';
-import { UsernamePasswordInput } from './UserPasswordInput';
+import { RegisterInput } from './RegisterInput';
 import { validateRegister } from '../utils/validateRegister';
-import { sendEmail } from '../utils/sendEmail';
+import { sendEmail, sendInvite } from '../utils/sendEmail';
 import { v4 } from 'uuid';
 import { getConnection } from 'typeorm';
+import { EmailInput } from './EmailInput';
+import { validateEmail } from '../utils/validateEmail';
 
 @ObjectType()
 class FieldError {
@@ -48,6 +51,12 @@ class RegisterResponse {
 
   @Field({ nullable: true })
   success?: boolean;
+}
+
+@ObjectType()
+class VerifyEmailResponse {
+  @Field()
+  isValid: boolean;
 }
 
 @Resolver(User)
@@ -155,8 +164,47 @@ export class UserResolver {
   }
 
   @Mutation(() => RegisterResponse)
+  async invite(
+    @Arg('options') options: EmailInput,
+    @Ctx() { redis }: MyContext
+  ): Promise<RegisterResponse> {
+    const errors = validateEmail(options);
+    if (errors) {
+      return { errors };
+    }
+
+    const user = await User.findOne({ where: { email: options.email } });
+
+    if (user) {
+      return {
+        errors: [
+          {
+            field: 'email',
+            message: 'Account with this email already exists',
+          },
+        ],
+      };
+    }
+
+    const token = v4();
+
+    redis.set(
+      INVITE_USER_PREFIX + token,
+      options.email,
+      'ex',
+      1000 * 60 * 60 * 24 * 7
+    );
+
+    sendInvite(options.email, `http://localhost:3000/register/${token}`);
+
+    return {
+      success: true,
+    };
+  }
+
+  @Mutation(() => RegisterResponse)
   async register(
-    @Arg('options') options: UsernamePasswordInput,
+    @Arg('options') options: RegisterInput,
     @Ctx() { redis }: MyContext
   ): Promise<RegisterResponse> {
     const errors = validateRegister(options);
@@ -198,12 +246,18 @@ export class UserResolver {
     }
   }
 
-  // @Mutation(() => UserResponse)
-  // async validateRegister(
-  //   @Arg('token') token: string,
-  //   @Ctx() { req, redis }: MyContext
-  // ): Promise<UserResponse> {
-  // }
+  @Query(() => VerifyEmailResponse)
+  async verifyInviteToken(
+    @Arg('token') token: string,
+    @Ctx() { req, redis }: MyContext
+  ): Promise<VerifyEmailResponse> {
+    const key = INVITE_USER_PREFIX + token;
+    const email = (await redis.get(key)) as string;
+    console.log('email', email);
+    return {
+      isValid: email?.length ? true : false,
+    };
+  }
 
   @Mutation(() => UserResponse)
   async verifyEmail(
@@ -212,7 +266,7 @@ export class UserResolver {
   ): Promise<UserResponse> {
     const key = REGISTER_USER_PREFIX + token;
     const user = (await redis.get(key)) as string;
-    const { username, email, password } = JSON.parse(user);
+    const { phone, email, password } = JSON.parse(user);
     let savedUser;
 
     try {
@@ -229,7 +283,7 @@ export class UserResolver {
         .insert()
         .into(User)
         .values({
-          username,
+          phone,
           email,
           password,
         })
@@ -238,13 +292,13 @@ export class UserResolver {
 
       savedUser = result.raw[0];
     } catch (err) {
-      // dupe username
+      // dupe phone
       if (err.detail.includes('already exists')) {
         return {
           errors: [
             {
-              field: 'username',
-              message: 'username has been taken',
+              field: 'phone',
+              message: 'phone has been taken',
             },
           ],
         };
@@ -262,21 +316,17 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async login(
-    @Arg('usernameOrEmail') usernameOrEmail: string,
+    @Arg('email') email: string,
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne(
-      usernameOrEmail.includes('@')
-        ? { where: { email: usernameOrEmail } }
-        : { where: { username: usernameOrEmail } }
-    );
+    const user = await User.findOne({ where: { email: email } });
     if (!user) {
       return {
         errors: [
           {
-            field: 'usernameOrEmail',
-            message: "That username or email doesn't exist",
+            field: 'email',
+            message: "That email doesn't exist",
           },
         ],
       };

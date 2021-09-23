@@ -1,23 +1,60 @@
-import React, { useState } from 'react';
-import { Formik, Form } from 'formik';
-import { Box, Button } from '@chakra-ui/react';
-import { Wrapper } from '../components/Wrapper';
-import { InputField } from '../components/InputField';
-import { useRegisterMutation } from '../generated/graphql';
-import { toErrorMap } from '../utils/toErrorMap';
+import React, { useEffect, useState } from 'react';
+import { Formik, Form, setIn } from 'formik';
+import { Box, Button, Center } from '@chakra-ui/react';
+import { Wrapper } from '../../components/Wrapper';
+import { InputField } from '../../components/InputField';
+import {
+  useInviteMutation,
+  useRegisterMutation,
+  useVerifyInviteTokenLazyQuery,
+} from '../../generated/graphql';
+import { toErrorMap } from '../../utils/toErrorMap';
 import { useRouter } from 'next/router';
-import { withApollo } from '../utils/withApollo';
+import { withApollo } from '../../utils/withApollo';
 
 interface registerProps {}
 
 const Register: React.FC<registerProps> = ({}) => {
+  const [invalid, setInvalid] = useState(false);
+  const [valid, setValid] = useState(false);
   const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
   const [register] = useRegisterMutation();
+  const [verifyInviteToken, tokenData] = useVerifyInviteTokenLazyQuery();
+  const token = router?.query?.token as string;
 
-  // if (!router.query['invite-id']) {
-  //   return <></>;
-  // }
+  const validateToken = async () => {
+    try {
+      await verifyInviteToken({ variables: { token } });
+    } catch (e) {
+      setInvalid(true);
+    }
+  };
+
+  useEffect(() => {
+    if (token) validateToken();
+  }, [token]);
+
+  useEffect(() => {
+    if (tokenData?.data?.verifyInviteToken) {
+      if (tokenData?.data?.verifyInviteToken.isValid === false) {
+        setInvalid(true);
+      } else {
+        setValid(true);
+      }
+    }
+  }, [tokenData]);
+
+  if (invalid)
+    return (
+      <Wrapper>
+        <Center>It appears your token is no longer valid.</Center>
+      </Wrapper>
+    );
+
+  if (!valid) {
+    return <></>;
+  }
 
   return (
     <Wrapper variant='small'>
@@ -28,7 +65,7 @@ const Register: React.FC<registerProps> = ({}) => {
         </Box>
       ) : (
         <Formik
-          initialValues={{ email: '', username: '', password: '' }}
+          initialValues={{ email: '', phone: '', password: '' }}
           onSubmit={async (values, { setErrors }) => {
             const response = await register({
               variables: { options: values },
@@ -42,13 +79,10 @@ const Register: React.FC<registerProps> = ({}) => {
         >
           {({ values, handleChange, isSubmitting }) => (
             <Form>
-              <InputField
-                name='username'
-                placeholder='username'
-                label='Username'
-              />
+              <InputField name='email' placeholder='email' label='email' />
+
               <Box mt={4}>
-                <InputField name='email' placeholder='email' label='email' />
+                <InputField name='phone' placeholder='phone' label='phone' />
               </Box>
               <Box mt={4}>
                 <InputField

@@ -1,29 +1,12 @@
-import { UsernamePasswordInput } from 'src/resolvers/UserPasswordInput';
+import { RegisterInput } from 'src/resolvers/RegisterInput';
+import { validateEmail } from './validateEmail';
 
-export const validateRegister = (options: UsernamePasswordInput) => {
-  if (!options.email.includes('@')) {
+export const validateRegister = (options: RegisterInput) => {
+  if (options.phone.length && options.phone.length !== 10) {
     return [
       {
-        field: 'email',
-        message: 'invalid email',
-      },
-    ];
-  }
-
-  if (options.username.length <= 2) {
-    return [
-      {
-        field: 'username',
-        message: 'length must be greater than 2',
-      },
-    ];
-  }
-
-  if (options.username.includes('@')) {
-    return [
-      {
-        field: 'username',
-        message: 'cannot include @',
+        field: 'phone',
+        message: 'length must be 10',
       },
     ];
   }
@@ -37,5 +20,5 @@ export const validateRegister = (options: UsernamePasswordInput) => {
     ];
   }
 
-  return null;
+  return validateEmail(options);
 };

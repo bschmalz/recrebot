@@ -1,0 +1,5 @@
+query VerifyInviteToken($token: String!) {
+  verifyInviteToken(token: $token) {
+    isValid
+  }
+}

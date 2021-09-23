@@ -50,12 +50,27 @@ export const sendSuccessEmail = async (to: string, result: ScrapeResult) => {
   readHTMLFile(
     __dirname + '/templates/success.html',
     function (err: Error, html: any) {
-      var template = handlebars.compile(html);
-      var replacements = {
+      const template = handlebars.compile(html);
+      const replacements = {
         hits,
       };
-      var htmlToSend = template(replacements);
+      const htmlToSend = template(replacements);
       sendEmail(to, htmlToSend, 'We Found An Opening From Your Saved Trips');
+    }
+  );
+};
+
+export const sendInvite = async (to: string, url: string) => {
+  readHTMLFile(
+    __dirname + '/templates/invite.html',
+    function (err: Error, html: any) {
+      const template = handlebars.compile(html);
+      console.log('url', url);
+      const replacements = {
+        url,
+      };
+      const htmlToSend = template(replacements);
+      sendEmail(to, htmlToSend, 'RecreBot Invitation');
     }
   );
 };

@@ -52,6 +52,10 @@ export type EditTripRequestInput = {
   id: Scalars['Float'];
 };
 
+export type EmailInput = {
+  email: Scalars['String'];
+};
+
 export type FieldError = {
   __typename?: 'FieldError';
   field: Scalars['String'];
@@ -62,6 +66,7 @@ export type Mutation = {
   __typename?: 'Mutation';
   changePassword: UserResponse;
   forgotPassword: Scalars['Boolean'];
+  invite: RegisterResponse;
   register: RegisterResponse;
   verifyEmail: UserResponse;
   login: UserResponse;
@@ -83,8 +88,13 @@ export type MutationForgotPasswordArgs = {
 };
 
 
+export type MutationInviteArgs = {
+  options: EmailInput;
+};
+
+
 export type MutationRegisterArgs = {
-  options: UsernamePasswordInput;
+  options: RegisterInput;
 };
 
 
@@ -95,7 +105,7 @@ export type MutationVerifyEmailArgs = {
 
 export type MutationLoginArgs = {
   password: Scalars['String'];
-  usernameOrEmail: Scalars['String'];
+  email: Scalars['String'];
 };
 
 
@@ -116,12 +126,18 @@ export type MutationEditTripRequestArgs = {
 export type Query = {
   __typename?: 'Query';
   me?: Maybe<User>;
+  verifyInviteToken: VerifyEmailResponse;
   searchCampgrounds: CampgroundsResponse;
   getCampground: CampgroundResponse;
   searchTrailheads: TrailheadsResponse;
   getTrailhead: TrailheadResponse;
   tripRequest: Scalars['String'];
   getTripRequests: TripRequestsResponse;
+};
+
+
+export type QueryVerifyInviteTokenArgs = {
+  token: Scalars['String'];
 };
 
 
@@ -142,6 +158,12 @@ export type QuerySearchTrailheadsArgs = {
 
 export type QueryGetTrailheadArgs = {
   id: Scalars['Float'];
+};
+
+export type RegisterInput = {
+  email: Scalars['String'];
+  phone?: Maybe<Scalars['String']>;
+  password: Scalars['String'];
 };
 
 export type RegisterResponse = {
@@ -230,8 +252,8 @@ export type TripRequestsResponse = {
 export type User = {
   __typename?: 'User';
   id: Scalars['Float'];
-  username: Scalars['String'];
   email: Scalars['String'];
+  phone: Scalars['String'];
   createdAt: Scalars['String'];
   updatedAt: Scalars['String'];
 };
@@ -242,17 +264,16 @@ export type UserResponse = {
   user?: Maybe<User>;
 };
 
-export type UsernamePasswordInput = {
-  email: Scalars['String'];
-  username: Scalars['String'];
-  password: Scalars['String'];
+export type VerifyEmailResponse = {
+  __typename?: 'VerifyEmailResponse';
+  isValid: Scalars['Boolean'];
 };
 
 export type RegularErrorFragment = { __typename?: 'FieldError', field: string, message: string };
 
-export type RegularUserFragment = { __typename?: 'User', id: number, username: string };
+export type RegularUserFragment = { __typename?: 'User', id: number, email: string };
 
-export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+export type RegularUserResponseFragment = { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, email: string }> };
 
 export type ChangePasswordMutationVariables = Exact<{
   token: Scalars['String'];
@@ -260,7 +281,7 @@ export type ChangePasswordMutationVariables = Exact<{
 }>;
 
 
-export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
+export type ChangePasswordMutation = { __typename?: 'Mutation', changePassword: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, email: string }> } };
 
 export type CreateTripRequestMutationVariables = Exact<{
   input: TripRequestInput;
@@ -290,13 +311,20 @@ export type ForgotPasswordMutationVariables = Exact<{
 
 export type ForgotPasswordMutation = { __typename?: 'Mutation', forgotPassword: boolean };
 
+export type InviteMutationVariables = Exact<{
+  options: EmailInput;
+}>;
+
+
+export type InviteMutation = { __typename?: 'Mutation', invite: { __typename?: 'RegisterResponse', success?: Maybe<boolean>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+
 export type LoginMutationVariables = Exact<{
-  usernameOrEmail: Scalars['String'];
+  email: Scalars['String'];
   password: Scalars['String'];
 }>;
 
 
-export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
+export type LoginMutation = { __typename?: 'Mutation', login: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, email: string }> } };
 
 export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 
@@ -304,7 +332,7 @@ export type LogoutMutationVariables = Exact<{ [key: string]: never; }>;
 export type LogoutMutation = { __typename?: 'Mutation', logout: boolean };
 
 export type RegisterMutationVariables = Exact<{
-  options: UsernamePasswordInput;
+  options: RegisterInput;
 }>;
 
 
@@ -315,7 +343,7 @@ export type VerifyEmailMutationVariables = Exact<{
 }>;
 
 
-export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, username: string }> } };
+export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, email: string }> } };
 
 export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -325,7 +353,7 @@ export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, username: string }> };
+export type MeQuery = { __typename?: 'Query', me?: Maybe<{ __typename?: 'User', id: number, email: string }> };
 
 export type SearchCampgroundsQueryVariables = Exact<{
   searchTerm: Scalars['String'];
@@ -347,6 +375,13 @@ export type SearchTrailheadsQueryVariables = Exact<{
 
 export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, latitude: number, longitude: number, parent_name: string, legacy_id: string, description?: Maybe<string>, subparent_name?: Maybe<string>, subparent_id?: Maybe<string> }> } };
 
+export type VerifyInviteTokenQueryVariables = Exact<{
+  token: Scalars['String'];
+}>;
+
+
+export type VerifyInviteTokenQuery = { __typename?: 'Query', verifyInviteToken: { __typename?: 'VerifyEmailResponse', isValid: boolean } };
+
 export const RegularErrorFragmentDoc = gql`
     fragment RegularError on FieldError {
   field
@@ -356,7 +391,7 @@ export const RegularErrorFragmentDoc = gql`
 export const RegularUserFragmentDoc = gql`
     fragment RegularUser on User {
   id
-  username
+  email
 }
     `;
 export const RegularUserResponseFragmentDoc = gql`
@@ -530,9 +565,45 @@ export function useForgotPasswordMutation(baseOptions?: Apollo.MutationHookOptio
 export type ForgotPasswordMutationHookResult = ReturnType<typeof useForgotPasswordMutation>;
 export type ForgotPasswordMutationResult = Apollo.MutationResult<ForgotPasswordMutation>;
 export type ForgotPasswordMutationOptions = Apollo.BaseMutationOptions<ForgotPasswordMutation, ForgotPasswordMutationVariables>;
+export const InviteDocument = gql`
+    mutation Invite($options: EmailInput!) {
+  invite(options: $options) {
+    errors {
+      ...RegularError
+    }
+    success
+  }
+}
+    ${RegularErrorFragmentDoc}`;
+export type InviteMutationFn = Apollo.MutationFunction<InviteMutation, InviteMutationVariables>;
+
+/**
+ * __useInviteMutation__
+ *
+ * To run a mutation, you first call `useInviteMutation` within a React component and pass it any options that fit your needs.
+ * When your component renders, `useInviteMutation` returns a tuple that includes:
+ * - A mutate function that you can call at any time to execute the mutation
+ * - An object with fields that represent the current status of the mutation's execution
+ *
+ * @param baseOptions options that will be passed into the mutation, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options-2;
+ *
+ * @example
+ * const [inviteMutation, { data, loading, error }] = useInviteMutation({
+ *   variables: {
+ *      options: // value for 'options'
+ *   },
+ * });
+ */
+export function useInviteMutation(baseOptions?: Apollo.MutationHookOptions<InviteMutation, InviteMutationVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useMutation<InviteMutation, InviteMutationVariables>(InviteDocument, options);
+      }
+export type InviteMutationHookResult = ReturnType<typeof useInviteMutation>;
+export type InviteMutationResult = Apollo.MutationResult<InviteMutation>;
+export type InviteMutationOptions = Apollo.BaseMutationOptions<InviteMutation, InviteMutationVariables>;
 export const LoginDocument = gql`
-    mutation Login($usernameOrEmail: String!, $password: String!) {
-  login(usernameOrEmail: $usernameOrEmail, password: $password) {
+    mutation Login($email: String!, $password: String!) {
+  login(email: $email, password: $password) {
     ...RegularUserResponse
   }
 }
@@ -552,7 +623,7 @@ export type LoginMutationFn = Apollo.MutationFunction<LoginMutation, LoginMutati
  * @example
  * const [loginMutation, { data, loading, error }] = useLoginMutation({
  *   variables: {
- *      usernameOrEmail: // value for 'usernameOrEmail'
+ *      email: // value for 'email'
  *      password: // value for 'password'
  *   },
  * });
@@ -595,7 +666,7 @@ export type LogoutMutationHookResult = ReturnType<typeof useLogoutMutation>;
 export type LogoutMutationResult = Apollo.MutationResult<LogoutMutation>;
 export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, LogoutMutationVariables>;
 export const RegisterDocument = gql`
-    mutation Register($options: UsernamePasswordInput!) {
+    mutation Register($options: RegisterInput!) {
   register(options: $options) {
     errors {
       ...RegularError
@@ -848,3 +919,38 @@ export function useSearchTrailheadsLazyQuery(baseOptions?: Apollo.LazyQueryHookO
 export type SearchTrailheadsQueryHookResult = ReturnType<typeof useSearchTrailheadsQuery>;
 export type SearchTrailheadsLazyQueryHookResult = ReturnType<typeof useSearchTrailheadsLazyQuery>;
 export type SearchTrailheadsQueryResult = Apollo.QueryResult<SearchTrailheadsQuery, SearchTrailheadsQueryVariables>;
+export const VerifyInviteTokenDocument = gql`
+    query VerifyInviteToken($token: String!) {
+  verifyInviteToken(token: $token) {
+    isValid
+  }
+}
+    `;
+
+/**
+ * __useVerifyInviteTokenQuery__
+ *
+ * To run a query within a React component, call `useVerifyInviteTokenQuery` and pass it any options that fit your needs.
+ * When your component renders, `useVerifyInviteTokenQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useVerifyInviteTokenQuery({
+ *   variables: {
+ *      token: // value for 'token'
+ *   },
+ * });
+ */
+export function useVerifyInviteTokenQuery(baseOptions: Apollo.QueryHookOptions<VerifyInviteTokenQuery, VerifyInviteTokenQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<VerifyInviteTokenQuery, VerifyInviteTokenQueryVariables>(VerifyInviteTokenDocument, options);
+      }
+export function useVerifyInviteTokenLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<VerifyInviteTokenQuery, VerifyInviteTokenQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<VerifyInviteTokenQuery, VerifyInviteTokenQueryVariables>(VerifyInviteTokenDocument, options);
+        }
+export type VerifyInviteTokenQueryHookResult = ReturnType<typeof useVerifyInviteTokenQuery>;
+export type VerifyInviteTokenLazyQueryHookResult = ReturnType<typeof useVerifyInviteTokenLazyQuery>;
+export type VerifyInviteTokenQueryResult = Apollo.QueryResult<VerifyInviteTokenQuery, VerifyInviteTokenQueryVariables>;
