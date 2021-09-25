@@ -26,9 +26,9 @@ export const Navbar = () => {
             login
           </Link>
         </NextLink>
-        <NextLink href='/register'>
+        {/* <NextLink href='/register'>
           <Link>register</Link>
-        </NextLink>
+        </NextLink> */}
       </>
     );
   } else {
@@ -44,7 +44,7 @@ export const Navbar = () => {
           variant='link'
           onClick={async () => {
             await logout();
-            await apolloClient.resetStore();
+            await apolloClient.clearStore();
             router.reload();
           }}
           isLoading={logoutFetching}

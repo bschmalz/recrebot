@@ -9,6 +9,7 @@ export interface PermitGroup {
 
 export interface PermitGroupResponse {
   payload: {
+    has_lottery?: boolean;
     divisions: {
       [key: string]: Division;
     };

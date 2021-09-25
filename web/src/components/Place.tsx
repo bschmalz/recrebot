@@ -88,13 +88,13 @@ export const Place: React.FC<PlaceProps> = (props) => {
   return (
     <ListItem key={id} position='relative'>
       <StyledContainer
+        as='button'
         onBlur={blurCard}
         onClick={() => handleCardClick(id)}
         onFocus={focusCard}
         onMouseEnter={onMouseEnter}
         onMouseLeave={onMouseLeave}
         key={id}
-        tabIndex={0}
         padding={1}
         cursor='pointer'
         bg='white'

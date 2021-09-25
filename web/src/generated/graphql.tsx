@@ -67,7 +67,7 @@ export type Mutation = {
   changePassword: UserResponse;
   forgotPassword: Scalars['Boolean'];
   invite: RegisterResponse;
-  register: RegisterResponse;
+  register: UserResponse;
   verifyEmail: UserResponse;
   login: UserResponse;
   logout: Scalars['Boolean'];
@@ -161,9 +161,9 @@ export type QueryGetTrailheadArgs = {
 };
 
 export type RegisterInput = {
-  email: Scalars['String'];
   phone?: Maybe<Scalars['String']>;
   password: Scalars['String'];
+  token: Scalars['String'];
 };
 
 export type RegisterResponse = {
@@ -336,7 +336,7 @@ export type RegisterMutationVariables = Exact<{
 }>;
 
 
-export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'RegisterResponse', success?: Maybe<boolean>, errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>> } };
+export type RegisterMutation = { __typename?: 'Mutation', register: { __typename?: 'UserResponse', errors?: Maybe<Array<{ __typename?: 'FieldError', field: string, message: string }>>, user?: Maybe<{ __typename?: 'User', id: number, email: string }> } };
 
 export type VerifyEmailMutationVariables = Exact<{
   token: Scalars['String'];
@@ -668,13 +668,10 @@ export type LogoutMutationOptions = Apollo.BaseMutationOptions<LogoutMutation, L
 export const RegisterDocument = gql`
     mutation Register($options: RegisterInput!) {
   register(options: $options) {
-    errors {
-      ...RegularError
-    }
-    success
+    ...RegularUserResponse
   }
 }
-    ${RegularErrorFragmentDoc}`;
+    ${RegularUserResponseFragmentDoc}`;
 export type RegisterMutationFn = Apollo.MutationFunction<RegisterMutation, RegisterMutationVariables>;
 
 /**

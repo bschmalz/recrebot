@@ -103,6 +103,7 @@ function TripRequestsProvider(props) {
 
   const tripRequests = tripRequestsData?.getTripRequests?.tripRequests || [];
 
+  console.log('context render');
   const value = {
     createTrip,
     customName,

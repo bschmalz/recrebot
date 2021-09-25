@@ -65,24 +65,26 @@ const Register: React.FC<registerProps> = ({}) => {
         </Box>
       ) : (
         <Formik
-          initialValues={{ email: '', phone: '', password: '' }}
+          initialValues={{ phone: '', password: '' }}
           onSubmit={async (values, { setErrors }) => {
             const response = await register({
-              variables: { options: values },
+              variables: { options: { ...values, token } },
             });
-            if (response.data?.register.errors) {
-              setErrors(toErrorMap(response.data.register.errors));
-            } else if (response.data?.register.success) {
-              setEmailSent(true);
-            }
+            // if (response.data?.register.errors) {
+            //   setErrors(toErrorMap(response.data.register.errors));
+            // } else if (response.data?.register.success) {
+            //   setEmailSent(true);
+            // }
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
             <Form>
-              <InputField name='email' placeholder='email' label='email' />
-
               <Box mt={4}>
-                <InputField name='phone' placeholder='phone' label='phone' />
+                <InputField
+                  name='phone'
+                  placeholder='phone'
+                  label='Phone (optional)'
+                />
               </Box>
               <Box mt={4}>
                 <InputField

@@ -202,17 +202,20 @@ export class UserResolver {
     };
   }
 
-  @Mutation(() => RegisterResponse)
+  @Mutation(() => UserResponse)
   async register(
     @Arg('options') options: RegisterInput,
-    @Ctx() { redis }: MyContext
-  ): Promise<RegisterResponse> {
+    @Ctx() { req, redis }: MyContext
+  ): Promise<UserResponse> {
     const errors = validateRegister(options);
     if (errors) {
       return { errors };
     }
 
-    const user = await User.findOne({ where: { email: options.email } });
+    const key = INVITE_USER_PREFIX + options.token;
+    const email = (await redis.get(key)) as string;
+
+    const user = await User.findOne({ where: { email: email } });
 
     if (user) {
       return {
@@ -224,24 +227,39 @@ export class UserResolver {
         ],
       };
     } else {
-      const token = v4();
       const password = await argon2.hash(options.password);
 
-      redis.set(
-        REGISTER_USER_PREFIX + token,
-        JSON.stringify({ ...options, password }),
-        'ex',
-        1000 * 60 * 30
-      );
+      let savedUser;
 
-      sendEmail(
-        options.email,
-        `<a href="http://localhost:3000/verify-email/${token}">Verify your email address</a>`,
-        'Verify Your Email Address'
-      );
+      try {
+        const result = await getConnection()
+          .createQueryBuilder()
+          .insert()
+          .into(User)
+          .values({
+            phone: options.phone,
+            email,
+            password,
+          })
+          .returning('*')
+          .execute();
 
+        savedUser = result.raw[0];
+      } catch (err) {
+        // dupe phone
+        if (err.detail.includes('already exists')) {
+          return {
+            errors: [
+              {
+                field: 'phone',
+                message: 'phone has been taken',
+              },
+            ],
+          };
+        }
+      }
       return {
-        success: true,
+        user: savedUser,
       };
     }
   }

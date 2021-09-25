@@ -73,6 +73,7 @@ export const scrapeRecData = () => {
     const response: PermitGroupResponse = await fetch(url).then((r) =>
       r.json()
     );
+    if (response.payload.has_lottery) return;
     const divisions = response?.payload?.divisions;
     if (!divisions) return;
     for (let key in divisions) {
