@@ -37,11 +37,10 @@ import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { useTripRequests } from '../contexts/TripRequestsContext';
 import { useMain } from '../contexts/MainContext';
 import { useMap } from '../contexts/MapContext';
+import { useMainFinal } from '../contexts/MainFinalContext';
 
 interface Props {
-  hasSearched: boolean;
   minimumNights?: number;
-  toggleSearched: Function;
 }
 
 const dateNumToStr = {
@@ -59,17 +58,13 @@ const dateNumToStr = {
   12: 'Dec',
 };
 
-export const Summary: React.FC<Props> = ({
-  hasSearched,
-  minimumNights = '1',
-  toggleSearched,
-}) => {
+export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
   const toast = useToast();
   const { sideBarView } = useMain();
   const { updateMapMarkers } = useMap();
+  const { hasSearched, toggleSearched } = useMainFinal();
   const { tripType } = useTripType();
-  const { selectedDates, selectedPlaces, setDates, setSelectedPlaces } =
-    useSelectedPlaces();
+  const { selectedDates, selectedPlaces } = useSelectedPlaces();
   const {
     customName,
     setCustomName,
@@ -125,12 +120,6 @@ export const Summary: React.FC<Props> = ({
   };
 
   const handleTripCheck = async () => {
-    console.log({
-      tripType,
-      selectedDates,
-      selectedPlaces,
-      minNights,
-    });
     setChecking(true);
     const res = await checkTripRequest({
       type: tripType,
@@ -139,7 +128,6 @@ export const Summary: React.FC<Props> = ({
       min_nights: parseInt(minNights),
     });
     if (res && Object.keys(res).length) {
-      console.log('res', res);
       setResults(res);
       onOpen();
     } else {

@@ -4,6 +4,8 @@ import MapboxGL from 'mapbox-gl';
 
 import { isValidCoord } from '../utils/isValidCoord';
 import { useSelectedPlaces } from './SelectedPlacesContext';
+import { usePlanTrip } from './PlanTripContext';
+import { useMain } from './MainContext';
 
 const MARKER_COLOR = '#F7C502';
 const MARKER_HIGHLIGHT_COLOR = '#38A169';
@@ -51,6 +53,8 @@ function MapProvider(props) {
   const markersRef = useRef({});
 
   const { selectCard } = useSelectedPlaces();
+  const { sideBarViewRef } = useMain();
+  const { setTabIndex, tabRef } = usePlanTrip();
 
   const addMarker = (m) => {
     if (!isValidCoord(m.latitude, m.longitude)) return;
@@ -64,6 +68,11 @@ function MapProvider(props) {
     const el = nm.getElement();
     el.onclick = (e) => {
       selectCard({ ...m, type });
+      // If we are in plan a trip mode, and on the date screen, move back to the places screen if they select on a place on the map.
+      // UX!!!
+      if (sideBarViewRef.current === 'PlanATrip' && tabRef.current === 1) {
+        setTabIndex(0);
+      }
     };
 
     markersRef.current[m.id] = { ...m, marker: nm };

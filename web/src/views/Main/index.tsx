@@ -22,10 +22,12 @@ import { useTripType } from '../../contexts/TripTypeContext';
 import { useMain } from '../../contexts/MainContext';
 import { useMainFinal } from '../../contexts/MainFinalContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
+import { usePlanTrip } from '../../contexts/PlanTripContext';
 
 const Main = () => {
-  const { searchText, searchTextRef, sideBarView, sideBarRef, setSideBarView } =
+  const { searchText, searchTextRef, sideBarView, setSideBarView, sideBarRef } =
     useMain();
+  const { setTabIndex } = usePlanTrip();
 
   const { editingTripRequest } = useTripRequests();
   const {
@@ -79,25 +81,18 @@ const Main = () => {
     }
   };
 
-  // const removePlace = (id) => {
-  //   removeSelectedPlace(id);
-  //   const marker = checkMarker(id);
-  //   if (marker) {
-  //     addMarker(marker);
-  //   }
-  // };
-
   const setSidebar = (newView) => {
     if (newView !== sideBarView) {
-      setSidebar(newView);
+      setSideBarView(newView);
       resetSelections();
+      setTabIndex(0);
     }
   };
 
   return (
     <Flex width='100%'>
       <Sidebar
-        setSidebar={setSideBarView}
+        setSidebar={setSidebar}
         sideBarView={sideBarView}
         ref={sideBarRef}
       >

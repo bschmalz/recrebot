@@ -64,6 +64,7 @@ function useTripRequests() {
 function TripRequestsProvider(props) {
   const [createTripMutation] = useCreateTripRequestMutation();
   const [customName, setCustomName] = useState('');
+  const [editingTripRequest, setEditingTripRequest] = useState(null);
 
   const {
     data: tripRequestsData,
@@ -79,7 +80,7 @@ function TripRequestsProvider(props) {
 
   const [
     editTripMutation,
-    { data: editingTripRequestResponse, loading: editingTripRequest },
+    { data: editingTripRequestResponse, loading: loadingEditTripRequest },
   ] = useEditTripRequestMutation();
 
   const createTrip = async (tr) => {
@@ -97,13 +98,8 @@ function TripRequestsProvider(props) {
     refetchTripRequests();
   };
 
-  const setEditingTripRequest = (isEditing) => {
-    setEditingTripRequest(isEditing);
-  };
-
   const tripRequests = tripRequestsData?.getTripRequests?.tripRequests || [];
 
-  console.log('context render');
   const value = {
     createTrip,
     customName,

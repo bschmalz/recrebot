@@ -24,33 +24,27 @@ import { useTripType } from '../../contexts/TripTypeContext';
 import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
 import { useMainFinal } from '../../contexts/MainFinalContext';
+import { usePlanTrip } from '../../contexts/PlanTripContext';
 
 export const PlanTrip: React.FC = () => {
   const { tripType } = useTripType();
-  const { handlePlanTripChange, toggleTripType } = useMainFinal();
+  const { handleTabChange, toggleTripType } = useMainFinal();
 
   const { removeSelectedPlace, selectedCard, selectedDates, selectedPlaces } =
     useSelectedPlaces();
   const { editingTripRequest } = useTripRequests();
-  const [summarySelected, setSummarySelected] = useState(false);
-  const [hasSearched, toggleSearched] = useState(false);
-  const handleTabChange = (val) => {
-    if (val === 3) {
-      if (summarySelected) return;
-      handlePlanTripChange(true);
-      setSummarySelected(true);
-      toggleSearched(false);
-    }
-    if (summarySelected) {
-      handlePlanTripChange(false);
-      setSummarySelected(false);
-    }
-  };
+
+  const { setTabIndex, tabIndex } = usePlanTrip();
 
   return (
     <Box>
       <Flex justifyContent='center'>
-        <Tabs align='center' width='100%'>
+        <Tabs
+          align='center'
+          width='100%'
+          index={tabIndex}
+          onChange={setTabIndex}
+        >
           <Center>
             <TabList>
               <Tab fontSize='small' onClick={() => handleTabChange(1)}>
@@ -131,11 +125,7 @@ export const PlanTrip: React.FC = () => {
               <MultiDaypicker />
             </TabPanel>
             <TabPanel paddingX={2}>
-              <Summary
-                hasSearched={hasSearched}
-                minimumNights={editingTripRequest?.min_nights}
-                toggleSearched={toggleSearched}
-              />
+              <Summary minimumNights={editingTripRequest?.min_nights} />
             </TabPanel>
           </TabPanels>
         </Tabs>

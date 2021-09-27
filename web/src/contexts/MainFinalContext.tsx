@@ -2,6 +2,7 @@ import { useMediaQuery } from '@chakra-ui/react';
 import React, { createContext, useContext, useRef, useState } from 'react';
 import { useMain } from './MainContext';
 import { useMap } from './MapContext';
+import { usePlanTrip } from './PlanTripContext';
 import { useSearchLocations } from './SearchLocationsContext';
 import { useSelectedPlaces } from './SelectedPlacesContext';
 import { useTripRequests } from './TripRequestsContext';
@@ -10,6 +11,9 @@ import { useTripType } from './TripTypeContext';
 interface MainFinalContextInterface {
   handlePlanTripChange: (val: boolean) => void;
   handleSearch: (val: string, type: {}) => void;
+  handleTabChange: (val: number) => void;
+  hasSearched: boolean;
+  toggleSearched: (val: boolean) => void;
   toggleTripType: (val: string) => void;
   resetSelections: () => void;
 }
@@ -17,6 +21,9 @@ interface MainFinalContextInterface {
 const initialValue: MainFinalContextInterface = {
   handlePlanTripChange: (val: boolean) => {},
   handleSearch: (val, val2) => {},
+  handleTabChange: (val) => {},
+  hasSearched: false,
+  toggleSearched: (val) => {},
   toggleTripType: (val) => {},
   resetSelections: () => {},
 };
@@ -32,6 +39,14 @@ function useMainFinal() {
 }
 
 function MainFinalProvider(props) {
+  const {
+    hasSearched,
+    setSummarySelected,
+    summarySelected,
+    setTabIndex,
+    toggleSearched,
+  } = usePlanTrip();
+
   const [shouldRenderMap] = useMediaQuery('(min-width: 700px)');
 
   const { tripType, setTripType } = useTripType();
@@ -47,7 +62,7 @@ function MainFinalProvider(props) {
   const { campgroundSearch, trailheadSearch } = useSearchLocations();
   const { setCustomName, setEditingTripRequest } = useTripRequests();
   const { filterOnMapRef, map, updateMapMarkers } = useMap();
-  const { searchText, sideBarView, setSearchText } = useMain();
+  const { searchText, setSearchText } = useMain();
 
   const handleSearch = (val, type) => {
     let center, bounds;
@@ -68,6 +83,19 @@ function MainFinalProvider(props) {
     });
   };
 
+  const handleTabChange = (val) => {
+    if (val === 3) {
+      if (summarySelected) return;
+      handlePlanTripChange(true);
+      setSummarySelected(true);
+      toggleSearched(false);
+    }
+    if (summarySelected) {
+      handlePlanTripChange(false);
+      setSummarySelected(false);
+    }
+  };
+
   const handlePlanTripChange = (showSelected) => {
     if (showSelected) {
       updateMapMarkers(selectedPlaces);
@@ -85,13 +113,6 @@ function MainFinalProvider(props) {
     resetSelectedPlaces();
   };
 
-  const setSidebar = (newView) => {
-    if (newView !== sideBarView) {
-      setSidebar(newView);
-      resetSelections();
-    }
-  };
-
   const toggleTripType = (newTripType) => {
     if (newTripType !== tripType) {
       setTripType(newTripType);
@@ -107,11 +128,14 @@ function MainFinalProvider(props) {
 
       updateMapMarkers(places);
       handleSearch(searchText, newTripType);
+      setTabIndex(0);
     }
   };
   const value = {
-    handlePlanTripChange,
     handleSearch,
+    handleTabChange,
+    hasSearched,
+    toggleSearched,
     toggleTripType,
     resetSelections,
   };

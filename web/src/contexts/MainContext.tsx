@@ -8,6 +8,7 @@ interface MainContextInterface {
   sideBarView: 'MyTrips' | 'PlanATrip';
   sideBarRef: React.MutableRefObject<HTMLDivElement | null>;
   scrollRef: React.MutableRefObject<number>;
+  sideBarViewRef: { current: any };
 }
 
 const initialValue: MainContextInterface = {
@@ -18,6 +19,7 @@ const initialValue: MainContextInterface = {
   sideBarView: 'MyTrips',
   scrollRef: { current: 0 },
   sideBarRef: { current: null },
+  sideBarViewRef: { current: null },
 };
 
 const MainContext = createContext(initialValue);
@@ -31,13 +33,18 @@ function useMain() {
 }
 
 function MainProvider(props) {
-  const [sideBarView, setSideBarView] = useState('MyTrips');
+  const [sideBarView, toggleSideBarView] = useState('MyTrips');
   const [searchText, setSearchText] = useState('');
 
   const searchTextRef = useRef('');
+  const sideBarViewRef = useRef('MyTrips');
 
   const sideBarRef = useRef(null);
   const scrollRef = useRef(0);
+  const setSideBarView = (val) => {
+    toggleSideBarView(val);
+    sideBarViewRef.current = val;
+  };
   const value = {
     searchText,
     searchTextRef,
@@ -45,6 +52,7 @@ function MainProvider(props) {
     setSideBarView,
     sideBarView,
     sideBarRef,
+    sideBarViewRef,
     scrollRef,
   };
   return <MainContext.Provider value={value} {...props} />;

@@ -1,23 +1,21 @@
 import React, { useEffect, useState } from 'react';
-import { Formik, Form, setIn } from 'formik';
+import { Formik, Form } from 'formik';
 import { Box, Button, Center } from '@chakra-ui/react';
 import { Wrapper } from '../../components/Wrapper';
 import { InputField } from '../../components/InputField';
 import {
-  useInviteMutation,
   useRegisterMutation,
   useVerifyInviteTokenLazyQuery,
 } from '../../generated/graphql';
-import { toErrorMap } from '../../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { withApollo } from '../../utils/withApollo';
+import { toErrorMap } from '../../utils/toErrorMap';
 
 interface registerProps {}
 
 const Register: React.FC<registerProps> = ({}) => {
   const [invalid, setInvalid] = useState(false);
   const [valid, setValid] = useState(false);
-  const [emailSent, setEmailSent] = useState(false);
   const router = useRouter();
   const [register] = useRegisterMutation();
   const [verifyInviteToken, tokenData] = useVerifyInviteTokenLazyQuery();
@@ -58,54 +56,52 @@ const Register: React.FC<registerProps> = ({}) => {
 
   return (
     <Wrapper variant='small'>
-      {emailSent ? (
-        <Box>
-          An email has been sent to your address. Confirm your email account to
-          finish registration.
-        </Box>
-      ) : (
-        <Formik
-          initialValues={{ phone: '', password: '' }}
-          onSubmit={async (values, { setErrors }) => {
-            const response = await register({
+      <Formik
+        initialValues={{ phone: '', password: '' }}
+        onSubmit={async (values, { setErrors }) => {
+          let res;
+          try {
+            res = await register({
               variables: { options: { ...values, token } },
             });
-            // if (response.data?.register.errors) {
-            //   setErrors(toErrorMap(response.data.register.errors));
-            // } else if (response.data?.register.success) {
-            //   setEmailSent(true);
-            // }
-          }}
-        >
-          {({ values, handleChange, isSubmitting }) => (
-            <Form>
-              <Box mt={4}>
-                <InputField
-                  name='phone'
-                  placeholder='phone'
-                  label='Phone (optional)'
-                />
-              </Box>
-              <Box mt={4}>
-                <InputField
-                  name='password'
-                  placeholder='password'
-                  label='Password'
-                  type='password'
-                />
-              </Box>
-              <Button
-                type='submit'
-                mt={4}
-                isLoading={isSubmitting}
-                colorScheme='teal'
-              >
-                register
-              </Button>
-            </Form>
-          )}
-        </Formik>
-      )}
+          } catch (e) {}
+          const { data } = res;
+          if (data?.register.errors) {
+            setErrors(toErrorMap(data.register.errors));
+          } else if (data?.register.success) {
+            router.push('/');
+          }
+        }}
+      >
+        {({ values, handleChange, isSubmitting }) => (
+          <Form>
+            <Box mt={4}>
+              <InputField
+                name='phone'
+                placeholder='phone'
+                label='Phone (optional)'
+              />
+            </Box>
+            <Box mt={4}>
+              <InputField
+                name='password'
+                placeholder='password'
+                label='Password'
+                type='password'
+              />
+            </Box>
+            <Button
+              type='submit'
+              mt={4}
+              isLoading={isSubmitting}
+              colorScheme='teal'
+            >
+              register
+            </Button>
+          </Form>
+        )}
+      </Formik>
+      )
     </Wrapper>
   );
 };

@@ -1,4 +1,6 @@
 import React, { createContext, useContext, useRef, useState } from 'react';
+import { useMain } from './MainContext';
+import { useSelectedPlaces } from './SelectedPlacesContext';
 
 interface TripTypeContextInterface {
   tripType: string;
