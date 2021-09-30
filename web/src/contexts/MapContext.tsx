@@ -13,7 +13,7 @@ const MARKER_HIGHLIGHT_COLOR = '#38A169';
 interface MapState {
   addMarker?: (id: number) => void;
   filterOnMap: boolean;
-  map?: any;
+  map?: { current: any };
   filterOnMapRef?: any;
   focusOnMarkers?: () => void;
   highlightMouseMarker?: (id: number) => void;

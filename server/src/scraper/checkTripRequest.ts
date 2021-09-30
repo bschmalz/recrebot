@@ -4,6 +4,7 @@ import fetch from 'node-fetch';
 
 import { delay } from './delay';
 import { Reservable } from './types/Reservable';
+import { Trailhead } from 'src/entities/Trailhead';
 
 const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
@@ -71,7 +72,7 @@ interface checkCampgroundsInterface extends checkTrailheadsInterface {
 
 interface checkTripRequestInterface {
   type: string;
-  min_nights?: any;
+  min_nights?: number | undefined;
   dates: Date[];
   locations: Reservable[];
 }
@@ -88,7 +89,7 @@ export const checkTripRequest = async ({
     return await checkCampgrounds({
       locations,
       dates,
-      min_nights: parseInt(min_nights),
+      min_nights: min_nights || 1,
     });
 };
 
@@ -123,7 +124,7 @@ const checkCampgrounds = async ({
 
 export const checkCaliCamps = async (
   camps: Reservable[],
-  days: any[],
+  days: Date[],
   min_nights: number
 ) => {
   const dates = days.map((d) => dayjs(d));

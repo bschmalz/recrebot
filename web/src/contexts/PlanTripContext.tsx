@@ -6,7 +6,7 @@ interface PlanTripContextInterface {
   setTabIndex: (number) => void;
   summarySelected: boolean;
   tabIndex: 0 | 1 | 2;
-  tabRef: { current: any };
+  tabRef: React.MutableRefObject<number>;
   toggleSearched: (boolean) => void;
 }
 
@@ -15,7 +15,7 @@ const intialState: PlanTripContextInterface = {
   setSummarySelected: (val) => {},
   setTabIndex: (val) => {},
   tabIndex: 0,
-  tabRef: { current: {} },
+  tabRef: { current: 0 },
   summarySelected: false,
   toggleSearched: (val) => {},
 };

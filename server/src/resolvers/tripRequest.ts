@@ -15,19 +15,33 @@ import {
   InputType,
   Int,
 } from 'type-graphql';
-import { EditTripRequestInput, TripRequestInput } from './types';
 import { Reservable } from '../entities/Reservable';
 import { Campground } from '../entities/Campground';
 import { Trailhead } from '../entities/Trailhead';
 
-// @ObjectType()
-// class FieldError {
-//   @Field()
-//   field: string;
+@InputType()
+export class TripRequestInput {
+  @Field()
+  custom_name: string;
 
-//   @Field()
-//   message: string;
-// }
+  @Field()
+  type: string;
+
+  @Field(() => [Date])
+  dates: Date[];
+
+  @Field(() => [Int])
+  locations: number[];
+
+  @Field({ nullable: true })
+  min_nights: number;
+}
+
+@InputType()
+export class EditTripRequestInput extends TripRequestInput {
+  @Field()
+  id: number;
+}
 
 @ObjectType()
 class TripRequestsResponse {

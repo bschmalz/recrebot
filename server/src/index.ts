@@ -102,7 +102,6 @@ const main = async () => {
       req.body.datesToCheck,
       req.body.min_nights
     );
-    console.log('hmm', result);
     res.send(result);
   });
 
@@ -113,7 +112,6 @@ const main = async () => {
 
   app.listen(parseInt(process.env.PORT), () => {
     console.log('server started');
-    // scrapeWatcher();
   });
 };
 

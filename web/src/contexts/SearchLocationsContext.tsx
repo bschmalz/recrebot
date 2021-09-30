@@ -1,10 +1,4 @@
-import React, {
-  createContext,
-  useContext,
-  useEffect,
-  useRef,
-  useState,
-} from 'react';
+import React, { createContext, useContext, useEffect, useRef } from 'react';
 import {
   SearchCampgroundsQuery,
   SearchTrailheadsQuery,
@@ -17,7 +11,7 @@ import { useTripType } from './TripTypeContext';
 import { Reservable } from '../views/Main/types/Reservable';
 import { useMap } from './MapContext';
 
-interface Blah {
+interface SearchLocationsInterface {
   campgroundData: SearchCampgroundsQuery;
   campgrounds: Reservable[];
   trailheadData: SearchTrailheadsQuery;
@@ -29,7 +23,7 @@ interface Blah {
   checkMarker: Function;
 }
 
-const initialState: Blah = {
+const initialState: SearchLocationsInterface = {
   campgroundData: { searchCampgrounds: { campgrounds: [] } },
   campgrounds: [],
   checkMarker: (id: string) => {},

@@ -8,7 +8,7 @@ interface MainContextInterface {
   sideBarView: 'MyTrips' | 'PlanATrip';
   sideBarRef: React.MutableRefObject<HTMLDivElement | null>;
   scrollRef: React.MutableRefObject<number>;
-  sideBarViewRef: { current: any };
+  sideBarViewRef: React.MutableRefObject<string>;
 }
 
 const initialValue: MainContextInterface = {
@@ -19,7 +19,7 @@ const initialValue: MainContextInterface = {
   sideBarView: 'MyTrips',
   scrollRef: { current: 0 },
   sideBarRef: { current: null },
-  sideBarViewRef: { current: null },
+  sideBarViewRef: { current: 'MyTrips' },
 };
 
 const MainContext = createContext(initialValue);

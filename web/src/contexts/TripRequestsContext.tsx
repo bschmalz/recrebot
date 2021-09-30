@@ -1,6 +1,5 @@
 import React, { createContext, useContext, useState } from 'react';
 import {
-  Reservable,
   TripRequest,
   useCreateTripRequestMutation,
   useDeleteTripRequestMutation,

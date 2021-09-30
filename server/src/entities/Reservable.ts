@@ -9,7 +9,7 @@ import {
 
 @ObjectType()
 @Entity()
-export class Reservable extends BaseEntity {
+export abstract class Reservable extends BaseEntity {
   @Field()
   @PrimaryGeneratedColumn()
   id: number;
