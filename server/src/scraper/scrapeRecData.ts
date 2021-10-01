@@ -103,7 +103,12 @@ export const scrapeRecData = () => {
       .pipe(parse({ headers: true }))
       .on('error', (error) => console.error(error))
       .on('data', (row: Facility) => {
-        if (row.FacilityID && row.Reservable && row.FacilityName) {
+        if (
+          row.FacilityID &&
+          row.Reservable &&
+          row.Reservable !== 'false' &&
+          row.FacilityName
+        ) {
           let lat = parseFloat(row.FacilityLatitude);
           let lng = parseFloat(row.FacilityLongitude);
           const recAreaName = recAreas[row.ParentRecAreaID] || '';
@@ -138,7 +143,8 @@ export const scrapeRecData = () => {
       })
       .on('end', () => {
         console.log('finished scraping facilities');
-        parsePermitGroups();
+
+        // parsePermitGroups();
       });
   };
 
