@@ -1,4 +1,6 @@
-import { Input, List, Spinner } from '@chakra-ui/react';
+import { Center, Input, List, Spinner } from '@chakra-ui/react';
+import { Text } from '@chakra-ui/layout';
+
 import React from 'react';
 import { useMain } from '../contexts/MainContext';
 import { useMainFinal } from '../contexts/MainFinalContext';
@@ -7,8 +9,14 @@ import { useTripType } from '../contexts/TripTypeContext';
 import { Place } from './Place';
 
 export const Places = () => {
-  const { campgrounds, loadingCampgrounds, loadingTrailheads, trailheads } =
-    useSearchLocations();
+  const {
+    campgrounds,
+    errorCampgrounds,
+    errorTrailheads,
+    loadingCampgrounds,
+    loadingTrailheads,
+    trailheads,
+  } = useSearchLocations();
 
   const { searchText, setSearchText, searchTextRef } = useMain();
   const { handleSearch } = useMainFinal();
@@ -24,8 +32,8 @@ export const Places = () => {
     searchTextRef.current = searchText;
   };
 
-  const renderCampgrounds = () => {
-    if (loadingCampgrounds) {
+  const renderBody = () => {
+    if (loadingCampgrounds || loadingTrailheads) {
       return (
         <Spinner
           thickness='2px'
@@ -35,7 +43,20 @@ export const Places = () => {
           size='lg'
         />
       );
+    } else if (errorCampgrounds || errorTrailheads) {
+      return (
+        <Center>
+          <Text>{`There was an error loading ${
+            tripType === 'Camp' ? 'campgrounds.' : 'trailheads.'
+          }`}</Text>
+        </Center>
+      );
+    } else {
+      return tripType === 'Camp' ? renderCampgrounds() : renderTrailheads();
     }
+  };
+
+  const renderCampgrounds = () => {
     return (
       Array.isArray(campgrounds) &&
       campgrounds.map((cg) => {
@@ -45,17 +66,6 @@ export const Places = () => {
   };
 
   const renderTrailheads = () => {
-    if (loadingTrailheads) {
-      return (
-        <Spinner
-          thickness='2px'
-          speed='0.65s'
-          emptyColor='gray.200'
-          color='green.700'
-          size='lg'
-        />
-      );
-    }
     return (
       Array.isArray(trailheads) &&
       trailheads.map((th) => {
@@ -75,9 +85,7 @@ export const Places = () => {
         marginTop={1}
         data-cy='search-input'
       />
-      <List spacing={4}>
-        {tripType === 'Camp' ? renderCampgrounds() : renderTrailheads()}
-      </List>
+      <List spacing={4}>{renderBody()}</List>
     </div>
   );
 };

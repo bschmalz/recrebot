@@ -121,28 +121,40 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
   };
 
   const handleTripCheck = async () => {
-    setChecking(true);
-    const res = await checkTripRequest({
-      type: tripType,
-      dates: selectedDates,
-      locations: selectedPlaces,
-      min_nights: parseInt(minNights),
-    });
-    if (res && Object.keys(res).length) {
-      setResults(res);
-      onOpen();
-    } else {
-      toggleSearched(true);
+    try {
+      setChecking(true);
+      const res = await checkTripRequest({
+        type: tripType,
+        dates: selectedDates,
+        locations: selectedPlaces,
+        min_nights: parseInt(minNights),
+      });
+      if (res && Object.keys(res).length) {
+        setResults(res);
+        onOpen();
+      } else {
+        toggleSearched(true);
+        toast({
+          title: 'No matches found.',
+          description:
+            'We searched all the locations and dates you entered and found no current availability.',
+          status: 'info',
+          duration: 5000,
+          isClosable: true,
+        });
+      }
+    } catch (e) {
       toast({
-        title: 'No matches found.',
+        title: 'There was an error checking trip requests.',
         description:
           'We searched all the locations and dates you entered and found no current availability.',
-        status: 'info',
+        status: 'error',
         duration: 5000,
         isClosable: true,
       });
+    } finally {
+      setChecking(false);
     }
-    setChecking(false);
   };
 
   return (

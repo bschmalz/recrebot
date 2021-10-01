@@ -9,13 +9,11 @@ import { useApolloClient } from '@apollo/client';
 import { SpinningGear } from './SpinningGear';
 import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 
-export const Navbar = () => {
+export const Navbar = ({}) => {
   const router = useRouter();
   const [logout, { loading: logoutFetching }] = useLogoutMutation();
   const apolloClient = useApolloClient();
-  const { data, loading } = useMeQuery({
-    skip: isServer(),
-  });
+  const { data, loading } = useMeQuery();
   const { checking } = useCheckingTripRequests();
 
   let body;
@@ -60,19 +58,16 @@ export const Navbar = () => {
   return (
     <Flex position='sticky' top={0} zIndex={1} p={1}>
       <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
-        <NextLink href='/'>
-          <Link>
-            <Heading>
-              <Flex alignItems='flex-end'>
-                RecreB
-                <Box mb='6px'>
-                  <SpinningGear spinning={checking} />
-                </Box>{' '}
-                t
-              </Flex>
-            </Heading>
-          </Link>
-        </NextLink>
+        <Heading>
+          <Flex alignItems='flex-end'>
+            RecreB
+            <Box mb='6px'>
+              <SpinningGear spinning={checking || loading} />
+            </Box>{' '}
+            t
+          </Flex>
+        </Heading>
+
         <Box ml='auto'>{body}</Box>
       </Flex>
     </Flex>

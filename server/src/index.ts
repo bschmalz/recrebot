@@ -26,92 +26,96 @@ import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
 
 const main = async () => {
-  await createConnection({
-    type: 'postgres',
-    url: process.env.DATABASE_URL,
-    // logging: true,
-    synchronize: true,
-    migrations: [path.join(__dirname, './migrations/*')],
-    entities: [User, Campground, Trailhead, TripRequest],
-  });
-  // await conn.runMigrations();
+  try {
+    await createConnection({
+      type: 'postgres',
+      url: process.env.DATABASE_URL,
+      // logging: true,
+      synchronize: true,
+      migrations: [path.join(__dirname, './migrations/*')],
+      entities: [User, Campground, Trailhead, TripRequest],
+    });
+    // await conn.runMigrations();
 
-  const app = express();
+    const app = express();
 
-  let RedisStore = connectRedis(session);
-  let redis = new Redis(process.env.REDIS_URL);
-  app.set('trust proxy', 1);
+    let RedisStore = connectRedis(session);
+    let redis = new Redis(process.env.REDIS_URL);
+    app.set('trust proxy', 1);
 
-  app.use(
-    cors({
-      origin: process.env.CORS_ORIGIN,
-      credentials: true,
-    })
-  );
-
-  app.use(
-    session({
-      name: COOKIE_NAME,
-      store: new RedisStore({
-        client: redis,
-        disableTouch: true,
-      }),
-      cookie: {
-        maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
-        httpOnly: true,
-        secure: __prod__,
-        sameSite: 'lax',
-        domain: __prod__ ? 'recrebot.com' : undefined,
-      },
-      saveUninitialized: false,
-      secret: process.env.SESSION_SECRET,
-      resave: false,
-    })
-  );
-
-  app.use(express.json());
-
-  const apolloServer = new ApolloServer({
-    schema: await buildSchema({
-      resolvers: [
-        UserResolver,
-        CampgroundResolver,
-        TrailheadResolver,
-        TripRequestResolver,
-      ],
-      validate: false,
-    }),
-    context: ({ req, res }) => ({
-      req,
-      res,
-      redis,
-    }),
-  });
-
-  await apolloServer.start();
-
-  apolloServer.applyMiddleware({
-    app,
-    cors: false,
-  });
-
-  app.post('/rc-check', async (req, res) => {
-    const result = await checkCaliCamps(
-      req.body.reserveCaliCamps,
-      req.body.dates,
-      req.body.min_nights
+    app.use(
+      cors({
+        origin: process.env.CORS_ORIGIN,
+        credentials: true,
+      })
     );
-    res.send(result);
-  });
 
-  app.get('/scrapewatch', (req, res) => {
-    scrapeWatcher();
-    res.send('Scrapin it up');
-  });
+    app.use(
+      session({
+        name: COOKIE_NAME,
+        store: new RedisStore({
+          client: redis,
+          disableTouch: true,
+        }),
+        cookie: {
+          maxAge: 1000 * 60 * 60 * 24 * 365 * 10, // 10 years
+          httpOnly: true,
+          secure: __prod__,
+          sameSite: 'lax',
+          domain: __prod__ ? 'recrebot.com' : undefined,
+        },
+        saveUninitialized: false,
+        secret: process.env.SESSION_SECRET,
+        resave: false,
+      })
+    );
 
-  app.listen(parseInt(process.env.PORT), () => {
-    console.log('server started');
-  });
+    app.use(express.json());
+
+    const apolloServer = new ApolloServer({
+      schema: await buildSchema({
+        resolvers: [
+          UserResolver,
+          CampgroundResolver,
+          TrailheadResolver,
+          TripRequestResolver,
+        ],
+        validate: false,
+      }),
+      context: ({ req, res }) => ({
+        req,
+        res,
+        redis,
+      }),
+    });
+
+    await apolloServer.start();
+
+    apolloServer.applyMiddleware({
+      app,
+      cors: false,
+    });
+
+    app.post('/rc-check', async (req, res) => {
+      const result = await checkCaliCamps(
+        req.body.reserveCaliCamps,
+        req.body.dates,
+        req.body.min_nights
+      );
+      res.send(result);
+    });
+
+    app.get('/scrapewatch', (req, res) => {
+      scrapeWatcher();
+      res.send('Scrapin it up');
+    });
+
+    app.listen(parseInt(process.env.PORT), () => {
+      console.log('server started');
+    });
+  } catch (e) {
+    console.log('app level exeception caught: ', e);
+  }
 };
 
 main();

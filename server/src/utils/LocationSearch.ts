@@ -75,28 +75,32 @@ export class LocationSearch<T> {
     orderByCenter = true,
     textSearch = true,
   }: handleSearchInterface) => {
-    const searchStr = `
-    select *
-    from ${this.databaseName} a
-    ${
-      textSearch && searchTerm?.length
-        ? `where (a.parent_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')`
-        : ''
+    try {
+      const searchStr = `
+      select *
+      from ${this.databaseName} a
+      ${
+        textSearch && searchTerm?.length
+          ? `where (a.parent_name ilike '%${searchTerm}%' or a.name ilike '%${searchTerm}%')`
+          : ''
+      }
+      ${locationSearch && textSearch ? 'and' : ''}${
+        locationSearch && !textSearch ? 'where' : ''
+      }
+      ${locationSearch ? `a.longitude < ${maxLng}` : ''}
+      ${locationSearch ? `and a.longitude > ${minLng}` : ''}
+      ${locationSearch ? `and a.latitude < ${maxLat}` : ''}
+      ${locationSearch ? `and a.latitude > ${minLat}` : ''}
+      ${
+        orderByCenter
+          ? `order by point(a.longitude,a.latitude) <-> point(${lng}, ${lat})`
+          : ''
+      }
+      limit ${this.maxResults}`;
+      return searchStr;
+    } catch (e) {
+      return '';
     }
-    ${locationSearch && textSearch ? 'and' : ''}${
-      locationSearch && !textSearch ? 'where' : ''
-    }
-    ${locationSearch ? `a.longitude < ${maxLng}` : ''}
-    ${locationSearch ? `and a.longitude > ${minLng}` : ''}
-    ${locationSearch ? `and a.latitude < ${maxLat}` : ''}
-    ${locationSearch ? `and a.latitude > ${minLat}` : ''}
-    ${
-      orderByCenter
-        ? `order by point(a.longitude,a.latitude) <-> point(${lng}, ${lat})`
-        : ''
-    }
-    limit ${this.maxResults}`;
-    return searchStr;
   };
 
   handleTextOnlySearch = (searchTerm: string) => {
@@ -138,8 +142,4 @@ export class LocationSearch<T> {
       orderByCenter,
     });
   };
-}
-
-export class CampgroundSearch {
-  search() {}
 }

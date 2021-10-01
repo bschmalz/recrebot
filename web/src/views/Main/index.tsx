@@ -25,7 +25,7 @@ import { useMainFinal } from '../../contexts/MainFinalContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
 import { usePlanTrip } from '../../contexts/PlanTripContext';
 
-const Main = () => {
+const Main = ({ something }) => {
   const { searchText, searchTextRef, sideBarView, setSideBarView, sideBarRef } =
     useMain();
   const { setTabIndex } = usePlanTrip();

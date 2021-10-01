@@ -14,6 +14,8 @@ import { useMap } from './MapContext';
 interface SearchLocationsInterface {
   campgroundData: SearchCampgroundsQuery;
   campgrounds: Reservable[];
+  errorCampgrounds: boolean;
+  errorTrailheads: boolean;
   trailheadData: SearchTrailheadsQuery;
   trailheads: Reservable[];
   campgroundSearch: any;
@@ -26,6 +28,8 @@ interface SearchLocationsInterface {
 const initialState: SearchLocationsInterface = {
   campgroundData: { searchCampgrounds: { campgrounds: [] } },
   campgrounds: [],
+  errorCampgrounds: false,
+  errorTrailheads: false,
   checkMarker: (id) => {},
   trailheadData: { searchTrailheads: { trailheads: [] } },
   trailheads: [],
@@ -54,12 +58,16 @@ function SearchLocationsProvider(props) {
 
   const [
     searchCampgrounds,
-    { data: campgroundData, loading: loadingCampgrounds },
+    {
+      data: campgroundData,
+      loading: loadingCampgrounds,
+      error: errorCampgrounds,
+    },
   ] = useSearchCampgroundsLazyQuery();
 
   const [
     searchTrailheads,
-    { data: trailheadData, loading: loadingTrailheads },
+    { data: trailheadData, loading: loadingTrailheads, error: errorTrailheads },
   ] = useSearchTrailheadsLazyQuery();
 
   useEffect(() => {
@@ -119,6 +127,8 @@ function SearchLocationsProvider(props) {
     campgroundData,
     campgrounds,
     campgroundSearch: debouncedCampgroundSearch,
+    errorCampgrounds,
+    errorTrailheads,
     trailheadSearch: debouncedTrailheadSearch,
     checkMarker,
     trailheads,

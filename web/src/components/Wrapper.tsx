@@ -1,5 +1,6 @@
 import { Flex } from '@chakra-ui/react';
 import React from 'react';
+import { ErrorFallback } from './ErrorFallback';
 
 export type WrapperVariant = 'small' | 'regular';
 
@@ -18,7 +19,7 @@ export const Wrapper: React.FC<WrapperProps> = ({
       mx='auto'
       h='calc(100% - 51px)'
     >
-      {children}
+      <ErrorFallback showFullError>{children}</ErrorFallback>
     </Flex>
   );
 };

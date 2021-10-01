@@ -35,11 +35,11 @@ const renderText = (custom_name: string, dates: Date[]) => {
 };
 
 export const MyTrips: React.FC = () => {
-  const { setTripType, tripType } = useTripType();
-  const { selectedDates, selectedPlaces, setDates, setSelectedPlaces } =
-    useSelectedPlaces();
+  const { setTripType } = useTripType();
+
+  const { setDates, setSelectedPlaces } = useSelectedPlaces();
+
   const {
-    customName,
     deleteTripRequest,
     loadingTripRequests,
     errorTripRequests,
@@ -47,6 +47,7 @@ export const MyTrips: React.FC = () => {
     setCustomName,
     setEditingTripRequest,
   } = useTripRequests();
+
   const {
     isOpen: isDeleteModalOpen,
     onOpen: openDeleteModal,
@@ -105,7 +106,7 @@ export const MyTrips: React.FC = () => {
           const { custom_name, id, dates, locations, type } = tr;
           const Icon = type === 'Hike' ? FaWalking : FaCampground;
           return (
-            <AccordionItem allowToggle>
+            <AccordionItem allowToggle key={tr.id}>
               <AccordionButton width='100%' p={2}>
                 <Flex
                   alignContent='center'

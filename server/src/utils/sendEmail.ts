@@ -17,75 +17,83 @@ const readHTMLFile = (path: string, callback: Function) => {
 
 // async..await is not allowed in global scope, must use a wrapper
 export const sendEmail = async (to: string, text: string, subject: string) => {
-  const transporter = await nodemailer.createTransport({
-    host: 'smtp.gmail.com',
-    port: 465,
-    secure: true, // use SSL
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  });
+  try {
+    const transporter = await nodemailer.createTransport({
+      host: 'smtp.gmail.com',
+      port: 465,
+      secure: true, // use SSL
+      auth: {
+        user: process.env.EMAIL_USER,
+        pass: process.env.EMAIL_PASS,
+      },
+    });
 
-  await transporter.sendMail(
-    {
-      from: process.env.EMAIL_USER,
-      to,
-      subject,
-      html: text,
-    },
-    (err) => {
-      if (err) console.error('Error sending email', err);
-    }
-  );
+    await transporter.sendMail(
+      {
+        from: process.env.EMAIL_USER,
+        to,
+        subject,
+        html: text,
+      },
+      (err) => {
+        if (err) console.error('Error sending email', err);
+      }
+    );
+  } catch (e) {}
 };
 
 export const sendSuccessEmail = async (to: string, result: ScrapeResult) => {
-  const hits: { name: string; dates: string; url: string }[] = [];
-  for (let name in result) {
-    const dates = result[name].dates
-      .map((d) => dayjs(d).format('MM/DD'))
-      .join(',');
-    hits.push({ name, dates, url: result[name].url });
-  }
-
-  readHTMLFile(
-    __dirname + '/templates/success.html',
-    function (err: Error, html: any) {
-      const template = handlebars.compile(html);
-      const replacements = {
-        hits,
-      };
-      const htmlToSend = template(replacements);
-      sendEmail(to, htmlToSend, 'We Found An Opening From Your Saved Trips');
+  try {
+    const hits: { name: string; dates: string; url: string }[] = [];
+    for (let name in result) {
+      const dates = result[name].dates
+        .map((d) => dayjs(d).format('MM/DD'))
+        .join(',');
+      hits.push({ name, dates, url: result[name].url });
     }
-  );
+
+    readHTMLFile(
+      __dirname + '/templates/success.html',
+      function (err: Error, html: any) {
+        const template = handlebars.compile(html);
+        const replacements = {
+          hits,
+        };
+        const htmlToSend = template(replacements);
+        sendEmail(to, htmlToSend, 'We Found An Opening From Your Saved Trips');
+      }
+    );
+  } catch (e) {}
 };
 
 export const sendInvite = async (to: string, url: string) => {
-  readHTMLFile(
-    __dirname + '/templates/invite.html',
-    function (err: Error, html: any) {
-      const template = handlebars.compile(html);
-      const replacements = {
-        url,
-      };
-      const htmlToSend = template(replacements);
-      sendEmail(to, htmlToSend, 'RecreBot Invitation');
-    }
-  );
+  try {
+    readHTMLFile(
+      __dirname + '/templates/invite.html',
+      function (err: Error, html: any) {
+        const template = handlebars.compile(html);
+        const replacements = {
+          url,
+        };
+        const htmlToSend = template(replacements);
+        sendEmail(to, htmlToSend, 'RecreBot Invitation');
+      }
+    );
+  } catch (e) {}
 };
 
 export const sendPasswordReset = async (to: string, url: string) => {
-  readHTMLFile(
-    __dirname + '/templates/resetPassword.html',
-    function (err: Error, html: any) {
-      const template = handlebars.compile(html);
-      const replacements = {
-        url,
-      };
-      const htmlToSend = template(replacements);
-      sendEmail(to, htmlToSend, 'Reset Your Password');
-    }
-  );
+  try {
+    readHTMLFile(
+      __dirname + '/templates/resetPassword.html',
+      function (err: Error, html: any) {
+        const template = handlebars.compile(html);
+        const replacements = {
+          url,
+        };
+        const htmlToSend = template(replacements);
+        sendEmail(to, htmlToSend, 'Reset Your Password');
+      }
+    );
+  } catch (e) {}
 };

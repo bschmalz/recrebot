@@ -77,18 +77,18 @@ const Register: React.FC<registerProps> = ({}) => {
           <Form>
             <Box mt={4}>
               <InputField
-                type='tel'
-                name='phone'
-                placeholder='phone'
-                label='Phone (optional)'
-              />
-            </Box>
-            <Box mt={4}>
-              <InputField
                 name='password'
                 placeholder='password'
                 label='Password'
                 type='password'
+              />
+            </Box>
+            <Box mt={4}>
+              <InputField
+                type='tel'
+                name='phone'
+                placeholder='phone'
+                label='Phone (optional)'
               />
             </Box>
             <Button

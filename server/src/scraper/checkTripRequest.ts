@@ -65,29 +65,33 @@ const checkCampgrounds = async ({
   dates,
   min_nights,
 }: checkCampgroundsInterface) => {
-  // Group together campsites by type so we can batch our searches more easily
-  const reserveCaliCamps: Reservable[] = [];
-  const recGovCamps: Reservable[] = [];
-  locations.forEach((loc) => {
-    if (loc.sub_type === 'res_ca') {
-      reserveCaliCamps.push(loc);
-    } else {
-      recGovCamps.push(loc);
-    }
-  });
-  const reserveCaliCampResults = await checkCaliCamps(
-    reserveCaliCamps,
-    dates,
-    min_nights
-  );
-  const recGovCampResults = await checkRecGovCamps(
-    recGovCamps,
-    dates,
-    min_nights,
-    memoFetch
-  );
+  try {
+    // Group together campsites by type so we can batch our searches more easily
+    const reserveCaliCamps: Reservable[] = [];
+    const recGovCamps: Reservable[] = [];
+    locations.forEach((loc) => {
+      if (loc.sub_type === 'res_ca') {
+        reserveCaliCamps.push(loc);
+      } else {
+        recGovCamps.push(loc);
+      }
+    });
+    const reserveCaliCampResults = await checkCaliCamps(
+      reserveCaliCamps,
+      dates,
+      min_nights
+    );
+    const recGovCampResults = await checkRecGovCamps(
+      recGovCamps,
+      dates,
+      min_nights,
+      memoFetch
+    );
 
-  return { ...reserveCaliCampResults, ...recGovCampResults };
+    return { ...reserveCaliCampResults, ...recGovCampResults };
+  } catch (e) {
+    return {};
+  }
 };
 
 export const checkCaliCamps = async (
@@ -95,46 +99,55 @@ export const checkCaliCamps = async (
   days: Date[],
   min_nights: number
 ) => {
-  const dates = days.map((d) => dayjs(d));
-  const result: {
-    [key: string]: { dates: dayjs.Dayjs[]; url: string; location: Reservable };
-  } = {};
-  for (let c = 0; c < camps.length; c++) {
-    const camp = camps[c];
-    for (let d = 0; d < dates.length; d++) {
-      const date = dates[d];
-      const req = {
-        ...sampleCaliReqBody,
-        Nights: min_nights,
-        PlaceId: camp.legacy_id,
-        StartDate: date.format('YYYY-MM-DD'),
+  try {
+    const dates = days.map((d) => dayjs(d));
+    const result: {
+      [key: string]: {
+        dates: dayjs.Dayjs[];
+        url: string;
+        location: Reservable;
       };
-      const res = await fetch(reserveCaliUrl, {
-        method: 'POST',
-        headers: {
-          Accept: 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify(req),
-      }).then((r) => r.json());
-      await delay(123, 456);
-      const facilities = res?.SelectedPlace?.Facilities || {};
-      for (let key in facilities) {
-        const f = facilities[key];
-        if (f.Available) {
-          if (result[camp.name]) {
-            if (!result[camp.name].dates.includes(date))
-              result[camp.name].dates.push(date);
-          } else {
-            result[camp.name] = {
-              location: camp,
-              dates: [date],
-              url: 'https://www.reservecalifornia.com/CaliforniaWebHome/Facilities/SearchViewUnitAvailabity.aspx',
-            };
+    } = {};
+    for (let c = 0; c < camps.length; c++) {
+      const camp = camps[c];
+      for (let d = 0; d < dates.length; d++) {
+        const date = dates[d];
+        const req = {
+          ...sampleCaliReqBody,
+          Nights: min_nights,
+          PlaceId: camp.legacy_id,
+          StartDate: date.format('YYYY-MM-DD'),
+        };
+        const res = await fetch(reserveCaliUrl, {
+          method: 'POST',
+          headers: {
+            Accept: 'application/json',
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(req),
+        }).then((r) => r.json());
+        await delay(123, 456);
+        const facilities = res?.SelectedPlace?.Facilities || {};
+        for (let key in facilities) {
+          const f = facilities[key];
+          if (f.Available) {
+            if (result[camp.name]) {
+              if (!result[camp.name].dates.includes(date))
+                result[camp.name].dates.push(date);
+            } else {
+              result[camp.name] = {
+                location: camp,
+                dates: [date],
+                url: 'https://www.reservecalifornia.com/CaliforniaWebHome/Facilities/SearchViewUnitAvailabity.aspx',
+              };
+            }
           }
         }
       }
     }
+    return result;
+  } catch (e) {
+    console.log('error checking cali camps', e);
+    return {};
   }
-  return result;
 };

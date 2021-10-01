@@ -6,13 +6,15 @@ const phoneNumber = process.env.TWILIO_PHONE_NUMBER;
 
 export const sendSMS = (recipient: string) => {
   if (phoneNumber && accountSid && authToken) {
-    const client = new Twilio(accountSid, authToken);
-    client.messages
-      .create({
-        body: 'A trip on recrebot got an opening. Check your email.',
-        from: phoneNumber,
-        to: `+1${recipient}`,
-      })
-      .then((message) => console.log(message.sid));
+    try {
+      const client = new Twilio(accountSid, authToken);
+      client.messages
+        .create({
+          body: 'A trip on recrebot got an opening. Check your email.',
+          from: phoneNumber,
+          to: `+1${recipient}`,
+        })
+        .then((message) => console.log(message.sid));
+    } catch (e) {}
   }
 };
