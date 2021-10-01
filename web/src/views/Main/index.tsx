@@ -99,22 +99,22 @@ const Main = ({ something }) => {
       >
         <>
           {sideBarView === 'MyTrips' && (
-            <Breadcrumb
-              mb={2}
-              ml={2}
-              fontSize={14}
-              fontWeight='bold'
-              onClick={() => {
-                if (editingTripRequest) resetSelections();
-              }}
-            >
+            <Breadcrumb mb={2} ml={2} fontSize={14} fontWeight='bold'>
               <BreadcrumbItem>
-                <BreadcrumbLink>All Trips</BreadcrumbLink>
+                <BreadcrumbLink
+                  onClick={() => {
+                    if (editingTripRequest) resetSelections();
+                  }}
+                >
+                  All Trips
+                </BreadcrumbLink>
               </BreadcrumbItem>
 
               {editingTripRequest ? (
                 <BreadcrumbItem>
-                  <BreadcrumbLink>Trip Edit</BreadcrumbLink>
+                  <BreadcrumbLink isCurrentPage={true} isDisabled={true}>
+                    Trip Edit
+                  </BreadcrumbLink>
                 </BreadcrumbItem>
               ) : null}
             </Breadcrumb>

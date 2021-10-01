@@ -114,7 +114,9 @@ export const MyTrips: React.FC = () => {
                   width='100%'
                 >
                   <Flex marginTop={2} marginBottom={2} alignItems='center'>
-                    <Icon fontSize={28} color='green' />
+                    <Box color='green.500'>
+                      <Icon fontSize={28} />
+                    </Box>
 
                     <Text marginLeft={2}>{renderText(custom_name, dates)}</Text>
                   </Flex>

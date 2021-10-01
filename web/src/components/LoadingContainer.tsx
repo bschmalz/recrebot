@@ -13,7 +13,13 @@ export const LoadingContainer = () => {
         transform='translate(-50%, -50%)'
         textAlign='center'
       >
-        <Spinner size='lg' />
+        <Spinner
+          size='lg'
+          thickness='2px'
+          speed='0.65s'
+          emptyColor='gray.200'
+          color='green.700'
+        />
         <Text>Loading</Text>
       </Box>
     </Flex>

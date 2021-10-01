@@ -113,6 +113,7 @@ export const SelectedCard = () => {
         variant='ghost'
       />
       <IconButton
+        color='green.500'
         colorScheme='green'
         onClick={() => addSelectedCard(selectedCard)}
         position='absolute'
