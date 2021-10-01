@@ -6,6 +6,7 @@ import { isServer } from '../utils/isServer';
 import { LandingPage } from '../components/LandingPage';
 
 import { MainContextWrapper } from '../views/Main/MainContextWrapper';
+import { CheckingTripRequestsProvider } from '../contexts/CheckingTripRequests';
 
 const Index = () => {
   const { data, loading } = useMeQuery({
@@ -13,15 +14,17 @@ const Index = () => {
   });
 
   return (
-    <Layout>
-      {loading || !data?.me ? (
-        <LandingPage />
-      ) : (
-        <MainContextWrapper>
-          <Main />
-        </MainContextWrapper>
-      )}
-    </Layout>
+    <CheckingTripRequestsProvider>
+      <Layout>
+        {loading || !data?.me ? (
+          <LandingPage />
+        ) : (
+          <MainContextWrapper>
+            <Main />
+          </MainContextWrapper>
+        )}
+      </Layout>
+    </CheckingTripRequestsProvider>
   );
 };
 

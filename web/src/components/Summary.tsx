@@ -38,6 +38,7 @@ import { useTripRequests } from '../contexts/TripRequestsContext';
 import { useMain } from '../contexts/MainContext';
 import { useMap } from '../contexts/MapContext';
 import { useMainFinal } from '../contexts/MainFinalContext';
+import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 
 interface Props {
   minimumNights?: number;
@@ -75,8 +76,8 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
   } = useTripRequests();
   const [minNights, setNights] = useState(minimumNights?.toString() || '1');
   const [results, setResults] = useState({});
-  const [checking, setChecking] = useState(false);
   const { isOpen, onOpen, onClose } = useDisclosure();
+  const { checking, setChecking } = useCheckingTripRequests();
 
   const createTripRequestObj = (customName: string, minNights) => {
     const tr = {

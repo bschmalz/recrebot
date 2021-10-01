@@ -6,6 +6,8 @@ import { useLogoutMutation, useMeQuery } from '../generated/graphql';
 import { isServer } from '../utils/isServer';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
+import { SpinningGear } from './SpinningGear';
+import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 
 export const Navbar = () => {
   const router = useRouter();
@@ -14,6 +16,7 @@ export const Navbar = () => {
   const { data, loading } = useMeQuery({
     skip: isServer(),
   });
+  const { checking } = useCheckingTripRequests();
 
   let body;
 
@@ -65,7 +68,15 @@ export const Navbar = () => {
       <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
         <NextLink href='/'>
           <Link>
-            <Heading>RecreBot</Heading>
+            <Heading>
+              <Flex alignItems='flex-end'>
+                RecreB
+                <Box mb='6px'>
+                  <SpinningGear spinning={checking} />
+                </Box>{' '}
+                t
+              </Flex>
+            </Heading>
           </Link>
         </NextLink>
         <Box ml='auto'>{body}</Box>
