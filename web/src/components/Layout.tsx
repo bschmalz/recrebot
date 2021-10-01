@@ -9,7 +9,7 @@ interface LayoutProps {
 
 export const Layout: React.FC<LayoutProps> = ({ children, variant }) => {
   return (
-    <Box h="100vh">
+    <Box h='100vh' bg='rgba(210, 220, 240, 0.2)'>
       <Navbar />
       <Wrapper variant={variant}>{children}</Wrapper>
     </Box>

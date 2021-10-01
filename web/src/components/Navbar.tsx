@@ -58,13 +58,7 @@ export const Navbar = () => {
     );
   }
   return (
-    <Flex
-      position='sticky'
-      top={0}
-      zIndex={1}
-      bg='rgba(210, 220, 240, 0.1)'
-      p={1}
-    >
+    <Flex position='sticky' top={0} zIndex={1} p={1}>
       <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
         <NextLink href='/'>
           <Link>
