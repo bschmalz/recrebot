@@ -102,6 +102,8 @@ const Main = ({ something }) => {
             <Breadcrumb mb={2} ml={2} fontSize={14} fontWeight='bold'>
               <BreadcrumbItem>
                 <BreadcrumbLink
+                  as={editingTripRequest ? 'button' : undefined}
+                  fontWeight='bold'
                   onClick={() => {
                     if (editingTripRequest) resetSelections();
                   }}
@@ -112,7 +114,11 @@ const Main = ({ something }) => {
 
               {editingTripRequest ? (
                 <BreadcrumbItem>
-                  <BreadcrumbLink isCurrentPage={true} isDisabled={true}>
+                  <BreadcrumbLink
+                    as='button'
+                    isCurrentPage={true}
+                    disabled={true}
+                  >
                     Trip Edit
                   </BreadcrumbLink>
                 </BreadcrumbItem>

@@ -106,7 +106,7 @@ export const MyTrips: React.FC = () => {
           const { custom_name, id, dates, locations, type } = tr;
           const Icon = type === 'Hike' ? FaWalking : FaCampground;
           return (
-            <AccordionItem allowToggle key={tr.id}>
+            <AccordionItem key={tr.id}>
               <AccordionButton width='100%' p={2}>
                 <Flex
                   alignContent='center'

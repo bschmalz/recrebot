@@ -1,5 +1,6 @@
 import { Layout } from '../components/Layout';
 import { withApollo } from '../utils/withApollo';
+import Head from 'next/head';
 import Main from '../views/Main';
 import { useMeQuery } from '../generated/graphql';
 import { LandingPage } from '../components/LandingPage';
@@ -28,9 +29,17 @@ const Index = () => {
   };
 
   return (
-    <CheckingTripRequestsProvider>
-      <Layout>{renderBody()}</Layout>
-    </CheckingTripRequestsProvider>
+    <>
+      <Head>
+        <title>Recrebot</title>
+        <meta name='viewport' content='initial-scale=1.0, width=device-width' />
+        <link rel='shortcut icon' href='/icons/favicon.ico' />
+        <link rel='manifest' href='/manifest.json' />
+      </Head>
+      <CheckingTripRequestsProvider>
+        <Layout>{renderBody()}</Layout>
+      </CheckingTripRequestsProvider>
+    </>
   );
 };
 
