@@ -1,4 +1,4 @@
-import { isValidCoord } from './isValidCoord';
+import { isValidCoord } from '../utils/isValidCoord';
 
 const puppeteer = require('puppeteer');
 

@@ -1,5 +1,5 @@
 import { getCoords } from './getCoords';
-import { isValidCoord } from './isValidCoord';
+import { isValidCoord } from '../utils/isValidCoord';
 import { ScrapedData } from './types/ScrapedData';
 
 export const validateCoords = async (

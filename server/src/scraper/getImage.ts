@@ -1,7 +1,7 @@
 import { Campground } from '../entities/Campground';
 import { getRepository } from 'typeorm';
 import { Trailhead } from '../entities/Trailhead';
-import { delay } from './delay';
+import { delay } from '../utils/delay';
 
 const puppeteer = require('puppeteer');
 const fs = require('fs');

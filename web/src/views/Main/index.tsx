@@ -1,4 +1,5 @@
 import { useEffect } from 'react';
+
 import { withApollo } from '../../utils/withApollo';
 import { Sidebar } from './Sidebar';
 import MapboxGL from 'mapbox-gl';

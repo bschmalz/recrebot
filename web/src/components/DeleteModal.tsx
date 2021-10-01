@@ -10,7 +10,7 @@ import {
 import React from 'react';
 
 interface DeleteModalProps {
-  delete: Function;
+  delete: (id: number) => void;
   deletingId: number;
   isOpen: boolean;
   modalText?: string;

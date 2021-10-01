@@ -20,13 +20,13 @@ interface SearchLocationsInterface {
   trailheadSearch: any;
   loadingCampgrounds: boolean;
   loadingTrailheads: boolean;
-  checkMarker: Function;
+  checkMarker: (id: string) => void;
 }
 
 const initialState: SearchLocationsInterface = {
   campgroundData: { searchCampgrounds: { campgrounds: [] } },
   campgrounds: [],
-  checkMarker: (id: string) => {},
+  checkMarker: (id) => {},
   trailheadData: { searchTrailheads: { trailheads: [] } },
   trailheads: [],
   trailheadSearch: {},

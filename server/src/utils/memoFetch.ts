@@ -1,4 +1,4 @@
-import { delay } from '../scraper/delay';
+import { delay } from './delay';
 import fetch from 'node-fetch';
 
 export interface MemoResponse {

@@ -1,41 +1,22 @@
 import fetch from 'node-fetch';
 import { Campground as CampgroundEntity } from '../entities/Campground';
 import { getConnection } from 'typeorm';
-import { delay } from './delay';
-import { CaliCampResponse, ReserveCaliRequest } from './types/CaliCampgroud';
+import { delay } from '../utils/delay';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { getImages } from './getImage';
+import { sampleCaliReqBody } from './checkTripRequest';
+
+interface CaliCampResponse {
+  PlaceId: number;
+}
 
 const url = 'https://calirdr.usedirect.com/RDR/rdr/search/place';
 
 const initialPlaceId = 6;
 
-const sampleBody: ReserveCaliRequest = {
-  Nights: 1,
-  IsADA: false,
-  MinVehicleLength: null,
-  UnitCategoryId: 1,
-  StartDate: '2022-01-27',
-  CustomerId: 0,
-  Sort: 'distance',
-  WebOnly: true,
-  NearbyCountLimit: 10,
-  CountUnits: true,
-  PlaceId: 6,
-  NearbyOnlyAvailable: false,
-  UnitTypesGroupIds: [1],
-  SleepingUnitId: 83,
-  HighlightedPlaceId: 0,
-  InSeasonOnly: false,
-  NearbyLimit: 100,
-  RefreshFavourites: true,
-  RestrictADA: false,
-  CountNearby: true,
-};
-
 const getReqBody = (PlaceId: number) => {
   return {
-    ...sampleBody,
+    ...sampleCaliReqBody,
     PlaceId,
   };
 };

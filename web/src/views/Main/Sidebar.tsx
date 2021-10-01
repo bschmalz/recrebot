@@ -4,7 +4,7 @@ import { BACKGROUND_COLOR } from '../../constants';
 
 interface SidebarProps {
   children: JSX.Element;
-  setSidebar: Function;
+  setSidebar: (val: string) => void;
   sideBarView: String;
 }
 

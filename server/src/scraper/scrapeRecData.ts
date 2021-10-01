@@ -10,7 +10,7 @@ import fetch from 'node-fetch';
 import { fetchCaliCamppgrounds } from './scrapeCaliData';
 import { getConnection } from 'typeorm';
 import { Trailhead } from '../entities/Trailhead';
-import { delay } from './delay';
+import { delay } from '../utils/delay';
 import { validateCoords } from './validateCoords';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { Campground } from '../entities/Campground';

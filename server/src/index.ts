@@ -99,7 +99,7 @@ const main = async () => {
     console.log('req', req.body);
     const result = await checkCaliCamps(
       req.body.reserveCaliCamps,
-      req.body.datesToCheck,
+      req.body.dates,
       req.body.min_nights
     );
     res.send(result);
