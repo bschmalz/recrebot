@@ -96,7 +96,6 @@ const main = async () => {
   });
 
   app.post('/rc-check', async (req, res) => {
-    console.log('req', req.body);
     const result = await checkCaliCamps(
       req.body.reserveCaliCamps,
       req.body.dates,

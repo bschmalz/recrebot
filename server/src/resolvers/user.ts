@@ -20,7 +20,7 @@ import {
 } from '../constants';
 import { RegisterInput } from './RegisterInput';
 import { validateRegister } from '../utils/validateRegister';
-import { sendEmail, sendInvite } from '../utils/sendEmail';
+import { sendEmail, sendInvite, sendPasswordReset } from '../utils/sendEmail';
 import { v4 } from 'uuid';
 import { getConnection } from 'typeorm';
 import { EmailInput } from './EmailInput';
@@ -145,11 +145,7 @@ export class UserResolver {
 
     redis.set(FORGET_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 30);
 
-    sendEmail(
-      email,
-      `<a href="http://localhost:3000/change-password/${token}">reset password</a>`,
-      'Reset Password'
-    );
+    sendPasswordReset(email, `http://localhost:3000/change-password/${token}`);
     return true;
   }
 
@@ -271,7 +267,6 @@ export class UserResolver {
   ): Promise<VerifyEmailResponse> {
     const key = INVITE_USER_PREFIX + token;
     const email = (await redis.get(key)) as string;
-    console.log('email', email);
     return {
       isValid: email?.length ? true : false,
     };

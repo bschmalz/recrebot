@@ -77,6 +77,7 @@ const Register: React.FC<registerProps> = ({}) => {
           <Form>
             <Box mt={4}>
               <InputField
+                type='tel'
                 name='phone'
                 placeholder='phone'
                 label='Phone (optional)'
@@ -101,7 +102,6 @@ const Register: React.FC<registerProps> = ({}) => {
           </Form>
         )}
       </Formik>
-      )
     </Wrapper>
   );
 };

@@ -34,7 +34,9 @@ export const sendEmail = async (to: string, text: string, subject: string) => {
       subject,
       html: text,
     },
-    (err) => console.error('Error sending email', err)
+    (err) => {
+      if (err) console.error('Error sending email', err);
+    }
   );
 };
 
@@ -65,12 +67,25 @@ export const sendInvite = async (to: string, url: string) => {
     __dirname + '/templates/invite.html',
     function (err: Error, html: any) {
       const template = handlebars.compile(html);
-      console.log('url', url);
       const replacements = {
         url,
       };
       const htmlToSend = template(replacements);
       sendEmail(to, htmlToSend, 'RecreBot Invitation');
+    }
+  );
+};
+
+export const sendPasswordReset = async (to: string, url: string) => {
+  readHTMLFile(
+    __dirname + '/templates/resetPassword.html',
+    function (err: Error, html: any) {
+      const template = handlebars.compile(html);
+      const replacements = {
+        url,
+      };
+      const htmlToSend = template(replacements);
+      sendEmail(to, htmlToSend, 'Reset Your Password');
     }
   );
 };

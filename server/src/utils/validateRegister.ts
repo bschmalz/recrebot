@@ -1,13 +1,23 @@
 import { RegisterInput } from 'src/resolvers/RegisterInput';
 
 export const validateRegister = (options: RegisterInput) => {
-  if (options.phone.length && options.phone.length !== 10) {
-    return [
-      {
-        field: 'phone',
-        message: 'length must be 10',
-      },
-    ];
+  if (options.phone.length) {
+    if (options.phone.length !== 10) {
+      return [
+        {
+          field: 'phone',
+          message: 'length must be 10',
+        },
+      ];
+    }
+    if (!/^[0-9]+$/g.test(options.phone)) {
+      return [
+        {
+          field: 'phone',
+          message: 'must only be numbers',
+        },
+      ];
+    }
   }
 
   if (options.password.length <= 2) {

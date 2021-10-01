@@ -7,6 +7,7 @@ import { Reservable } from './types/Reservable';
 import { User } from '../entities/User';
 import { sendSuccessEmail } from '../utils/sendEmail';
 import dayjs from 'dayjs';
+import { sendSMS } from '../utils/sendSMS';
 
 export interface TripRequestInterface {
   id: number;
@@ -80,6 +81,7 @@ const handleSuccessfulTripRequest = async (
   const user = await User.findOne({ where: { id: tr.userId } });
   if (user) {
     sendSuccessEmail(user.email, result);
+    if (user.phone?.length === 10) sendSMS(user.phone);
   } else {
     console.error(
       'Found a trip request connected to a user that does not exist'
