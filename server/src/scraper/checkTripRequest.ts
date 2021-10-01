@@ -4,7 +4,7 @@ import { delay } from '../utils/delay';
 import { checkRecGovCamps } from './checkRecGovCamps';
 import { checkTrailheads } from './checkTrailheads';
 import { Reservable } from './types/Reservable';
-import { memoFetch } from 'src/utils/memoFetch';
+import { memoFetch } from '../utils/memoFetch';
 
 const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
