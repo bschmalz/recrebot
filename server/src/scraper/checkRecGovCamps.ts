@@ -6,7 +6,8 @@ export const checkRecGovCamps = async (
   camps: Reservable[],
   days: any[],
   min_nights: number,
-  memoFetch: () => Function
+  memoFetch: () => Function,
+  shortenDelay?: boolean
 ) => {
   try {
     const memoRecGovCampCheck = memoFetch();
@@ -33,7 +34,7 @@ export const checkRecGovCamps = async (
         const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
         const url = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${firstDay}T00%3A00%3A00.000Z`;
         const curMonth = await memoRecGovCampCheck(url);
-        await delay();
+        (await shortenDelay) ? delay(123, 456) : delay();
         const nextMonthFirstDay = arr[0]
           .startOf('month')
           .add(1, 'month')
@@ -41,7 +42,7 @@ export const checkRecGovCamps = async (
 
         const nextUrl = `https://www.recreation.gov/api/camps/availability/campground/${camp.legacy_id}/month?start_date=${nextMonthFirstDay}T00%3A00%3A00.000Z`;
         const nextMonth = await memoRecGovCampCheck(nextUrl);
-        await delay();
+        (await shortenDelay) ? delay(123, 456) : delay();
 
         let curStreak = 0;
         // Loop through every campsite on the response, make a map of previous nights of availability and then compare that to selections to
@@ -64,7 +65,7 @@ export const checkRecGovCamps = async (
               }
             });
             if (curStreak > 0 && min_nights > 1) {
-              await delay();
+              (await shortenDelay) ? delay(123, 456) : delay();
 
               const newCampsite = nextMonth?.campsites[key] || [];
               const newDates = Object.keys(newCampsite.availabilities);

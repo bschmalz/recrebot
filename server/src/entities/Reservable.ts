@@ -56,8 +56,4 @@ export abstract class Reservable extends BaseEntity {
   @Field()
   @Column('varchar')
   sub_type: string;
-
-  @Field({ nullable: true })
-  @Column('varchar', { nullable: true })
-  description: string;
 }

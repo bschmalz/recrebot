@@ -6,12 +6,14 @@ interface checkTrailheadsInterface {
   dates: Date[];
   locations: Reservable[];
   memoFetch: () => Function;
+  shortenDelay?: boolean;
 }
 
 export const checkTrailheads = async ({
   locations,
   dates,
   memoFetch,
+  shortenDelay = false,
 }: checkTrailheadsInterface) => {
   try {
     const memoTrailheadCheck = memoFetch();
@@ -59,7 +61,7 @@ export const checkTrailheads = async ({
             }
           }
         }
-        await delay();
+        (await shortenDelay) ? delay(123, 456) : delay();
       }
     }
     return results;

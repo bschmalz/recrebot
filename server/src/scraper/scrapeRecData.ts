@@ -15,6 +15,44 @@ import { validateCoords } from './validateCoords';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { Campground } from '../entities/Campground';
 
+const whiteListedTrailHeads: { [key: string]: boolean } = {
+  '233260': true, // Whitney
+  '233262': true, // Inyo
+  '445856': true, // Humboldt-Toiyabe
+  '445857': true, // Seki
+  '445858': true, // Sierra NF
+};
+
+// Whitney
+// Facility ID: 233260
+// Sub ids: 166, 406
+// Url Example: https://www.recreation.gov/api/permits/233260/divisions/406/availability?start_date=2020-12-31T00:00:00.000Z&end_date=2021-12-31T00:00:00.000Z&commercial_acct=false
+// Each sub id has its own url
+
+// Inyo
+// Facility ID: 233260
+// Sub ids: 430, 434….
+// Url Example: https://www.recreation.gov/api/permitinyo/233262/availability?start_date=2021-10-01&end_date=2021-10-31&commercial_acct=false
+// All sub ids in the response
+
+// Humboldt-Toiyabe
+// Facility ID: 445856
+// Sub ids: stuff
+// Url Example: https://www.recreation.gov/api/permitinyo/445856/availability?start_date=2021-10-01&end_date=2021-10-31&commercial_acct=false
+// All sub ids in the response
+
+// SeKi
+// Facility ID: 445857
+// Sub ids: stuff
+// Url Example: https://www.recreation.gov/api/permitinyo/445857/availability?start_date=2021-10-01&end_date=2021-10-31&commercial_acct=false
+// All sub ids in the response
+
+// Sierra National Forest
+// Facility ID: 445858
+// Sub ids: stuff
+// Url Example: https://www.recreation.gov/api/permitinyo/445858/availability?start_date=2021-10-01&end_date=2021-10-31&commercial_acct=false
+// All sub ids in the response
+
 export const scrapeRecData = () => {
   const recAreas: RecAreas = {};
   const campgroundsArray: ScrapedData[] = [];
@@ -80,7 +118,6 @@ export const scrapeRecData = () => {
       const item = divisions[key] as Division;
       if (item.type === 'Entry Point') {
         const t = {
-          description: item.description,
           subparent_id: pg.FacilityID,
           subparent_name: pg.FacilityName,
           legacy_id: item.id,
@@ -116,7 +153,6 @@ export const scrapeRecData = () => {
           if (row.FacilityTypeDescription === 'Campground') {
             const cg = {
               legacy_id: row.FacilityID,
-              description: row.FacilityDescription,
               name: row.FacilityName,
               latitude: lat,
               longitude: lng,
@@ -129,7 +165,7 @@ export const scrapeRecData = () => {
             campgroundsArray.push(cg);
           }
 
-          if (row.FacilityTypeDescription === 'Permit') {
+          if (whiteListedTrailHeads[row.FacilityID]) {
             permitGroups.push({
               FacilityID: row.FacilityID,
               FacilityName: row.FacilityName,
@@ -144,7 +180,7 @@ export const scrapeRecData = () => {
       .on('end', () => {
         console.log('finished scraping facilities');
 
-        // parsePermitGroups();
+        parsePermitGroups();
       });
   };
 

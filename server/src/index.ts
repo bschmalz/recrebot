@@ -24,6 +24,8 @@ import { sendSMS } from './utils/sendSMS';
 import { sendSuccessEmail } from './utils/sendEmail';
 import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
+import { fetchCaliCampground } from './scraper/scrapeCaliData';
+import { getCaliLocationDescription } from './utils/getCaliDescription';
 
 const main = async () => {
   try {
@@ -102,6 +104,12 @@ const main = async () => {
         req.body.dates,
         req.body.min_nights
       );
+      res.send(result);
+    });
+
+    app.get('/rc-description/:id/', async (req, res) => {
+      console.log(req.params.id);
+      const result = await getCaliLocationDescription(parseInt(req.params.id));
       res.send(result);
     });
 

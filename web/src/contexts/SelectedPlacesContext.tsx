@@ -9,11 +9,10 @@ export interface SelectedPlaceInterface {
   latitude: number;
   id: number;
   district?: string;
-  description: string;
   sub_type: string;
   legacy_id: string;
   facility_id?: string;
-  subparent_id?: string;
+  subparent_id: string;
 }
 
 interface SelectedPlaceContextInterface {

@@ -19,7 +19,6 @@ export interface PermitGroupResponse {
 export interface Division {
   id: string;
   district: string;
-  description: string;
   latitude: number;
   longitude: number;
   name: string;

@@ -1,6 +1,6 @@
-import { IconButton } from '@chakra-ui/react';
+import React, { useEffect, useState } from 'react';
+import { IconButton, SkeletonText } from '@chakra-ui/react';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
-import React from 'react';
 import { StyledContainer } from './StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
 import { useTripType } from '../contexts/TripTypeContext';
@@ -8,8 +8,11 @@ import { useSearchLocations } from '../contexts/SearchLocationsContext';
 import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { useMap } from '../contexts/MapContext';
 import { useMain } from '../contexts/MainContext';
+import { getLocationDescription } from '../utils/getLocationDescription';
 
 export const SelectedCard = () => {
+  const [description, setDescription] = useState(null);
+  const [loading, setLoading] = useState(true);
   const { campgrounds, trailheads } = useSearchLocations();
   const { addSelectedPlace, selectCard, selectedCard } = useSelectedPlaces();
   const { removeMarker, updateMapMarkers, zoomOnSelectedCard } = useMap();
@@ -18,21 +21,22 @@ export const SelectedCard = () => {
 
   const {
     id,
-    latitude,
     legacy_id,
-    longitude,
     name,
     parent_name,
     type,
     sub_type,
     district,
-    description,
     subparent_id,
   } = selectedCard;
 
-  const createMarkup = () => {
-    return { __html: description };
-  };
+  useEffect(() => {
+    getLocationDescription(selectedCard)
+      .then((res) => {
+        setDescription(res);
+      })
+      .finally(() => setLoading(false));
+  }, []);
 
   const addSelectedCard = (selectedCard) => {
     addSelectedPlace(selectedCard);
@@ -45,6 +49,10 @@ export const SelectedCard = () => {
       updateMapMarkers(markers);
       sideBarRef.current.scrollTop = scrollRef.current;
     });
+  };
+
+  const createMarkup = () => {
+    return { __html: description };
   };
 
   const handleCardClick = (id) => {
@@ -142,6 +150,9 @@ export const SelectedCard = () => {
             Reservation Page
           </Link>
         </Text>
+        {loading && !description && (
+          <SkeletonText mt='4' noOfLines={8} spacing='4' />
+        )}
 
         {description ? (
           <Box

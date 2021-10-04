@@ -1,6 +1,5 @@
 export interface ScrapedData {
   legacy_id: string;
-  description: string;
   name: string;
   latitude: number;
   longitude: number;

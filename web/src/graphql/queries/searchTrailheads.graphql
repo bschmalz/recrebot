@@ -20,7 +20,6 @@ query SearchTrailheads(
       parent_name
       legacy_id
       parent_name
-      description
       subparent_name
       subparent_id
     }

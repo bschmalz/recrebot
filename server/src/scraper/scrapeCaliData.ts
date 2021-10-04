@@ -51,9 +51,9 @@ export const fetchCaliCamppgrounds = async () => {
   return caliCamps;
 };
 
-const checkCampground = async (id: number) => {
+export const fetchCaliCampground = async (id: number) => {
   let body = getReqBody(id);
-  const res = await fetch(url, {
+  return await fetch(url, {
     method: 'post',
     body: JSON.stringify(body),
     headers: { 'Content-Type': 'application/json' },
@@ -64,11 +64,14 @@ const checkCampground = async (id: number) => {
         error: true,
       };
     });
+};
+
+const checkCampground = async (id: number) => {
+  const res = await fetchCaliCampground(id);
   if (!res || res.error || !res.SelectedPlace) return;
-  const { Latitude, Longitude, PlaceId, Name, Description } = res.SelectedPlace;
+  const { Latitude, Longitude, PlaceId, Name } = res.SelectedPlace;
 
   const cg = {
-    description: Description as string,
     latitude: Latitude as number,
     longitude: Longitude as number,
     name: Name as string,

@@ -19,7 +19,6 @@ query SearchCampgrounds(
       latitude
       longitude
       legacy_id
-      description
       parent_name
     }
   }

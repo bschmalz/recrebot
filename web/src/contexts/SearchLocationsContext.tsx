@@ -87,7 +87,7 @@ function SearchLocationsProvider(props) {
   const campgroundsRef = useRef([]);
   const trailheadsRef = useRef([]);
 
-  const debounceTime = 800;
+  const debounceTime = 1000;
   const debouncedCampgroundSearch = useRef(
     debounce(searchCampgrounds, debounceTime)
   );

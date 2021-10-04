@@ -4,6 +4,8 @@ import { checkRecGovCamps } from '../../../../recreBot/server/src/scraper/checkR
 import { checkTrailheads } from '../../../../recreBot/server/src/scraper/checkTrailheads';
 import { memoFetch } from './memoFetch';
 
+const shortenDelay = true;
+
 interface checkTrailheadsInterface {
   dates: Date[];
   locations: Reservable[];
@@ -24,7 +26,7 @@ export const checkTripRequest = async ({
   type,
 }: checkTripRequestInterface) => {
   if (type === 'Hike') {
-    return await checkTrailheads({ locations, dates, memoFetch });
+    return await checkTrailheads({ locations, dates, memoFetch, shortenDelay });
   } else return await checkCampgrounds({ locations, dates, min_nights });
 };
 
@@ -66,7 +68,8 @@ const checkCampgrounds = async ({
     recGovCamps,
     dates,
     min_nights,
-    memoFetch
+    memoFetch,
+    shortenDelay
   );
 
   return { ...reserveCaliCampResults, ...recGovCampResults };
