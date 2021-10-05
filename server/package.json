@@ -1,6 +1,6 @@
 {
   "name": "recrebot-api",
-  "version": "0.0.1",
+  "version": "1.0.0",
   "description": "Server for delivering recreation data to the recrebot frontend",
   "main": "index.js",
   "scripts": {

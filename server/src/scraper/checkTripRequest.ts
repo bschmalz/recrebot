@@ -5,6 +5,7 @@ import { checkRecGovCamps } from './checkRecGovCamps';
 import { checkTrailheads } from './checkTrailheads';
 import { Reservable } from './types/Reservable';
 import { memoFetch } from '../utils/memoFetch';
+import { logError } from '../utils/logError';
 
 const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
@@ -37,6 +38,7 @@ interface checkCampgroundsInterface {
   min_nights: number;
   dates: Date[];
   locations: Reservable[];
+  logError?: (message: string, error: Error) => void;
 }
 
 interface checkTripRequestInterface {
@@ -60,12 +62,14 @@ export const checkTripRequest = async ({
       dates,
       memoFetch,
       num_hikers: num_hikers || 1,
+      logError,
     });
   } else
     return await checkCampgrounds({
       locations,
       dates,
       min_nights: min_nights || 1,
+      logError,
     });
 };
 
@@ -73,6 +77,7 @@ const checkCampgrounds = async ({
   locations,
   dates,
   min_nights,
+  logError,
 }: checkCampgroundsInterface) => {
   try {
     // Group together campsites by type so we can batch our searches more easily
@@ -99,6 +104,9 @@ const checkCampgrounds = async ({
 
     return { ...reserveCaliCampResults, ...recGovCampResults };
   } catch (e) {
+    if (logError) {
+      logError('Error collecting camps', e);
+    }
     return {};
   }
 };
@@ -156,7 +164,10 @@ export const checkCaliCamps = async (
     }
     return result;
   } catch (e) {
-    console.log('error checking cali camps', e);
+    // console.log('error checking cali camps', e);
+    if (logError) {
+      logError('error checking cali camps', e);
+    }
     return {};
   }
 };

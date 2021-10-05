@@ -7,7 +7,8 @@ export const checkRecGovCamps = async (
   days: any[],
   min_nights: number,
   memoFetch: () => Function,
-  shortenDelay?: boolean
+  shortenDelay?: boolean,
+  logError?: (message: string, error: Error) => void
 ) => {
   try {
     const memoRecGovCampCheck = memoFetch();
@@ -107,7 +108,9 @@ export const checkRecGovCamps = async (
     }
     return result;
   } catch (e) {
-    console.log('error checking rec gov camps', e);
+    if (logError) {
+      logError('Error checking rec gov camps', e);
+    }
     return {};
   }
 };

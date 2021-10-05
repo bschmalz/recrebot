@@ -8,6 +8,7 @@ interface CheckTrailheadsInterface {
   memoFetch: () => Function;
   shortenDelay?: boolean;
   num_hikers: number;
+  logError?: (message: string, error: Error) => void;
 }
 
 export const checkTrailheads = async ({
@@ -16,6 +17,7 @@ export const checkTrailheads = async ({
   memoFetch,
   shortenDelay = false,
   num_hikers,
+  logError,
 }: CheckTrailheadsInterface) => {
   const backcountryTrails: Reservable[] = [];
   const permitTrails: Reservable[] = [];
@@ -33,6 +35,7 @@ export const checkTrailheads = async ({
     memoFetch,
     shortenDelay,
     num_hikers,
+    logError,
   });
 
   const permitResults = await checkPermitTrailheads({
@@ -40,6 +43,7 @@ export const checkTrailheads = async ({
     dates,
     memoFetch,
     num_hikers,
+    logError,
   });
 
   return { ...backcountryResults, ...permitResults };
@@ -70,6 +74,7 @@ const checkBackcountryTrailheads = async ({
   memoFetch,
   shortenDelay = false,
   num_hikers,
+  logError,
 }: CheckTrailheadsInterface) => {
   try {
     const memoTrailheadCheck = memoFetch();
@@ -112,7 +117,9 @@ const checkBackcountryTrailheads = async ({
     }
     return results;
   } catch (e) {
-    console.log('error checking trailhead trip request');
+    if (logError) {
+      logError('Error checking backcountry trail permit', e);
+    }
     return {};
   }
 };
@@ -126,6 +133,7 @@ const checkPermitTrailheads = async ({
   memoFetch,
   shortenDelay = false,
   num_hikers,
+  logError,
 }: CheckTrailheadsInterface) => {
   console.log('num hikers', num_hikers);
 
@@ -172,7 +180,9 @@ const checkPermitTrailheads = async ({
     }
     return results;
   } catch (e) {
-    console.log('error checking trailhead trip request');
+    if (logError) {
+      logError('Error checking permit trip request', e);
+    }
     return {};
   }
 };
