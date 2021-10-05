@@ -3,7 +3,6 @@ import { Button, Flex, Heading, Link } from '@chakra-ui/react';
 import React from 'react';
 import NextLink from 'next/link';
 import { useLogoutMutation, useMeQuery } from '../generated/graphql';
-import { isServer } from '../utils/isServer';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { SpinningGear } from './SpinningGear';
@@ -35,11 +34,11 @@ export const Navbar = ({}) => {
   } else {
     body = (
       <Flex>
-        {data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
+        {/* {data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
           <NextLink href='/invite'>
             <Link mr={3}>invite</Link>
           </NextLink>
-        ) : null}
+        ) : null} */}
         <Button
           data-cy='logout-link'
           variant='link'

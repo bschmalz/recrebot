@@ -14,7 +14,7 @@ export const getLocationDescription = async ({
     if (sub_type === 'res_ca') {
       console.log('hmm');
       const res = await locMemo(
-        `http://localhost:4000/rc-description/${legacy_id}`,
+        `${process.env.NEXT_PUBLIC_API_URL}/rc-description/${legacy_id}`,
         returnText
       ).then((res) => res.text());
       console.log('what is it', res);

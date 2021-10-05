@@ -8,12 +8,14 @@ import { memoFetch } from '../utils/memoFetch';
 
 const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
+const startDate = dayjs().format('YYYY-MM-DD');
+
 export const sampleCaliReqBody = {
   Nights: 1,
   IsADA: false,
   MinVehicleLength: null,
   UnitCategoryId: 1,
-  StartDate: '2022-01-27',
+  StartDate: startDate,
   CustomerId: 0,
   Sort: 'distance',
   WebOnly: true,

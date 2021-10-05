@@ -118,7 +118,7 @@ function MainFinalProvider(props) {
       setTripType(newTripType);
 
       setSelectedPlaces([]);
-
+      setDates([]);
       selectCard(null);
 
       const places =

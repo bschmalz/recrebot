@@ -64,7 +64,7 @@ export const getImages = async () => {
   }
 };
 
-const tryToGetImage = async (
+export const tryToGetImage = async (
   searchString: string,
   type: string,
   id: number

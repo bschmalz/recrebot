@@ -15,16 +15,33 @@ const Index = () => {
   const { data, error, loading } = useMeQuery();
 
   const renderBody = () => {
-    if (error) return <ErrorContainer />;
-    if (loading) return <LoadingContainer />;
-    if (!data?.me) return <LandingPage />;
+    if (error)
+      return (
+        <Layout>
+          <ErrorContainer />
+        </Layout>
+      );
+    if (loading)
+      return (
+        <Layout>
+          <LoadingContainer />;
+        </Layout>
+      );
+    if (!data?.me)
+      return (
+        <Layout variant='large'>
+          <LandingPage />
+        </Layout>
+      );
     else
       return (
-        <MainContextWrapper>
-          <ErrorFallback showFullError>
-            <Main />
-          </ErrorFallback>
-        </MainContextWrapper>
+        <Layout>
+          <MainContextWrapper>
+            <ErrorFallback showFullError>
+              <Main />
+            </ErrorFallback>
+          </MainContextWrapper>
+        </Layout>
       );
   };
 
@@ -37,7 +54,7 @@ const Index = () => {
         <link rel='manifest' href='/manifest.json' />
       </Head>
       <CheckingTripRequestsProvider>
-        <Layout>{renderBody()}</Layout>
+        {renderBody()}
       </CheckingTripRequestsProvider>
     </>
   );

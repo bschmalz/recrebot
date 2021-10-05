@@ -26,6 +26,7 @@ import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
 import { fetchCaliCampground } from './scraper/scrapeCaliData';
 import { getCaliLocationDescription } from './utils/getCaliDescription';
+import { logError } from './utils/logError';
 
 const main = async () => {
   try {
@@ -108,7 +109,6 @@ const main = async () => {
     });
 
     app.get('/rc-description/:id/', async (req, res) => {
-      console.log(req.params.id);
       const result = await getCaliLocationDescription(parseInt(req.params.id));
       res.send(result);
     });
@@ -122,7 +122,8 @@ const main = async () => {
       console.log('server started');
     });
   } catch (e) {
-    console.log('app level exeception caught: ', e);
+    logError('app level exeception caught: ', e);
+    console.error('app level exeception caught: ', e);
   }
 };
 

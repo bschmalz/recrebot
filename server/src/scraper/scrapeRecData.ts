@@ -14,6 +14,7 @@ import { delay } from '../utils/delay';
 import { validateCoords } from './validateCoords';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { Campground } from '../entities/Campground';
+import { tryToGetImage } from './getImage';
 
 const whiteListedTrailHeads: { [key: string]: boolean } = {
   '233260': true, // Whitney
@@ -87,6 +88,8 @@ export const scrapeRecData = () => {
       await delay();
     }
 
+    console.log('trailheads', trailheads);
+
     console.log('validating rec gov th coords');
 
     const trailsWithValidCoords = await validateCoords(trailheads, 'Trailhead');
@@ -94,7 +97,7 @@ export const scrapeRecData = () => {
     console.log('adding ' + trailsWithValidCoords.length + ' trails to db');
 
     // Add trailheads to the database
-    await getConnection()
+    const trails = await getConnection()
       .createQueryBuilder()
       .insert()
       .into(Trailhead)
@@ -111,7 +114,6 @@ export const scrapeRecData = () => {
     const response: PermitGroupResponse = await fetch(url).then((r) =>
       r.json()
     );
-    if (response.payload.has_lottery) return;
     const divisions = response?.payload?.divisions;
     if (!divisions) return;
     for (let key in divisions) {

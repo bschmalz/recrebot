@@ -145,7 +145,10 @@ export class UserResolver {
 
     redis.set(FORGET_PASSWORD_PREFIX + token, user.id, 'ex', 1000 * 60 * 30);
 
-    sendPasswordReset(email, `http://localhost:3000/change-password/${token}`);
+    sendPasswordReset(
+      email,
+      `${process.env.CORS_ORIGIN}/change-password/${token}`
+    );
     return true;
   }
 
@@ -191,7 +194,7 @@ export class UserResolver {
       1000 * 60 * 60 * 24 * 7
     );
 
-    sendInvite(options.email, `http://localhost:3000/register/${token}`);
+    sendInvite(options.email, `${process.env.CORS_ORIGIN}/register/${token}`);
 
     return {
       success: true,

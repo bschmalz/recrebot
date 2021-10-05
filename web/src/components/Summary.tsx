@@ -78,6 +78,7 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
   const [results, setResults] = useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { checking, setChecking } = useCheckingTripRequests();
+  const { setSideBarView } = useMain();
 
   const createTripRequestObj = (customName: string, minNights) => {
     const tr = {
@@ -109,6 +110,7 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
       if (editingTripRequest) {
         setEditingTripRequest(null);
       }
+      setSideBarView('MyTrips');
     } catch (e) {
       toast({
         title: 'Error',

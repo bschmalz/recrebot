@@ -126,7 +126,8 @@ export const MyTrips: React.FC = () => {
                       color='red.400'
                       icon={<MdDeleteForever size={24} />}
                       isRound
-                      onClick={() => {
+                      onClick={(e) => {
+                        e.stopPropagation();
                         handleDeleteModalOpen(id);
                       }}
                     />

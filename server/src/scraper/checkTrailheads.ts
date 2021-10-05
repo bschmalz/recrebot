@@ -2,7 +2,7 @@ import { Reservable } from './types/Reservable';
 import { delay } from '../utils/delay';
 import dayjs from 'dayjs';
 
-interface checkTrailheadsInterface {
+interface CheckTrailheadsInterface {
   dates: Date[];
   locations: Reservable[];
   memoFetch: () => Function;
@@ -14,29 +14,70 @@ export const checkTrailheads = async ({
   dates,
   memoFetch,
   shortenDelay = false,
-}: checkTrailheadsInterface) => {
+}: CheckTrailheadsInterface) => {
+  const backcountryTrails: Reservable[] = [];
+  const permitTrails: Reservable[] = [];
+  locations.forEach((loc) => {
+    if (loc.subparent_id === '233260') {
+      permitTrails.push(loc);
+    } else {
+      backcountryTrails.push(loc);
+    }
+  });
+
+  const backcountryResults = await checkBackcountryTrailheads({
+    locations: backcountryTrails,
+    dates,
+    memoFetch,
+    shortenDelay,
+  });
+
+  const permitResults = await checkPermitTrailheads({
+    locations: permitTrails,
+    dates,
+    memoFetch,
+    shortenDelay,
+  });
+
+  return { ...backcountryResults, ...permitResults };
+};
+
+const getSearchObjects = (dates: Date[]) => {
+  const datesToCheck = dates.map((d) => dayjs(d));
+  const monthsToCheck: { [key: string]: dayjs.Dayjs[] } = {};
+  const results: {
+    [key: string]: {
+      url: string;
+      dates: dayjs.Dayjs[];
+      location: Reservable;
+    };
+  } = {};
+  datesToCheck.forEach((d) => {
+    const yearMonth = `${d.year()}-${d.month()}}`;
+    if (monthsToCheck[yearMonth]) monthsToCheck[yearMonth].push(d);
+    else monthsToCheck[yearMonth] = [d];
+  });
+
+  return { monthsToCheck, results };
+};
+
+const checkBackcountryTrailheads = async ({
+  locations,
+  dates,
+  memoFetch,
+  shortenDelay = false,
+}: CheckTrailheadsInterface) => {
   try {
     const memoTrailheadCheck = memoFetch();
 
-    const datesToCheck = dates.map((d) => dayjs(d));
-    const monthsToCheck: { [key: string]: dayjs.Dayjs[] } = {};
-    const results: {
-      [key: string]: {
-        url: string;
-        dates: dayjs.Dayjs[];
-        location: Reservable;
-      };
-    } = {};
-    datesToCheck.forEach((d) => {
-      const yearMonth = `${d.year()}-${d.month()}}`;
-      if (monthsToCheck[yearMonth]) monthsToCheck[yearMonth].push(d);
-      else monthsToCheck[yearMonth] = [d];
-    });
+    const { monthsToCheck, results } = getSearchObjects(dates);
+
     for (let key in monthsToCheck) {
       const arr = monthsToCheck[key];
       const firstDay = arr[0].startOf('month').format('YYYY-MM-DD');
       const lastDay = arr[0].endOf('month').format('YYYY-MM-DD');
       for (let x = 0; x < locations.length; x++) {
+        // Whitney search is hardcoded based on ID for now, will change as new locations define requirements
         const loc = locations[x];
         const url = `https://www.recreation.gov/api/permitinyo/${loc.subparent_id}/availability?start_date=${firstDay}&end_date=${lastDay}&commercial_acct=false`;
         const res = await memoTrailheadCheck(url);
@@ -61,8 +102,66 @@ export const checkTrailheads = async ({
             }
           }
         }
+
         (await shortenDelay) ? delay(123, 456) : delay();
       }
+    }
+    return results;
+  } catch (e) {
+    console.log('error checking trailhead trip request');
+    return {};
+  }
+};
+
+const today = dayjs().format('YYYY-MM-DDT00:00:00Z');
+const nextYear = dayjs().add(1, 'year').format('YYYY-MM-DDT00:00:00Z');
+
+const checkPermitTrailheads = async ({
+  locations,
+  dates,
+  memoFetch,
+  shortenDelay = false,
+}: CheckTrailheadsInterface) => {
+  try {
+    const memoTrailheadCheck = memoFetch();
+    const results: {
+      [key: string]: {
+        url: string;
+        dates: dayjs.Dayjs[];
+        location: Reservable;
+      };
+    } = {};
+
+    const datesToCheck = dates.map((d) => dayjs(d));
+
+    for (let i = 0; i < locations.length; i++) {
+      const loc = locations[i];
+      const res = await memoTrailheadCheck(
+        `https://www.recreation.gov/api/permits/${loc.subparent_id}/divisions/${loc.legacy_id}/availability?start_date=${today}&end_date=${nextYear}&commercial_acct=false`
+      );
+
+      datesToCheck.forEach((d) => {
+        const remaining =
+          res?.payload?.date_availability[`${d.format('YYYY-MM-DD')}T00:00:00Z`]
+            ?.remaining;
+        if (remaining && remaining > 0) {
+          if (results[loc.name]) {
+            results[loc.name].dates.push(d);
+          } else {
+            results[loc.name] = {
+              location: loc,
+              dates: [d],
+              url: `https://www.recreation.gov/permits/${
+                loc.subparent_id
+              }/registration/detailed-availability?type=overnight-permit&date=${d.format(
+                'YYYY-MM-DD'
+              )}`,
+            };
+          }
+        }
+      });
+
+      (await shortenDelay) ? delay(123, 456) : delay();
     }
     return results;
   } catch (e) {
