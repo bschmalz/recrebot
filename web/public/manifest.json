@@ -1,7 +1,7 @@
 {
-  "short_name": "Next PWA",
-  "name": "Next PWA Tutorial",
-  "description": "...",
+  "short_name": "Recrebot",
+  "name": "Recrebot",
+  "description": "Trip Finder for outdoor enthusiasts",
   "icons": [
     {
       "src": "/icons/favicon-16x16.png",

@@ -52,6 +52,19 @@ const Index = () => {
         <meta name='viewport' content='initial-scale=1.0, width=device-width' />
         <link rel='shortcut icon' href='/icons/favicon.ico' />
         <link rel='manifest' href='/manifest.json' />
+        <link
+          href='/favicon-16x16.png'
+          rel='icon'
+          type='image/png'
+          sizes='16x16'
+        />
+        <link
+          href='/favicon-32x32.png'
+          rel='icon'
+          type='image/png'
+          sizes='32x32'
+        />
+        <link rel='apple-touch-icon' href='/apple-icon.png'></link>
       </Head>
       <CheckingTripRequestsProvider>
         {renderBody()}

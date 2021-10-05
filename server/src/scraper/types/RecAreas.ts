@@ -1,4 +1,4 @@
-interface Facility {
+export interface Facility {
   FacilityID: string;
   ParentRecAreaID: string;
   FacilityDescription: string;
@@ -9,6 +9,6 @@ interface Facility {
   Reservable: string;
 }
 
-interface RecAreas {
+export interface RecAreas {
   [key: string]: string;
 }

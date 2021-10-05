@@ -13,9 +13,16 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "composite": true
+    "composite": true,
+    "experimentalDecorators": true
   },
-  "include": ["next-env.d.ts", "**/*.ts", "**/*.tsx"],
+  "include": [
+    "next-env.d.ts",
+    "**/*.ts",
+    "**/*.tsx",
+    "../server/**/*.ts",
+    "../server/**/*.tsx"
+  ],
   "exclude": ["node_modules"],
   "references": [{ "path": "../server" }]
 }

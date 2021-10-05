@@ -1,7 +1,7 @@
 import nodemailer from 'nodemailer';
 import fs from 'fs';
 import handlebars from 'handlebars';
-import { ScrapeResult, TripRequestInterface } from 'src/scraper/scrapeWatcher';
+import { ScrapeResult, TripRequestInterface } from '../scraper/scrapeWatcher';
 import dayjs from 'dayjs';
 
 const readHTMLFile = (path: string, callback: Function) => {

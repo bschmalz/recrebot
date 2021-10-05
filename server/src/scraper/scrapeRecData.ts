@@ -15,6 +15,7 @@ import { validateCoords } from './validateCoords';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { Campground } from '../entities/Campground';
 import { tryToGetImage } from './getImage';
+import { Facility, RecAreas } from './types/RecAreas';
 
 const whiteListedTrailHeads: { [key: string]: boolean } = {
   '233260': true, // Whitney

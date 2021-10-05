@@ -1,4 +1,4 @@
-import { SearchInput } from 'src/resolvers/types';
+import { SearchInput } from '../resolvers/types';
 import { getManager } from 'typeorm';
 import { getLatLng } from './getLatLng';
 import { shouldOrderByCenter } from './shouldOrderByCenter';
