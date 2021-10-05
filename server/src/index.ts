@@ -21,12 +21,14 @@ import { TripRequestResolver } from './resolvers/tripRequest';
 import { scrapeRecData } from './scraper/scrapeRecData';
 import { getImages } from './scraper/getImage';
 import { sendSMS } from './utils/sendSMS';
-import { sendSuccessEmail } from './utils/sendEmail';
+import { sendEmail, sendSuccessEmail } from './utils/sendEmail';
 import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
 import { fetchCaliCampground } from './scraper/scrapeCaliData';
 import { getCaliLocationDescription } from './utils/getCaliDescription';
 import { logError } from './utils/logError';
+import { isCompositeType } from 'graphql';
+import { validateMessage } from './utils/validateMessage';
 
 const main = async () => {
   try {
@@ -97,6 +99,20 @@ const main = async () => {
     apolloServer.applyMiddleware({
       app,
       cors: false,
+    });
+
+    app.post('/contact', async (req, res) => {
+      const errors = validateMessage(req.body);
+      if (errors) {
+        res.send({ errors });
+      }
+      await sendEmail(
+        process.env.EMAIL_USER,
+        req.body.message,
+        req.body.subject,
+        req.body.email
+      );
+      res.send({ success: true });
     });
 
     app.post('/rc-check', async (req, res) => {

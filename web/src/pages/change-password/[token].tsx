@@ -13,13 +13,14 @@ import {
 import { toErrorMap } from '../../utils/toErrorMap';
 import NextLink from 'next/link';
 import { withApollo } from '../../utils/withApollo';
+import { FormWrapper } from '../../components/FormWrapper';
 
 const ChangePassword: NextPage = ({}) => {
   const router = useRouter();
   const [changePassword] = useChangePasswordMutation();
   const [tokenError, setTokenError] = useState('');
   return (
-    <Wrapper variant="small">
+    <Wrapper variant='small'>
       <Formik
         initialValues={{ newPassword: '' }}
         onSubmit={async (values, { setErrors }) => {
@@ -54,30 +55,32 @@ const ChangePassword: NextPage = ({}) => {
         }}
       >
         {({ isSubmitting }) => (
-          <Form>
-            <InputField
-              name="newPassword"
-              placeholder="new password"
-              label="New Password"
-              type="password"
-            />
-            {tokenError && (
-              <Box>
-                <Box color="red">{tokenError}</Box>
-                <NextLink href="/forgot-password">
-                  <Link>Forgot Password?</Link>
-                </NextLink>
-              </Box>
-            )}
-            <Button
-              type="submit"
-              mt={4}
-              isLoading={isSubmitting}
-              colorScheme="teal"
-            >
-              change password
-            </Button>
-          </Form>
+          <FormWrapper mt={8}>
+            <Form>
+              <InputField
+                name='newPassword'
+                placeholder='new password'
+                label='New Password'
+                type='password'
+              />
+              {tokenError && (
+                <Box>
+                  <Box color='red'>{tokenError}</Box>
+                  <NextLink href='/forgot-password'>
+                    <Link>Forgot Password?</Link>
+                  </NextLink>
+                </Box>
+              )}
+              <Button
+                type='submit'
+                mt={4}
+                isLoading={isSubmitting}
+                colorScheme='teal'
+              >
+                change password
+              </Button>
+            </Form>
+          </FormWrapper>
         )}
       </Formik>
     </Wrapper>

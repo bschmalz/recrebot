@@ -16,7 +16,12 @@ const readHTMLFile = (path: string, callback: Function) => {
 };
 
 // async..await is not allowed in global scope, must use a wrapper
-export const sendEmail = async (to: string, text: string, subject: string) => {
+export const sendEmail = async (
+  to: string,
+  text: string,
+  subject: string,
+  from?: string
+) => {
   try {
     const transporter = await nodemailer.createTransport({
       host: 'smtp.gmail.com',
@@ -33,7 +38,7 @@ export const sendEmail = async (to: string, text: string, subject: string) => {
         from: process.env.EMAIL_USER,
         to,
         subject,
-        html: text,
+        html: from ? `<p>Email: ${from}</p>` + `<p>Message: ${text}</p>` : text,
       },
       (err) => {
         if (err) console.error('Error sending email', err);

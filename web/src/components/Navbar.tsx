@@ -21,24 +21,24 @@ export const Navbar = ({}) => {
   } else if (!data?.me) {
     body = (
       <>
+        <Button mr={3} variant='link' onClick={() => {}}>
+          contact
+        </Button>
         <NextLink href='/login'>
           <Link mr={2} data-cy='login-link'>
             login
           </Link>
         </NextLink>
-        {/* <NextLink href='/register'>
-          <Link>register</Link>
-        </NextLink> */}
       </>
     );
   } else {
     body = (
       <Flex>
-        {/* {data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
+        {data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
           <NextLink href='/invite'>
             <Link mr={3}>invite</Link>
           </NextLink>
-        ) : null} */}
+        ) : null}
         <Button
           data-cy='logout-link'
           variant='link'
@@ -55,20 +55,22 @@ export const Navbar = ({}) => {
     );
   }
   return (
-    <Flex position='sticky' top={0} zIndex={1} p={1}>
-      <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
-        <Heading>
-          <Flex alignItems='flex-end'>
-            RecreB
-            <Box mb='6px'>
-              <SpinningGear spinning={checking || loading} />
-            </Box>{' '}
-            t
-          </Flex>
-        </Heading>
+    <>
+      <Flex position='sticky' top={0} zIndex={3} p={1}>
+        <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
+          <Heading>
+            <Flex alignItems='flex-end'>
+              RecreB
+              <Box mb='6px'>
+                <SpinningGear spinning={checking || loading} />
+              </Box>{' '}
+              t
+            </Flex>
+          </Heading>
 
-        <Box ml='auto'>{body}</Box>
+          <Box ml='auto'>{body}</Box>
+        </Flex>
       </Flex>
-    </Flex>
+    </>
   );
 };

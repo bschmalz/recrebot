@@ -8,6 +8,7 @@ import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import NextLink from 'next/link';
 import { withApollo } from '../utils/withApollo';
+import { FormWrapper } from '../components/FormWrapper';
 
 const Login: React.FC<{}> = ({}) => {
   const router = useRouter();
@@ -42,37 +43,39 @@ const Login: React.FC<{}> = ({}) => {
         }}
       >
         {({ values, handleChange, isSubmitting }) => (
-          <Form>
-            <InputField
-              name='email'
-              placeholder='Email'
-              label='Email'
-              data-cy='email-input'
-            />
-            <Box mt={4}>
+          <FormWrapper mt={8}>
+            <Form>
               <InputField
-                name='password'
-                placeholder='password'
-                label='Password'
-                type='password'
-                data-cy='password-input'
+                name='email'
+                placeholder='Email'
+                label='Email'
+                data-cy='email-input'
               />
-            </Box>
-            <Button
-              type='submit'
-              mt={4}
-              isLoading={isSubmitting}
-              colorScheme='teal'
-              data-cy='login-button'
-            >
-              login
-            </Button>
-            <Box>
-              <NextLink href='/forgot-password'>
-                <Link>Forgot Password?</Link>
-              </NextLink>
-            </Box>
-          </Form>
+              <Box mt={4}>
+                <InputField
+                  name='password'
+                  placeholder='password'
+                  label='Password'
+                  type='password'
+                  data-cy='password-input'
+                />
+              </Box>
+              <Button
+                type='submit'
+                mt={4}
+                isLoading={isSubmitting}
+                colorScheme='teal'
+                data-cy='login-button'
+              >
+                login
+              </Button>
+              <Box>
+                <NextLink href='/forgot-password'>
+                  <Link>Forgot Password?</Link>
+                </NextLink>
+              </Box>
+            </Form>
+          </FormWrapper>
         )}
       </Formik>
     </Wrapper>

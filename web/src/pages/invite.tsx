@@ -7,6 +7,7 @@ import { useInviteMutation, useMeQuery } from '../generated/graphql';
 import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { withApollo } from '../utils/withApollo';
+import { FormWrapper } from '../components/FormWrapper';
 
 const Invite: React.FC = () => {
   const [emailSent, setEmailSent] = useState(false);
@@ -45,18 +46,20 @@ const Invite: React.FC = () => {
           }}
         >
           {({ values, handleChange, isSubmitting }) => (
-            <Form>
-              <InputField name='email' placeholder='email' label='email' />
+            <FormWrapper mt={8}>
+              <Form>
+                <InputField name='email' placeholder='email' label='email' />
 
-              <Button
-                type='submit'
-                mt={4}
-                isLoading={isSubmitting}
-                colorScheme='teal'
-              >
-                invite
-              </Button>
-            </Form>
+                <Button
+                  type='submit'
+                  mt={4}
+                  isLoading={isSubmitting}
+                  colorScheme='teal'
+                >
+                  invite
+                </Button>
+              </Form>
+            </FormWrapper>
           )}
         </Formik>
       )}

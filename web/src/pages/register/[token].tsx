@@ -10,6 +10,7 @@ import {
 import { useRouter } from 'next/router';
 import { withApollo } from '../../utils/withApollo';
 import { toErrorMap } from '../../utils/toErrorMap';
+import { FormWrapper } from '../../components/FormWrapper';
 
 interface registerProps {}
 
@@ -74,32 +75,34 @@ const Register: React.FC<registerProps> = ({}) => {
         }}
       >
         {({ values, handleChange, isSubmitting }) => (
-          <Form>
-            <Box mt={4}>
-              <InputField
-                name='password'
-                placeholder='password'
-                label='Password'
-                type='password'
-              />
-            </Box>
-            <Box mt={4}>
-              <InputField
-                type='tel'
-                name='phone'
-                placeholder='phone'
-                label='Phone (optional)'
-              />
-            </Box>
-            <Button
-              type='submit'
-              mt={4}
-              isLoading={isSubmitting}
-              colorScheme='teal'
-            >
-              register
-            </Button>
-          </Form>
+          <FormWrapper mt={8}>
+            <Form>
+              <Box mt={4}>
+                <InputField
+                  name='password'
+                  placeholder='password'
+                  label='Password'
+                  type='password'
+                />
+              </Box>
+              <Box mt={4}>
+                <InputField
+                  type='tel'
+                  name='phone'
+                  placeholder='phone'
+                  label='Phone (optional)'
+                />
+              </Box>
+              <Button
+                type='submit'
+                mt={4}
+                isLoading={isSubmitting}
+                colorScheme='teal'
+              >
+                register
+              </Button>
+            </Form>
+          </FormWrapper>
         )}
       </Formik>
     </Wrapper>

@@ -21,7 +21,13 @@ export const Wrapper: React.FC<WrapperProps> = ({
     size = '400px';
   }
   return (
-    <Flex maxW={size} w='100%' mx='auto' h='calc(100% - 51px)'>
+    <Flex
+      maxW={size}
+      w='100%'
+      mx='auto'
+      h='calc(100% - 51px)'
+      position='relative'
+    >
       <ErrorFallback showFullError>{children}</ErrorFallback>
     </Flex>
   );

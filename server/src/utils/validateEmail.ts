@@ -1,7 +1,7 @@
 import { EmailInput } from 'src/resolvers/EmailInput';
 
 export const validateEmail = (options: EmailInput) => {
-  if (!options.email.includes('@')) {
+  if (!/^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w{2,3})+$/.test(options.email)) {
     return [
       {
         field: 'email',

@@ -13,6 +13,7 @@ export const LandingPage = () => {
       backgroundImage='url(matlock.jpeg)'
       width='100%'
       transition=''
+      backgroundSize='cover'
     >
       <Ipad />
     </Box>

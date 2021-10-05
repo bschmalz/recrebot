@@ -5,6 +5,18 @@ import React, { useEffect, useRef, useState } from 'react';
 import { isServer } from '../utils/isServer';
 import { delay } from '../utils/delay';
 import { Slide } from '@chakra-ui/transition';
+import { Button } from '@chakra-ui/button';
+import {
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  useDisclosure,
+} from '@chakra-ui/react';
+import { ContactModal } from './ContactModal';
 
 interface IpadProps {}
 
@@ -21,6 +33,11 @@ const images = [
 ];
 
 export const Ipad: React.FC<IpadProps> = ({}) => {
+  const {
+    isOpen: isModalOpen,
+    onOpen: onModalOpen,
+    onClose: onModalClose,
+  } = useDisclosure();
   const [isOpen, setOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const [opacity, setOpacity] = useState(0);
@@ -29,6 +46,17 @@ export const Ipad: React.FC<IpadProps> = ({}) => {
   useEffect(() => {
     startImages();
   }, []);
+
+  const handleModalClose = () => {
+    onModalClose();
+    setOpen(true);
+  };
+
+  const handleModalOpen = async () => {
+    setOpen(false);
+    await delay(200, 200);
+    onModalOpen();
+  };
 
   const startImages = async () => {
     await delay(250, 250);
@@ -55,151 +83,180 @@ export const Ipad: React.FC<IpadProps> = ({}) => {
     setOpacity(1);
     swapImage();
   };
-
-  const [isLarge] = useMediaQuery('(min-width: 1600px)');
+  const [isXLarge] = useMediaQuery('(min-width: 1950px)');
+  const [isLarge] = useMediaQuery('(min-width: 1650px)');
   const [isMedium] = useMediaQuery('(min-width: 660px)');
   if (isServer()) {
     return <></>;
   }
 
-  if (isLarge) {
-    return (
-      <Slide direction='right' in={isOpen} style={{ zIndex: 10 }}>
-        <Box position='absolute' top='25%' right='15%'>
-          <Image
-            position='relative'
-            src='ipad.png'
-            background='rgba(0, 0, 0, 100)'
-            borderRadius='40px'
-            minWidth='1000px'
-          ></Image>
-          <Image
-            position='absolute'
-            src={images[index]}
-            top='44px'
-            left='88px'
-            maxWidth='847px'
-            opacity={opacity}
-            transition='opacity .5s'
-          ></Image>
+  const renderModal = () => {
+    if (isLarge) {
+      return (
+        <Slide direction='right' in={isOpen} style={{ zIndex: 2 }}>
+          <Box position='absolute' top='25%' right={isXLarge ? '15%' : '5%'}>
+            <Image
+              position='relative'
+              src='ipad.png'
+              background='rgba(0, 0, 0, 100)'
+              borderRadius='40px'
+              minWidth='1000px'
+            ></Image>
+            <Image
+              position='absolute'
+              src={images[index]}
+              top='44px'
+              left='88px'
+              maxWidth='847px'
+              opacity={opacity}
+              transition='opacity .75s'
+              borderRadius='2px'
+            ></Image>
+            <Box
+              position='absolute'
+              left={'-550px'}
+              top={'50%'}
+              bottom={'-100px'}
+              transform={'translateY(-50%)'}
+              color='white'
+              background='rgba(22, 22, 22, 0.3)'
+              fontSize={'36px'}
+              padding={'0 20px'}
+              borderRadius='5px'
+              opacity={textOpacity}
+              transition='opacity .5s linear'
+              minWidth={'400px'}
+              maxWidth={'30%'}
+              display='inline'
+              textAlign='center'
+              maxHeight='240px'
+            >
+              Spend less time planning, and more time travelling.
+              <Button mx={2} colorScheme='green' onClick={handleModalOpen}>
+                Get In Touch
+              </Button>
+            </Box>
+          </Box>
+        </Slide>
+      );
+    } else if (isMedium) {
+      return (
+        <Slide direction='right' in={isOpen} style={{ zIndex: 2 }}>
           <Box
             position='absolute'
-            left={'-550px'}
-            top={'50%'}
-            bottom={'-100px'}
-            transform={'translateY(-50%)'}
-            color='white'
-            background='rgba(22, 22, 22, 0.3)'
-            fontSize={'36px'}
-            padding={'0 20px'}
-            borderRadius='5px'
-            opacity={textOpacity}
-            transition='opacity .5s linear'
-            minWidth={'400px'}
-            maxWidth={'30%'}
-            display='inline'
-            textAlign='center'
-            maxHeight='180px'
+            top='130px'
+            right='50%'
+            transform='translate(50%, 0%)'
           >
-            Spend less time planning, and more time travelling.
+            <Image
+              position='relative'
+              src='ipad.png'
+              maxWidth='661px'
+              minWidth='661px'
+              background='rgba(0, 0, 0, 100)'
+              borderRadius='27px'
+            ></Image>
+            <Image
+              position='absolute'
+              src={images[index]}
+              top='29px'
+              left={58}
+              maxWidth='545px'
+              opacity={opacity}
+              transition='opacity .75s'
+            ></Image>
+            <Box
+              position='absolute'
+              left={'50%'}
+              bottom={'-150px'}
+              transform={'translateX(-50%)'}
+              color='white'
+              background='rgba(22, 22, 22, 0.3)'
+              fontSize={'32px'}
+              padding={2}
+              borderRadius='5px'
+              opacity={textOpacity}
+              transition='opacity .5s linear'
+              width='auto'
+              minWidth='600px'
+              maxWidth={'90%'}
+              display='inline'
+              textAlign='center'
+            >
+              Spend less time planning, and more time travelling.
+              <Button
+                mx={3}
+                mb={2}
+                colorScheme='green'
+                onClick={handleModalOpen}
+              >
+                Get In Touch
+              </Button>
+            </Box>
           </Box>
-        </Box>
-      </Slide>
-    );
-  } else if (isMedium) {
-    return (
-      <Slide direction='right' in={isOpen} style={{ zIndex: 10 }}>
+        </Slide>
+      );
+    } else {
+      return (
         <Box
           position='absolute'
-          top='100px'
+          top='25%'
           right='50%'
-          transform='translate(50%, 0%)'
+          transform='translate(50%, -25%)'
         >
           <Image
             position='relative'
             src='ipad.png'
-            maxWidth='661px'
-            minWidth='661px'
+            minWidth='333px'
             background='rgba(0, 0, 0, 100)'
-            borderRadius='27px'
+            borderRadius='15px'
           ></Image>
           <Image
             position='absolute'
             src={images[index]}
-            top='29px'
-            left={58}
-            maxWidth='545px'
-            opacity={opacity}
+            top='13px'
+            left='26px'
+            maxWidth='280px'
+            opacity={1}
             transition='opacity .5s'
           ></Image>
           <Box
             position='absolute'
             left={'50%'}
-            bottom={'-150px'}
+            bottom={'-200px'}
             transform={'translateX(-50%)'}
             color='white'
             background='rgba(22, 22, 22, 0.3)'
-            fontSize={'32px'}
-            padding={'0 20px'}
+            fontSize={'28px'}
+            padding={2}
             borderRadius='5px'
             opacity={textOpacity}
             transition='opacity .5s linear'
             width='auto'
-            minWidth='600px'
+            minWidth='300px'
             maxWidth={'90%'}
             display='inline'
             textAlign='center'
           >
             Spend less time planning, and more time travelling.
+            <Button mx={2} colorScheme='green' onClick={handleModalOpen}>
+              Get In Touch
+            </Button>
           </Box>
         </Box>
-      </Slide>
-    );
-  } else {
-    return (
-      <Box
-        position='absolute'
-        top='25%'
-        right='50%'
-        transform='translate(50%, -25%)'
-      >
-        <Image
-          position='relative'
-          src='ipad.png'
-          minWidth='333px'
-          background='rgba(0, 0, 0, 100)'
-          borderRadius='15px'
-        ></Image>
-        <Image
-          position='absolute'
-          src={images[index]}
-          top='13px'
-          left='26px'
-          maxWidth='280px'
-          opacity={1}
-          transition='opacity .5s'
-        ></Image>
-        <Box
-          position='absolute'
-          left={'50%'}
-          bottom={'-200px'}
-          transform={'translateX(-50%)'}
-          color='white'
-          background='rgba(22, 22, 22, 0.3)'
-          fontSize={'28px'}
-          padding={0}
-          borderRadius='5px'
-          opacity={textOpacity}
-          transition='opacity .5s linear'
-          width='auto'
-          minWidth='300px'
-          maxWidth={'90%'}
-          display='inline'
-          textAlign='center'
-        >
-          Spend less time planning, and more time travelling.
-        </Box>
-      </Box>
-    );
-  }
+      );
+    }
+  };
+
+  return (
+    <>
+      {renderModal()}
+      {isModalOpen ? (
+        <ContactModal
+          isModalOpen={isModalOpen}
+          handleModalClose={handleModalClose}
+        />
+      ) : null}
+    </>
+  );
 };

@@ -12,12 +12,10 @@ export const getLocationDescription = async ({
 }) => {
   if (type === 'campground') {
     if (sub_type === 'res_ca') {
-      console.log('hmm');
       const res = await locMemo(
         `${process.env.NEXT_PUBLIC_API_URL}/rc-description/${legacy_id}`,
         returnText
       ).then((res) => res.text());
-      console.log('what is it', res);
       return res;
     } else {
       const res = await locMemo(
@@ -25,7 +23,6 @@ export const getLocationDescription = async ({
       );
       let str = '';
       const dmap = res?.campground?.facility_description_map;
-      console.log('heyo', dmap);
       if (!dmap || !Object.keys(dmap).length) return str;
       for (let key in dmap) {
         str += dmap[key];

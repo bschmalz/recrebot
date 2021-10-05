@@ -36,6 +36,7 @@ export const InputField: React.FC<InputFieldProps> = ({
           id={field.name}
           placeholder={props.placeholder}
           type={type}
+          backgroundColor='white'
         />
       </InputGroup>
 
