@@ -17,6 +17,7 @@ query GetTripRequests {
       active
       min_nights
       type
+      num_hikers
     }
   }
 }

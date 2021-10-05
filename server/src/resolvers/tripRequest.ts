@@ -35,6 +35,9 @@ export class TripRequestInput {
 
   @Field({ nullable: true })
   min_nights: number;
+
+  @Field({ nullable: true })
+  num_hikers: number;
 }
 
 @InputType()

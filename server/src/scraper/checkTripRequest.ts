@@ -44,6 +44,7 @@ interface checkTripRequestInterface {
   min_nights?: number | undefined;
   dates: Date[];
   locations: Reservable[];
+  num_hikers?: number | undefined;
 }
 
 export const checkTripRequest = async ({
@@ -51,9 +52,15 @@ export const checkTripRequest = async ({
   locations,
   min_nights,
   type,
+  num_hikers,
 }: checkTripRequestInterface) => {
   if (type === 'Hike') {
-    return await checkTrailheads({ locations, dates, memoFetch });
+    return await checkTrailheads({
+      locations,
+      dates,
+      memoFetch,
+      num_hikers: num_hikers || 1,
+    });
   } else
     return await checkCampgrounds({
       locations,

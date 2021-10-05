@@ -125,7 +125,10 @@ export const PlanTrip: React.FC = () => {
               <MultiDaypicker />
             </TabPanel>
             <TabPanel paddingX={2}>
-              <Summary minimumNights={editingTripRequest?.min_nights} />
+              <Summary
+                minimumNights={editingTripRequest?.min_nights}
+                numHikers={editingTripRequest?.num_hikers}
+              />
             </TabPanel>
           </TabPanels>
         </Tabs>

@@ -9,6 +9,7 @@ const shortenDelay = true;
 interface checkTrailheadsInterface {
   dates: Date[];
   locations: Reservable[];
+  num_hikers?: number;
 }
 
 interface checkCampgroundsInterface extends checkTrailheadsInterface {
@@ -24,9 +25,16 @@ export const checkTripRequest = async ({
   locations,
   min_nights,
   type,
+  num_hikers,
 }: checkTripRequestInterface) => {
   if (type === 'Hike') {
-    return await checkTrailheads({ locations, dates, memoFetch, shortenDelay });
+    return await checkTrailheads({
+      locations,
+      dates,
+      memoFetch,
+      shortenDelay,
+      num_hikers,
+    });
   } else return await checkCampgrounds({ locations, dates, min_nights });
 };
 

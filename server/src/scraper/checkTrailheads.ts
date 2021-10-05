@@ -7,6 +7,7 @@ interface CheckTrailheadsInterface {
   locations: Reservable[];
   memoFetch: () => Function;
   shortenDelay?: boolean;
+  num_hikers: number;
 }
 
 export const checkTrailheads = async ({
@@ -14,6 +15,7 @@ export const checkTrailheads = async ({
   dates,
   memoFetch,
   shortenDelay = false,
+  num_hikers,
 }: CheckTrailheadsInterface) => {
   const backcountryTrails: Reservable[] = [];
   const permitTrails: Reservable[] = [];
@@ -30,13 +32,14 @@ export const checkTrailheads = async ({
     dates,
     memoFetch,
     shortenDelay,
+    num_hikers,
   });
 
   const permitResults = await checkPermitTrailheads({
     locations: permitTrails,
     dates,
     memoFetch,
-    shortenDelay,
+    num_hikers,
   });
 
   return { ...backcountryResults, ...permitResults };
@@ -66,6 +69,7 @@ const checkBackcountryTrailheads = async ({
   dates,
   memoFetch,
   shortenDelay = false,
+  num_hikers,
 }: CheckTrailheadsInterface) => {
   try {
     const memoTrailheadCheck = memoFetch();
@@ -85,7 +89,7 @@ const checkBackcountryTrailheads = async ({
           const date = arr[i].format('YYYY-MM-DD');
           if (res?.payload[date]) {
             const d = res.payload[date];
-            if (d[loc.legacy_id]?.remaining) {
+            if (d[loc.legacy_id]?.remaining >= num_hikers) {
               if (results[loc.name]) {
                 results[loc.name].dates.push(arr[i]);
               } else {
@@ -121,7 +125,10 @@ const checkPermitTrailheads = async ({
   dates,
   memoFetch,
   shortenDelay = false,
+  num_hikers,
 }: CheckTrailheadsInterface) => {
+  console.log('num hikers', num_hikers);
+
   try {
     const memoTrailheadCheck = memoFetch();
     const results: {
@@ -144,7 +151,7 @@ const checkPermitTrailheads = async ({
         const remaining =
           res?.payload?.date_availability[`${d.format('YYYY-MM-DD')}T00:00:00Z`]
             ?.remaining;
-        if (remaining && remaining > 0) {
+        if (remaining && remaining >= num_hikers) {
           if (results[loc.name]) {
             results[loc.name].dates.push(d);
           } else {

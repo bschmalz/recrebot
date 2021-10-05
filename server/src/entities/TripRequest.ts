@@ -46,6 +46,10 @@ export class TripRequest extends BaseEntity {
 
   @Field({ nullable: true })
   @Column({ nullable: true })
+  num_hikers: number;
+
+  @Field({ nullable: true })
+  @Column({ nullable: true })
   last_success: Date;
 
   @Field(() => String)

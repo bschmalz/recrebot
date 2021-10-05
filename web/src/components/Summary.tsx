@@ -42,6 +42,7 @@ import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 
 interface Props {
   minimumNights?: number;
+  numHikers?: number;
 }
 
 const dateNumToStr = {
@@ -59,7 +60,10 @@ const dateNumToStr = {
   12: 'Dec',
 };
 
-export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
+export const Summary: React.FC<Props> = ({
+  minimumNights = 1,
+  numHikers = 1,
+}) => {
   const toast = useToast();
   const { sideBarView } = useMain();
   const { updateMapMarkers } = useMap();
@@ -75,12 +79,13 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
     editingTripRequest,
   } = useTripRequests();
   const [minNights, setNights] = useState(minimumNights?.toString() || '1');
+  const [numberOfHikers, setHikers] = useState(numHikers?.toString() || '1');
   const [results, setResults] = useState({});
   const { isOpen, onOpen, onClose } = useDisclosure();
   const { checking, setChecking } = useCheckingTripRequests();
   const { setSideBarView } = useMain();
 
-  const createTripRequestObj = (customName: string, minNights) => {
+  const createTripRequestObj = (customName: string, minNights, numHikers) => {
     const tr = {
       type: tripType,
       dates: selectedDates,
@@ -88,11 +93,16 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
       custom_name: customName,
     };
     if (minNights) tr['min_nights'] = parseInt(minNights);
+    if (numHikers) tr['num_hikers'] = parseInt(numHikers);
     return tr;
   };
 
-  const saveTripRequest = async (customName: string, minNights: number) => {
-    const tr = createTripRequestObj(customName, minNights);
+  const saveTripRequest = async (
+    customName: string,
+    minNights: number,
+    numHikers: number
+  ) => {
+    const tr = createTripRequestObj(customName, minNights, numHikers);
     updateMapMarkers([]);
     try {
       if (sideBarView === 'MyTrips') {
@@ -130,6 +140,7 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
         dates: selectedDates,
         locations: selectedPlaces,
         min_nights: parseInt(minNights),
+        num_hikers: parseInt(numberOfHikers),
       });
       if (res && Object.keys(res).length) {
         setResults(res);
@@ -158,6 +169,8 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
       setChecking(false);
     }
   };
+
+  const isCampingTrip = tripType === 'Camp';
 
   return (
     <>
@@ -189,36 +202,36 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
             places={selectedPlaces}
             tripType={tripType}
           />
-          {tripType === 'Camp' ? (
-            <Box marginBottom={6}>
-              <Flex alignItems='center'>
-                <Text
-                  fontSize={14}
-                  color='gray.600'
-                  fontWeight='bold'
-                  minWidth='200px'
-                >
-                  Minimum Number of Nights
-                </Text>
-                <NumberInput
-                  defaultValue={1}
-                  min={1}
-                  max={13}
-                  value={minNights}
-                  onChange={(num) => {
-                    toggleSearched(false);
-                    setNights(num);
-                  }}
-                >
-                  <NumberInputField />
-                  <NumberInputStepper>
-                    <NumberIncrementStepper />
-                    <NumberDecrementStepper />
-                  </NumberInputStepper>
-                </NumberInput>
-              </Flex>
-            </Box>
-          ) : null}
+          <Box marginBottom={6}>
+            <Flex alignItems='center'>
+              <Text
+                fontSize={14}
+                color='gray.600'
+                fontWeight='bold'
+                minWidth='200px'
+              >
+                {isCampingTrip
+                  ? 'Minimum Number of Nights'
+                  : 'Number of Hikers'}
+              </Text>
+              <NumberInput
+                defaultValue={1}
+                min={1}
+                max={10}
+                value={isCampingTrip ? minNights : numberOfHikers}
+                onChange={(num) => {
+                  toggleSearched(false);
+                  isCampingTrip ? setNights(num) : setHikers(num);
+                }}
+              >
+                <NumberInputField />
+                <NumberInputStepper>
+                  <NumberIncrementStepper />
+                  <NumberDecrementStepper />
+                </NumberInputStepper>
+              </NumberInput>
+            </Flex>
+          </Box>
 
           {!hasSearched ? (
             <>
@@ -244,7 +257,8 @@ export const Summary: React.FC<Props> = ({ minimumNights = '1' }) => {
               onClick={() =>
                 saveTripRequest(
                   customName,
-                  tripType === 'Camp' ? parseInt(minNights) : undefined
+                  tripType === 'Camp' ? parseInt(minNights) : undefined,
+                  tripType === 'Hike' ? parseInt(numberOfHikers) : undefined
                 )
               }
             >
