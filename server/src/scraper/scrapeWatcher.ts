@@ -8,6 +8,7 @@ import { User } from '../entities/User';
 import { sendSuccessEmail } from '../utils/sendEmail';
 import dayjs from 'dayjs';
 import { sendSMS } from '../utils/sendSMS';
+import { logError } from '../utils/logError';
 
 export interface TripRequestInterface {
   id: number;
@@ -32,33 +33,53 @@ export interface ScrapeResult {
 }
 
 export const scrapeWatcher = async () => {
-  // setInterval(intervalScrape, 1000 * 60 * 5);
   intervalScrape();
 };
 
+const fiveMins = 1000 * 60 * 5;
+
 const intervalScrape = async () => {
+  console.log('Beginning interval scrape');
+  const now = dayjs();
   const trs = await getRepository(TripRequest).createQueryBuilder().getMany();
   for (let i = 0; i < trs.length; i++) {
-    const tr = trs[i];
+    const tr = { ...trs[i] } as TripRequest;
+    const filteredDates = tr.dates.filter((d) => dayjs(d).isAfter(now));
+    // In this case, our trip request has an old date that needs to be cleaned up
+    if (filteredDates.length !== tr.dates.length) {
+      if (!filteredDates.length) {
+        await TripRequest.delete({ id: tr.id });
+        continue;
+      } else {
+        // Remove old dates
+        tr.dates = filteredDates;
+        if (tr) {
+          await TripRequest.save(tr);
+        }
+      }
+    }
     // If we've successfully scraped this in the past 24 hours, we don't want to do it again
     if (tr.last_success) {
-      const now = dayjs();
       const then = dayjs(tr.last_success);
       const diff = now.diff(then, 'day', true);
       if (diff <= 1) continue;
     }
-
     let locations: Reservable[] = [];
-    if (tr.type === 'Camp') {
-      locations = await getRepository(Campground)
-        .createQueryBuilder('campground')
-        .where('campground.id IN (:...ids)', { ids: tr.locations })
-        .getMany();
-    } else {
-      locations = await getRepository(Trailhead)
-        .createQueryBuilder('trailhead')
-        .where('trailhead.id IN (:...ids)', { ids: tr.locations })
-        .getMany();
+
+    try {
+      if (tr.type === 'Camp') {
+        locations = await getRepository(Campground)
+          .createQueryBuilder('campground')
+          .where('campground.id IN (:...ids)', { ids: tr.locations })
+          .getMany();
+      } else {
+        locations = await getRepository(Trailhead)
+          .createQueryBuilder('trailhead')
+          .where('trailhead.id IN (:...ids)', { ids: tr.locations })
+          .getMany();
+      }
+    } catch (e) {
+      logError('Error grabbing locations from db from type ' + tr.type, e);
     }
 
     const tripRequest: TripRequestInterface = {
@@ -70,6 +91,8 @@ const intervalScrape = async () => {
     if (Object.keys(result).length)
       handleSuccessfulTripRequest(tripRequest, result);
   }
+  // Scrape every 5 mins
+  setTimeout(intervalScrape, fiveMins);
 };
 
 const handleSuccessfulTripRequest = async (

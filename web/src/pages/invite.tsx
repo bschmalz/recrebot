@@ -67,4 +67,4 @@ const Invite: React.FC = () => {
   );
 };
 
-export default withApollo({ ssr: false })(Invite);
+export default withApollo({ ssr: true })(Invite);

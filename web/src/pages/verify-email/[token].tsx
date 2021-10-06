@@ -48,4 +48,4 @@ const VerifyEmail: NextPage = ({}) => {
   return <Wrapper variant='small'></Wrapper>;
 };
 
-export default withApollo({ ssr: false })(VerifyEmail);
+export default withApollo({ ssr: true })(VerifyEmail);

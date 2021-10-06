@@ -28,8 +28,6 @@ const images = [
   'screen5.png',
   'screen6.png',
   'screen7.png',
-  'screen8.png',
-  'screen9.png',
 ];
 
 export const Ipad: React.FC<IpadProps> = ({}) => {

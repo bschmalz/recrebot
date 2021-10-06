@@ -1,22 +1,18 @@
-# Project Title
-
-Recrebot
-
-## Description
+# Recrebot
 
 A trip building tool that automates the process of checking trip availability for you and notifying you in real time if any openings appear for requested trips.
 
 Currently supported trip types are:
 
-Recreation.gov Campgrounds
-Reserve California Campgrounds
-Recreation.gov Trail Permits
+- Recreation.gov Campgrounds
+- Reserve California Campgrounds
+- Recreation.gov Trail Permits
 
-- Mt. Whitney
-- Inyo National Forest
-- Sierra National Forest
-- Humboldt-Toiyabe National Forest
-- SeKi National Park
+* Mt. Whitney
+* Inyo National Forest
+* Sierra National Forest
+* Humboldt-Toiyabe National Forest
+* SeKi National Park
 
 ## Technology Breakdown
 

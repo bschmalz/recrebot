@@ -87,4 +87,4 @@ const ChangePassword: NextPage = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(ChangePassword);
+export default withApollo({ ssr: true })(ChangePassword);

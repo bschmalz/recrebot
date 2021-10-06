@@ -82,4 +82,4 @@ const Login: React.FC<{}> = ({}) => {
   );
 };
 
-export default withApollo({ ssr: false })(Login);
+export default withApollo({ ssr: true })(Login);

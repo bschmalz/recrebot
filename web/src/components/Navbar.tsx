@@ -21,9 +21,6 @@ export const Navbar = ({}) => {
   } else if (!data?.me) {
     body = (
       <>
-        <Button mr={3} variant='link' onClick={() => {}}>
-          contact
-        </Button>
         <NextLink href='/login'>
           <Link mr={2} data-cy='login-link'>
             login

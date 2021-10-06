@@ -58,6 +58,7 @@ const Main = ({ something }) => {
       });
 
       map.current.on('load', () => {
+        console.log('here?');
         initMap();
       });
     } else if (map.current && !shouldRenderMap) {
@@ -175,4 +176,4 @@ const Main = ({ something }) => {
   );
 };
 
-export default withApollo({ ssr: true })(Main);
+export default withApollo({ ssr: false })(Main);

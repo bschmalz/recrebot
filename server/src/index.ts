@@ -18,16 +18,11 @@ import { CampgroundResolver } from './resolvers/campground';
 import { TrailheadResolver } from './resolvers/trailhead';
 import { TripRequest } from './entities/TripRequest';
 import { TripRequestResolver } from './resolvers/tripRequest';
-import { scrapeRecData } from './scraper/scrapeRecData';
-import { getImages } from './scraper/getImage';
-import { sendSMS } from './utils/sendSMS';
-import { sendEmail, sendSuccessEmail } from './utils/sendEmail';
+import { sendEmail } from './utils/sendEmail';
 import { scrapeWatcher } from './scraper/scrapeWatcher';
 import { checkCaliCamps } from './scraper/checkTripRequest';
-import { fetchCaliCampground } from './scraper/scrapeCaliData';
 import { getCaliLocationDescription } from './utils/getCaliDescription';
 import { logError } from './utils/logError';
-import { isCompositeType } from 'graphql';
 import { validateMessage } from './utils/validateMessage';
 
 const main = async () => {
@@ -129,13 +124,9 @@ const main = async () => {
       res.send(result);
     });
 
-    app.get('/scrapewatch', (req, res) => {
-      scrapeWatcher();
-      res.send('Scrapin it up');
-    });
-
     app.listen(parseInt(process.env.PORT), () => {
       console.log('server started');
+      scrapeWatcher();
     });
   } catch (e) {
     logError('app level exeception caught: ', e);

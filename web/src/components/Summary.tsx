@@ -289,11 +289,15 @@ export const Summary: React.FC<Props> = ({
                             </Tag>
                           </Link>
                           <Box as='span' ml={2}>
-                            {results[name].dates.map((d, i) => {
-                              return `${dayjs(d).format('MM/DD')}${
-                                i !== results[name].dates.length - 1 ? ', ' : ''
-                              }`;
-                            })}{' '}
+                            {results[name].dates
+                              .sort((a, b) => a - b)
+                              .map((d, i) => {
+                                return `${dayjs(d).format('MM/DD')}${
+                                  i !== results[name].dates.length - 1
+                                    ? ', '
+                                    : ''
+                                }`;
+                              })}{' '}
                           </Box>
                         </Text>
                       </ListItem>
