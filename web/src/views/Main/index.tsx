@@ -75,6 +75,7 @@ const Main = ({ something }) => {
   const initMap = () => {
     map.current.on('dragend', onMapUpdate);
     map.current.on('zoomend', onMapUpdate);
+    map.current.on('resize', onMapUpdate);
   };
 
   const onMapUpdate = () => {

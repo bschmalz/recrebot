@@ -127,11 +127,14 @@ function MapProvider(props) {
 
   const toggleMapFilter = () => {
     if (filterOnMap) {
-      safeSetState({ filterOnMap: false });
       filterOnMapRef.current = false;
+      safeSetState({ filterOnMap: false });
+      map.current.setMinZoom(null);
     } else {
-      safeSetState({ filterOnMap: true, repositionMap: false });
       filterOnMapRef.current = true;
+      map.current.setMinZoom(9);
+      map.current.resize();
+      safeSetState({ filterOnMap: true, repositionMap: false });
     }
   };
 
