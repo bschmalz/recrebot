@@ -24,6 +24,7 @@ import { useMain } from '../../contexts/MainContext';
 import { useMainFinal } from '../../contexts/MainFinalContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
 import { usePlanTrip } from '../../contexts/PlanTripContext';
+import { isServer } from '../../utils/isServer';
 
 const Main = ({ something }) => {
   const { searchText, searchTextRef, sideBarView, setSideBarView, sideBarRef } =
@@ -58,7 +59,6 @@ const Main = ({ something }) => {
       });
 
       map.current.on('load', () => {
-        console.log('here?');
         initMap();
       });
     } else if (map.current && !shouldRenderMap) {
@@ -135,7 +135,7 @@ const Main = ({ something }) => {
           )}
         </>
       </Sidebar>
-      {shouldRenderMap && (
+      {!isServer() && shouldRenderMap && (
         <Box
           ref={mapRef}
           w='100%'

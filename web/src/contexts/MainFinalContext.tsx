@@ -111,6 +111,7 @@ function MainFinalProvider(props) {
     setDates([]);
     setEditingTripRequest(null);
     resetSelectedPlaces();
+    updateMapMarkers([]);
   };
 
   const toggleTripType = (newTripType) => {

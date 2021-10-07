@@ -23,7 +23,7 @@ export const ErrorContainer: React.FC<ErrorContainerProps> = ({
           <Image
             borderRadius='full'
             boxSize='350px'
-            src='/whoops.jpeg'
+            src='/whoops.jpg'
             alt='Whoops'
             display='inline'
             mb={2}

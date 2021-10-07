@@ -2,29 +2,29 @@ import { Box } from '@chakra-ui/layout';
 import { Button, Flex, Heading, Link } from '@chakra-ui/react';
 import React from 'react';
 import NextLink from 'next/link';
-import { useLogoutMutation, useMeQuery } from '../generated/graphql';
+import { useLogoutMutation } from '../generated/graphql';
 import { useRouter } from 'next/router';
 import { useApolloClient } from '@apollo/client';
 import { SpinningGear } from './SpinningGear';
 import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
+import { useMe } from '../contexts/MeContext';
 
 export const Navbar = ({}) => {
   const router = useRouter();
   const [logout, { loading: logoutFetching }] = useLogoutMutation();
   const apolloClient = useApolloClient();
-  const { data, loading } = useMeQuery();
+  const { data, loading } = useMe();
   const { checking } = useCheckingTripRequests();
-
   let body;
 
   if (loading) {
   } else if (!data?.me) {
     body = (
       <>
-        <NextLink href='/login'>
-          <Link mr={2} data-cy='login-link'>
+        <NextLink href='/login' as='button'>
+          <Button data-cy='login-link' variant='link'>
             login
-          </Link>
+          </Button>
         </NextLink>
       </>
     );
@@ -42,7 +42,7 @@ export const Navbar = ({}) => {
           onClick={async () => {
             await logout();
             await apolloClient.clearStore();
-            router.reload();
+            await router.reload();
           }}
           isLoading={logoutFetching}
         >

@@ -4,8 +4,8 @@ import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { StyledContainer } from './StyledContainer';
 
 const today = new Date();
-const sixMonths = new Date();
-sixMonths.setMonth(sixMonths.getMonth() + 6);
+const nextYear = new Date();
+nextYear.setMonth(nextYear.getMonth() + 12);
 
 export const MultiDaypicker = () => {
   const { selectedDates, setDates } = useSelectedPlaces();
@@ -29,7 +29,7 @@ export const MultiDaypicker = () => {
           fromMonth={today}
           selectedDays={selectedDates}
           onDayClick={handleClick}
-          disabledDays={{ before: today, after: sixMonths }}
+          disabledDays={{ before: today, after: nextYear }}
         />
       </StyledContainer>
     </div>

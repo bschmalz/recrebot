@@ -28,7 +28,6 @@ const Login: React.FC<{}> = ({}) => {
                   me: data?.login.user,
                 },
               });
-              cache.evict({ fieldName: 'posts: {}' });
             },
           });
           if (response.data?.login.errors) {

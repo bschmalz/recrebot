@@ -11,6 +11,7 @@ import { useMain } from '../contexts/MainContext';
 import { getLocationDescription } from '../utils/getLocationDescription';
 
 export const SelectedCard = () => {
+  const [fetchedID, setFetchedId] = useState(null);
   const [description, setDescription] = useState(null);
   const [loading, setLoading] = useState(true);
   const { campgrounds, trailheads } = useSearchLocations();
@@ -31,12 +32,16 @@ export const SelectedCard = () => {
   } = selectedCard;
 
   useEffect(() => {
-    getLocationDescription(selectedCard)
-      .then((res) => {
-        setDescription(res);
-      })
-      .finally(() => setLoading(false));
-  }, []);
+    if (selectedCard.id !== fetchedID) {
+      setFetchedId(selectedCard.id);
+      setLoading(true);
+      getLocationDescription(selectedCard)
+        .then((res) => {
+          setDescription(res);
+        })
+        .finally(() => setLoading(false));
+    }
+  }, [fetchedID, selectedCard]);
 
   const addSelectedCard = (selectedCard) => {
     addSelectedPlace(selectedCard);

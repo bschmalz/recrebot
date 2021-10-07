@@ -1,4 +1,4 @@
-import { Box, Text } from '@chakra-ui/layout';
+import { Box } from '@chakra-ui/layout';
 import React from 'react';
 import { Ipad } from './Ipad';
 
@@ -10,7 +10,7 @@ export const LandingPage = () => {
       backgroundPosition='top'
       backgroundRepeat='no-repeat'
       minHeight='100%'
-      backgroundImage='url(matlock.jpeg)'
+      backgroundImage='url(matlock.jpg)'
       width='100%'
       transition=''
       backgroundSize='cover'

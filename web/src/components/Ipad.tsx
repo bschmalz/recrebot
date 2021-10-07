@@ -6,19 +6,8 @@ import { isServer } from '../utils/isServer';
 import { delay } from '../utils/delay';
 import { Slide } from '@chakra-ui/transition';
 import { Button } from '@chakra-ui/button';
-import {
-  Modal,
-  ModalBody,
-  ModalCloseButton,
-  ModalContent,
-  ModalFooter,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-} from '@chakra-ui/react';
+import { useDisclosure } from '@chakra-ui/react';
 import { ContactModal } from './ContactModal';
-
-interface IpadProps {}
 
 const images = [
   'screen1.png',
@@ -30,7 +19,7 @@ const images = [
   'screen7.png',
 ];
 
-export const Ipad: React.FC<IpadProps> = ({}) => {
+export const Ipad: React.FC = () => {
   const {
     isOpen: isModalOpen,
     onOpen: onModalOpen,
@@ -52,7 +41,7 @@ export const Ipad: React.FC<IpadProps> = ({}) => {
 
   const handleModalOpen = async () => {
     setOpen(false);
-    await delay(200, 200);
+    await delay(500, 500);
     onModalOpen();
   };
 
@@ -91,7 +80,12 @@ export const Ipad: React.FC<IpadProps> = ({}) => {
   const renderModal = () => {
     if (isLarge) {
       return (
-        <Slide direction='right' in={isOpen} style={{ zIndex: 2 }}>
+        <Slide
+          direction='right'
+          in={isOpen}
+          style={{ zIndex: 2 }}
+          transition={{ enter: { duration: 1 }, exit: { duration: 0.5 } }}
+        >
           <Box position='absolute' top='25%' right={isXLarge ? '15%' : '5%'}>
             <Image
               position='relative'
@@ -139,7 +133,12 @@ export const Ipad: React.FC<IpadProps> = ({}) => {
       );
     } else if (isMedium) {
       return (
-        <Slide direction='right' in={isOpen} style={{ zIndex: 2 }}>
+        <Slide
+          direction='right'
+          in={isOpen}
+          style={{ zIndex: 2 }}
+          transition={{ enter: { duration: 1 }, exit: { duration: 0.5 } }}
+        >
           <Box
             position='absolute'
             top='130px'

@@ -8,6 +8,7 @@ import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { withApollo } from '../utils/withApollo';
 import { FormWrapper } from '../components/FormWrapper';
+import { MeProvider, useMe } from '../contexts/MeContext';
 
 const Invite: React.FC = () => {
   const [emailSent, setEmailSent] = useState(false);
