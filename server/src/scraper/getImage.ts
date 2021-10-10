@@ -11,7 +11,19 @@ export const getImage = async (
   type: string,
   id: number
 ) => {
-  const browser = await puppeteer.launch();
+  const browser =
+    process.env.NODE_ENV === 'production'
+      ? await puppeteer.launch({
+          headless: true,
+          args: [
+            '--disable-gpu',
+            '--disable-dev-shm-usage',
+            '--disable-setuid-sandbox',
+            '--no-sandbox',
+          ],
+        })
+      : await puppeteer.launch();
+
   const page = await browser.newPage();
   await page.goto('https://images.google.com');
   await page.type('input', searchString);
@@ -29,7 +41,7 @@ export const getImage = async (
   var base64Data = src[0].replace(/^data:image\/\w+;base64,/, '');
 
   fs.writeFile(
-    `../web/public/${type}/${id}.png`,
+    `./public/${type}/${id}.png`,
     base64Data,
     'base64',
     function (err: Error) {

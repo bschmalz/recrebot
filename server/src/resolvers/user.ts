@@ -26,6 +26,61 @@ import { getConnection } from 'typeorm';
 import { EmailInput } from './EmailInput';
 import { validateEmail } from '../utils/validateEmail';
 
+export const handleRegister = async (options: RegisterInput) => {
+  const errors = validateRegister(options);
+  if (errors) {
+    return { errors };
+  }
+
+  const user = await User.findOne({ where: { email: options.email } });
+
+  if (user) {
+    return {
+      errors: [
+        {
+          field: 'email',
+          message: 'Account with this email already exists',
+        },
+      ],
+    };
+  } else {
+    const password = await argon2.hash(options.password);
+
+    let savedUser;
+
+    try {
+      const result = await getConnection()
+        .createQueryBuilder()
+        .insert()
+        .into(User)
+        .values({
+          phone: options.phone,
+          email: options.email,
+          password,
+        })
+        .returning('*')
+        .execute();
+
+      savedUser = result.raw[0];
+    } catch (err) {
+      // dupe phone
+      if (err.detail.includes('already exists')) {
+        return {
+          errors: [
+            {
+              field: 'phone',
+              message: 'phone has been taken',
+            },
+          ],
+        };
+      }
+    }
+    return {
+      user: savedUser,
+    };
+  }
+};
+
 @ObjectType()
 class FieldError {
   @Field()
@@ -206,61 +261,7 @@ export class UserResolver {
     @Arg('options') options: RegisterInput,
     @Ctx() { req, redis }: MyContext
   ): Promise<UserResponse> {
-    const errors = validateRegister(options);
-    if (errors) {
-      return { errors };
-    }
-
-    const key = INVITE_USER_PREFIX + options.token;
-    const email = (await redis.get(key)) as string;
-
-    const user = await User.findOne({ where: { email: email } });
-
-    if (user) {
-      return {
-        errors: [
-          {
-            field: 'email',
-            message: 'Account with this email already exists',
-          },
-        ],
-      };
-    } else {
-      const password = await argon2.hash(options.password);
-
-      let savedUser;
-
-      try {
-        const result = await getConnection()
-          .createQueryBuilder()
-          .insert()
-          .into(User)
-          .values({
-            phone: options.phone,
-            email,
-            password,
-          })
-          .returning('*')
-          .execute();
-
-        savedUser = result.raw[0];
-      } catch (err) {
-        // dupe phone
-        if (err.detail.includes('already exists')) {
-          return {
-            errors: [
-              {
-                field: 'phone',
-                message: 'phone has been taken',
-              },
-            ],
-          };
-        }
-      }
-      return {
-        user: savedUser,
-      };
-    }
+    return await handleRegister(options);
   }
 
   @Query(() => VerifyEmailResponse)

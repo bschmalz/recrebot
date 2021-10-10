@@ -3,7 +3,18 @@ import { isValidCoord } from '../utils/isValidCoord';
 const puppeteer = require('puppeteer');
 
 export const getCoords = async (searchString: string) => {
-  const browser = await puppeteer.launch();
+  const browser =
+    process.env.NODE_ENV === 'production'
+      ? await puppeteer.launch({
+          headless: true,
+          args: [
+            '--disable-gpu',
+            '--disable-dev-shm-usage',
+            '--disable-setuid-sandbox',
+            '--no-sandbox',
+          ],
+        })
+      : await puppeteer.launch();
   try {
     const page = await browser.newPage();
     await page.setViewport({ width: 2000, height: 1400 });

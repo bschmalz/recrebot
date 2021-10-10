@@ -1,7 +1,3 @@
 {
-  "baseUrl": "http://localhost:3000",
-  "env": {
-    "login": "recrebot",
-    "password": "HellYes"
-  }
+  "baseUrl": "http://localhost:5555"
 }

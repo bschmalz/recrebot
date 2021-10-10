@@ -112,25 +112,33 @@ const handleSuccessfulTripRequest = async (
   }
 };
 
+const returnTrue = async (tr: TripRequestInterface) => {
+  await getConnection()
+    .createQueryBuilder()
+    .update(TripRequest)
+    .set({ last_success: new Date() })
+    .where('id = :id', { id: tr.id })
+    .execute();
+  return true;
+};
+
 const checkTripRequestStatus = async (tr: TripRequestInterface) => {
   const tripRequest = await TripRequest.findOne({ where: { id: tr.id } });
+
   if (tripRequest) {
     const lastSucces = tripRequest.last_success;
-    console.log('last Success', lastSucces);
     if (!lastSucces) {
-      await getConnection()
-        .createQueryBuilder()
-        .update(TripRequest)
-        .set({ last_success: new Date() })
-        .where('id = :id', { id: tr.id })
-        .execute();
-      return true;
+      return returnTrue(tr);
     } else {
       // Check to make sure we haven't sent a success email in the last day, just in case we missed it on our other check
       const now = dayjs();
       const then = dayjs(lastSucces);
       const diff = now.diff(then, 'day', true);
-      return diff > 1;
+      if (diff > 1) {
+        return returnTrue(tr);
+      } else {
+        return false;
+      }
     }
   } else {
     return false;

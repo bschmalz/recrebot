@@ -7,5 +7,5 @@ export class RegisterInput {
   @Field()
   password: string;
   @Field()
-  token: string;
+  email: string;
 }

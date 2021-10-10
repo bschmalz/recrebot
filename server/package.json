@@ -5,12 +5,10 @@
   "main": "index.js",
   "scripts": {
     "gen-env": "gen-env-types .env -o src/env.d.ts -e .",
-    "prebuild": "del dist/",
     "build": "tsc",
-    "postbuild": "cpy '**/*' '!**/*.ts' ../dist/ --cwd=src/ --no-overwrite --parents",
     "watch": "tsc -w",
-    "dev": "nodemon dist/index.js",
-    "start": "node dist/index.js",
+    "dev": "nodemon dist/src/index.js",
+    "start": "node dist/src/index.js",
     "gen": "graphql-codegen --config codegen.yml"
   },
   "author": "Brian Schmalz",

@@ -4,7 +4,7 @@ import { COOKIE_NAME, __prod__ } from './constants';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { UserResolver } from './resolvers/user';
+import { handleRegister, UserResolver } from './resolvers/user';
 import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -20,22 +20,24 @@ import { TripRequest } from './entities/TripRequest';
 import { TripRequestResolver } from './resolvers/tripRequest';
 import { sendEmail } from './utils/sendEmail';
 import { scrapeWatcher } from './scraper/scrapeWatcher';
-import { checkCaliCamps } from './scraper/checkTripRequest';
+import { checkCaliCamps } from './scraper/checkCaliCamps';
 import { getCaliLocationDescription } from './utils/getCaliDescription';
 import { logError } from './utils/logError';
 import { validateMessage } from './utils/validateMessage';
+import { scrapeRecData } from './scraper/scrapeRecData';
+import { getImages } from './scraper/getImage';
 
 const main = async () => {
   try {
-    await createConnection({
+    const conn = await createConnection({
       type: 'postgres',
       url: process.env.DATABASE_URL,
       // logging: true,
-      synchronize: true,
+      // synchronize: true,
       migrations: [path.join(__dirname, './migrations/*')],
       entities: [User, Campground, Trailhead, TripRequest],
     });
-    // await conn.runMigrations();
+    await conn.runMigrations();
 
     const app = express();
 
@@ -49,6 +51,8 @@ const main = async () => {
         credentials: true,
       })
     );
+
+    app.use(express.static('public'));
 
     app.use(
       session({
@@ -124,9 +128,25 @@ const main = async () => {
       res.send(result);
     });
 
+    app.get('/initscrape', (req, res) => {
+      console.log('starting init scrape');
+      scrapeRecData();
+      res.send('started scrape');
+    });
+
+    app.post('/register', async (req, res) => {
+      const result = await handleRegister({
+        email: req.body.email,
+        password: req.body.password,
+        phone: req.body.phone,
+      });
+      res.send(result);
+    });
+
     app.listen(parseInt(process.env.PORT), () => {
       console.log('server started');
-      scrapeWatcher();
+      // getImages();
+      // scrapeWatcher();
     });
   } catch (e) {
     logError('app level exeception caught: ', e);

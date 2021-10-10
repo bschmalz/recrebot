@@ -1,10 +1,9 @@
-import { Reservable } from './types/Reservable';
 import { delay } from '../utils/delay';
 import dayjs from 'dayjs';
 
 interface CheckTrailheadsInterface {
   dates: Date[];
-  locations: Reservable[];
+  locations: any[];
   memoFetch: () => Function;
   shortenDelay?: boolean;
   num_hikers: number;
@@ -19,8 +18,8 @@ export const checkTrailheads = async ({
   num_hikers,
   logError,
 }: CheckTrailheadsInterface) => {
-  const backcountryTrails: Reservable[] = [];
-  const permitTrails: Reservable[] = [];
+  const backcountryTrails: any[] = [];
+  const permitTrails: any[] = [];
   locations.forEach((loc) => {
     if (loc.subparent_id === '233260') {
       permitTrails.push(loc);
@@ -56,7 +55,7 @@ const getSearchObjects = (dates: Date[]) => {
     [key: string]: {
       url: string;
       dates: dayjs.Dayjs[];
-      location: Reservable;
+      location: any;
     };
   } = {};
   datesToCheck.forEach((d) => {
@@ -141,7 +140,7 @@ const checkPermitTrailheads = async ({
       [key: string]: {
         url: string;
         dates: dayjs.Dayjs[];
-        location: Reservable;
+        location: any;
       };
     } = {};
 

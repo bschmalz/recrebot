@@ -5,7 +5,4 @@ module.exports = withPWA({
     dest: 'public',
     disable: process.env.NODE_ENV === 'production' ? false : true,
   },
-  experimental: {
-    externalDir: true,
-  },
 });

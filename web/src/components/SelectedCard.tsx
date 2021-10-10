@@ -139,7 +139,10 @@ export const SelectedCard = () => {
         isRound={true}
         variant='ghost'
       />
-      <img src={`/${type}/${id}.png`} alt={`Picture of ${name}`} />
+      <img
+        src={`${process.env.NEXT_PUBLIC_API_URL}/${type}/${id}.png`}
+        alt={`Picture of ${name}`}
+      />
       <Box marginTop={3} textAlign='left'>
         <Heading as='h1' size='md'>
           {name}

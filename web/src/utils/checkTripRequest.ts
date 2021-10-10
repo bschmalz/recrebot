@@ -1,14 +1,13 @@
 import dayjs from 'dayjs';
-import { Reservable } from '../views/Main/types/Reservable';
-import { checkRecGovCamps } from '../../../../recreBot/server/src/scraper/checkRecGovCamps';
-import { checkTrailheads } from '../../../../recreBot/server/src/scraper/checkTrailheads';
+import { checkRecGovCamps } from './checkRecGovCamps';
+import { checkTrailheads } from './checkTrailheads';
 import { memoFetch } from './memoFetch';
 
 const shortenDelay = true;
 
 interface checkTrailheadsInterface {
   dates: Date[];
-  locations: Reservable[];
+  locations: any[];
   num_hikers?: number;
 }
 
@@ -44,8 +43,8 @@ const checkCampgrounds = async ({
   min_nights,
 }: checkCampgroundsInterface) => {
   // Group together campsites by type so we can batch our searches more easily
-  const reserveCaliCamps: Reservable[] = [];
-  const recGovCamps: Reservable[] = [];
+  const reserveCaliCamps: any[] = [];
+  const recGovCamps: any[] = [];
   locations.forEach((loc) => {
     if (loc.sub_type === 'res_ca') {
       reserveCaliCamps.push(loc);

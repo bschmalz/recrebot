@@ -163,7 +163,7 @@ export type QueryGetTrailheadArgs = {
 export type RegisterInput = {
   phone?: Maybe<Scalars['String']>;
   password: Scalars['String'];
-  token: Scalars['String'];
+  email: Scalars['String'];
 };
 
 export type RegisterResponse = {
