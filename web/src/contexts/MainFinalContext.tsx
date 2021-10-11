@@ -50,8 +50,13 @@ function MainFinalProvider(props) {
   const [shouldRenderMap] = useMediaQuery('(min-width: 700px)');
 
   const { tripType, setTripType } = useTripType();
-  const { campgrounds, trailheads, campgroundData, trailheadData } =
-    useSearchLocations();
+  const {
+    campgrounds,
+    trailheads,
+    campgroundData,
+    resetSearchLocations,
+    trailheadData,
+  } = useSearchLocations();
   const {
     selectedPlaces,
     resetSelectedPlaces,
@@ -109,6 +114,7 @@ function MainFinalProvider(props) {
     setSearchText('');
     setCustomName('');
     setDates([]);
+    resetSearchLocations();
     setEditingTripRequest(null);
     resetSelectedPlaces();
     updateMapMarkers([]);

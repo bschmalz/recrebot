@@ -128,25 +128,28 @@ const main = async () => {
       res.send(result);
     });
 
-    app.get('/initscrape', (req, res) => {
-      console.log('starting init scrape');
-      scrapeRecData();
-      res.send('started scrape');
+    app.get('/getImages', (req, res) => {
+      getImages();
     });
 
-    app.post('/register', async (req, res) => {
-      const result = await handleRegister({
-        email: req.body.email,
-        password: req.body.password,
-        phone: req.body.phone,
-      });
-      res.send(result);
-    });
+    // app.get('/initscrape', (req, res) => {
+    //   console.log('starting init scrape');
+    //   scrapeRecData();
+    //   res.send('started scrape');
+    // });
+
+    // app.post('/register', async (req, res) => {
+    //   const result = await handleRegister({
+    //     email: req.body.email,
+    //     password: req.body.password,
+    //     phone: req.body.phone,
+    //   });
+    //   res.send(result);
+    // });
 
     app.listen(parseInt(process.env.PORT), () => {
       console.log('server started');
-      // getImages();
-      // scrapeWatcher();
+      scrapeWatcher();
     });
   } catch (e) {
     logError('app level exeception caught: ', e);

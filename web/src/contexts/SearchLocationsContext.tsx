@@ -23,6 +23,7 @@ interface SearchLocationsInterface {
   loadingCampgrounds: boolean;
   loadingTrailheads: boolean;
   checkMarker: (id: string) => void;
+  resetSearchLocations: () => void;
 }
 
 const initialState: SearchLocationsInterface = {
@@ -37,6 +38,7 @@ const initialState: SearchLocationsInterface = {
   campgroundSearch: {},
   loadingCampgrounds: false,
   loadingTrailheads: false,
+  resetSearchLocations: () => {},
 };
 
 const SearchLocationsContext = createContext(initialState);
@@ -123,6 +125,22 @@ function SearchLocationsProvider(props) {
     return marker;
   };
 
+  const resetSearchLocations = () => {
+    const params = {
+      variables: {
+        searchTerm: '',
+        filterOnBounds: false,
+      },
+    };
+    if (campgrounds.length) {
+      searchCampgrounds(params);
+    }
+
+    if (trailheads.length) {
+      searchTrailheads(params);
+    }
+  };
+
   const value = {
     campgroundData,
     campgrounds,
@@ -135,6 +153,7 @@ function SearchLocationsProvider(props) {
     trailheadData,
     loadingCampgrounds,
     loadingTrailheads,
+    resetSearchLocations,
   };
   return <SearchLocationsContext.Provider value={value} {...props} />;
 }

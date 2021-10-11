@@ -26,10 +26,10 @@ COPY .env.production .env
 RUN yarn build
 ADD ./src/scraper/data ./dist/src/scraper/data
 ADD ./src/utils/templates ./dist/src/utils/templates
-ADD ./src/public ./dist/src/public
 
 
 RUN chmod -R o+rwx node_modules/puppeteer/.local-chromium
+RUN chown -R node:node /usr/src/app
 ENV NODE_ENV production
 
 EXPOSE 8080

@@ -19,7 +19,7 @@ export const SpinningGear: React.FC<SpinningGearProps> = ({ spinning }) => {
           from='0 64 64'
           to='27.69 64 64'
           dur='600ms'
-          repeatCount='indefinite'
+          repeatCount={spinning ? 'indefinite' : '0'}
         ></animateTransform>
       </g>
     </svg>

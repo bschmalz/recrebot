@@ -1,4 +1,6 @@
 import { ChakraProvider, ColorModeProvider } from '@chakra-ui/react';
+import { LightMode } from '@chakra-ui/color-mode';
+
 import theme from '../theme';
 import 'react-day-picker/lib/style.css';
 import '../StyleOverrides.css';
@@ -9,10 +11,12 @@ function MyApp({ Component, pageProps }) {
     <ChakraProvider resetCSS theme={theme}>
       <ColorModeProvider
         options={{
-          useSystemColorMode: true,
+          useSystemColorMode: false,
         }}
       >
-        <Component {...pageProps} />
+        <LightMode>
+          <Component {...pageProps} />
+        </LightMode>
       </ColorModeProvider>
     </ChakraProvider>
   );

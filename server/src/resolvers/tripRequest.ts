@@ -109,7 +109,7 @@ export class TripRequestResolver {
       await TripRequest.delete({ id });
       return true;
     } catch (e) {
-      console.log('error', e);
+      console.error('error', e);
       return false;
     }
   }

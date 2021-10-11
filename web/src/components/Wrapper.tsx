@@ -17,7 +17,7 @@ export const Wrapper: React.FC<WrapperProps> = ({
   if (variant === 'large') {
     size = '2800px';
   } else if (variant === 'regular') {
-    size = '1600px';
+    size = '2000px';
   } else {
     size = '400px';
   }
@@ -27,8 +27,10 @@ export const Wrapper: React.FC<WrapperProps> = ({
         maxW={size}
         w='100%'
         mx='auto'
-        h='calc(100% - 51px)'
+        h='calc(100% - 47px)'
         position='relative'
+        justifyContent='center'
+        mt='47px'
       >
         <ErrorFallback showFullError>{children}</ErrorFallback>
       </Flex>

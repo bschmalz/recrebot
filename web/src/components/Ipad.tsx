@@ -72,7 +72,8 @@ export const Ipad: React.FC = () => {
   };
   const [isXLarge] = useMediaQuery('(min-width: 1950px)');
   const [isLarge] = useMediaQuery('(min-width: 1650px)');
-  const [isMedium] = useMediaQuery('(min-width: 660px)');
+  const [isMedium] = useMediaQuery('(min-width: 766px)');
+  const [isVeryShort] = useMediaQuery('(max-height: 500px)');
   if (isServer()) {
     return <></>;
   }
@@ -197,7 +198,7 @@ export const Ipad: React.FC = () => {
       return (
         <Box
           position='absolute'
-          top='25%'
+          top={isVeryShort ? '20%' : '25%'}
           right='50%'
           transform='translate(50%, -25%)'
         >
@@ -220,23 +221,28 @@ export const Ipad: React.FC = () => {
           <Box
             position='absolute'
             left={'50%'}
-            bottom={'-200px'}
+            bottom={isVeryShort ? '-75px' : '-150px'}
             transform={'translateX(-50%)'}
             color='white'
             background='rgba(22, 22, 22, 0.3)'
-            fontSize={'28px'}
+            fontSize={isVeryShort ? '16px' : '22px'}
             padding={2}
             borderRadius='5px'
             opacity={textOpacity}
             transition='opacity .5s linear'
-            width='auto'
-            minWidth='300px'
-            maxWidth={'90%'}
+            width={isVeryShort ? '500px' : 'auto'}
+            minWidth={'300px'}
+            maxWidth={isVeryShort ? '90%' : undefined}
             display='inline'
             textAlign='center'
           >
             Spend less time planning, and more time travelling.
-            <Button mx={2} colorScheme='green' onClick={handleModalOpen}>
+            <Button
+              mx={2}
+              size={isVeryShort ? 'xs' : undefined}
+              colorScheme='green'
+              onClick={handleModalOpen}
+            >
               Get In Touch
             </Button>
           </Box>

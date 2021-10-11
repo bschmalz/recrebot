@@ -98,7 +98,7 @@ export const getCoordsBatched = async (
         resultData[id] = { lat, lng };
       }
     } catch (e) {
-      console.log('error', e);
+      console.error('error', e);
     }
   }
 

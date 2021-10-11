@@ -9,21 +9,9 @@ const fs = require('fs');
 export const getImage = async (
   searchString: string,
   type: string,
-  id: number
+  id: number,
+  browser: any
 ) => {
-  const browser =
-    process.env.NODE_ENV === 'production'
-      ? await puppeteer.launch({
-          headless: true,
-          args: [
-            '--disable-gpu',
-            '--disable-dev-shm-usage',
-            '--disable-setuid-sandbox',
-            '--no-sandbox',
-          ],
-        })
-      : await puppeteer.launch();
-
   const page = await browser.newPage();
   await page.goto('https://images.google.com');
   await page.type('input', searchString);
@@ -48,11 +36,23 @@ export const getImage = async (
       console.log(err);
     }
   );
-  await browser.close();
   console.log('finished getting image data for ' + searchString);
 };
 
 export const getImages = async () => {
+  // Make sure image directories exist
+
+  const cgDir = '`./public/campground/';
+  const thDir = '`./public/trailhead/';
+
+  if (!fs.existsSync(cgDir)) {
+    fs.mkdirSync(cgDir, { recursive: true });
+  }
+
+  if (!fs.existsSync(thDir)) {
+    fs.mkdirSync(thDir, { recursive: true });
+  }
+
   const campgrounds = await getRepository(Campground)
     .createQueryBuilder('campground')
     .getMany();
@@ -81,16 +81,31 @@ export const tryToGetImage = async (
   type: string,
   id: number
 ) => {
+  let browser;
   let tries = 1;
   while (tries < 3) {
     if (tries > 1) {
       await delay();
     }
     try {
-      await getImage(searchString, type, id);
+      browser =
+        process.env.NODE_ENV === 'production'
+          ? await puppeteer.launch({
+              headless: true,
+              args: [
+                '--disable-gpu',
+                '--disable-dev-shm-usage',
+                '--disable-setuid-sandbox',
+                '--no-sandbox',
+              ],
+            })
+          : await puppeteer.launch();
+      await getImage(searchString, type, id, browser);
       tries = 5;
     } catch (e) {
       tries++;
+    } finally {
+      await browser.close();
     }
   }
 };

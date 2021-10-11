@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IconButton, SkeletonText } from '@chakra-ui/react';
+import { IconButton, Image, SkeletonText } from '@chakra-ui/react';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
 import { StyledContainer } from './StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
@@ -139,7 +139,7 @@ export const SelectedCard = () => {
         isRound={true}
         variant='ghost'
       />
-      <img
+      <Image
         src={`${process.env.NEXT_PUBLIC_API_URL}/${type}/${id}.png`}
         alt={`Picture of ${name}`}
       />

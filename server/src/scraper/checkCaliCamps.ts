@@ -60,7 +60,6 @@ export const checkCaliCamps = async (
     }
     return result;
   } catch (e) {
-    // console.log('error checking cali camps', e);
     if (logError) {
       logError('error checking cali camps', e);
     }

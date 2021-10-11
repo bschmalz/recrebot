@@ -283,6 +283,7 @@ export class UserResolver {
   ): Promise<UserResponse> {
     const key = REGISTER_USER_PREFIX + token;
     const user = (await redis.get(key)) as string;
+
     const { phone, email, password } = JSON.parse(user);
     let savedUser;
 
@@ -301,7 +302,7 @@ export class UserResolver {
         .into(User)
         .values({
           phone,
-          email,
+          email: email.toLowerCase(),
           password,
         })
         .returning('*')
@@ -337,7 +338,8 @@ export class UserResolver {
     @Arg('password') password: string,
     @Ctx() { req }: MyContext
   ): Promise<UserResponse> {
-    const user = await User.findOne({ where: { email: email } });
+    const lowerEmail = email.toLowerCase();
+    const user = await User.findOne({ where: { email: lowerEmail } });
     if (!user) {
       return {
         errors: [

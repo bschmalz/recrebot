@@ -34,7 +34,7 @@ export const validateCoords = async (
         goodCoords[id] = { latitude, longitude };
       }
     } catch (e) {
-      console.log('error validating ' + searchStr);
+      console.error('error validating ' + searchStr);
     }
   }
 

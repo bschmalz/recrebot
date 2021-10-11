@@ -27,8 +27,14 @@ import { usePlanTrip } from '../../contexts/PlanTripContext';
 import { isServer } from '../../utils/isServer';
 
 const Main = ({ something }) => {
-  const { searchText, searchTextRef, sideBarView, setSideBarView, sideBarRef } =
-    useMain();
+  const {
+    searchText,
+    searchTextRef,
+    sideBarView,
+    sideBarViewRef,
+    setSideBarView,
+    sideBarRef,
+  } = useMain();
   const { setTabIndex } = usePlanTrip();
 
   const { editingTripRequest } = useTripRequests();
@@ -53,7 +59,7 @@ const Main = ({ something }) => {
       MapboxGL.accessToken = process.env.NEXT_PUBLIC_MAPBOX_TOKEN;
       map.current = new MapboxGL.Map({
         container: mapRef.current,
-        style: 'mapbox://styles/mapbox/outdoors-v11',
+        style: process.env.NEXT_PUBLIC_MAPBOX_STYLE,
         center: [-118.26, 36.6],
         zoom: 7,
       });
@@ -76,10 +82,13 @@ const Main = ({ something }) => {
     map.current.on('dragend', onMapUpdate);
     map.current.on('zoomend', onMapUpdate);
     map.current.on('resize', onMapUpdate);
+    map.current.on('pitchend', () => {
+      console.log('pitch', map.current.getPitch());
+    });
   };
 
   const onMapUpdate = () => {
-    if (filterOnMapRef.current) {
+    if (filterOnMapRef.current && sideBarViewRef.current === 'PlanATrip') {
       handleSearch(searchTextRef.current, tripTypeRef.current);
     }
   };

@@ -51,9 +51,20 @@ export const Navbar = ({}) => {
       </Flex>
     );
   }
+  console.log('checking', checking);
+  console.log('loading', loading);
+
   return (
     <>
-      <Flex position='sticky' top={0} zIndex={3} p={1}>
+      <Flex
+        position='fixed'
+        top={0}
+        zIndex={3}
+        p={1}
+        height='47px'
+        background='white'
+        width='100%'
+      >
         <Flex flex={1} m='auto' align='center' maxW={1600} px={8}>
           <Heading>
             <Flex alignItems='flex-end'>
