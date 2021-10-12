@@ -7,6 +7,8 @@ export const FormWrapper = ({ children, ...props }) => {
       backgroundColor='rgba(190, 210, 210, 0.2)'
       padding={4}
       borderRadius='5px'
+      width='100%'
+      mx={6}
       {...props}
     >
       {children}

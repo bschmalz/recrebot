@@ -45,7 +45,7 @@ export const PlanTrip: React.FC = () => {
           index={tabIndex}
           onChange={setTabIndex}
         >
-          <Center>
+          <Center marginBottom={1}>
             <TabList>
               <Tab fontSize='small' onClick={() => handleTabChange(1)}>
                 Destination(s)

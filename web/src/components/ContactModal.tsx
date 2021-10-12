@@ -48,15 +48,16 @@ export const ContactModal: React.FC<ContactModalProps> = ({
                 });
               }
 
-              if (res?.errors) {
+              if (res?.data?.errors) {
                 setErrors(toErrorMap(res.errors));
-              } else if (res.success) {
-                toast({
-                  title: 'Message sent.',
-                  description: 'Thanks for reaching out!',
-                  duration: 4000,
-                  isClosable: true,
-                });
+              } else {
+                if (res?.data?.success)
+                  toast({
+                    title: 'Message sent.',
+                    description: 'Thanks for reaching out!',
+                    duration: 4000,
+                    isClosable: true,
+                  });
                 handleModalClose();
               }
             }}

@@ -1,5 +1,5 @@
 import { Box } from '@chakra-ui/layout';
-import { Button, Flex, Heading, Link } from '@chakra-ui/react';
+import { Button, Flex, Heading, Link, useDisclosure } from '@chakra-ui/react';
 import React from 'react';
 import NextLink from 'next/link';
 import { useLogoutMutation } from '../generated/graphql';
@@ -8,6 +8,7 @@ import { useApolloClient } from '@apollo/client';
 import { SpinningGear } from './SpinningGear';
 import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 import { useMe } from '../contexts/MeContext';
+import { ContactModal } from './ContactModal';
 
 export const Navbar = ({}) => {
   const router = useRouter();
@@ -15,13 +16,15 @@ export const Navbar = ({}) => {
   const apolloClient = useApolloClient();
   const { data, loading } = useMe();
   const { checking } = useCheckingTripRequests();
+  const { isOpen, onOpen, onClose } = useDisclosure();
+
   let body;
 
   if (loading) {
   } else if (!data?.me) {
     body = (
       <>
-        <NextLink href='/login' as='button'>
+        <NextLink href='/login'>
           <Button data-cy='login-link' variant='link'>
             login
           </Button>
@@ -35,7 +38,11 @@ export const Navbar = ({}) => {
           <NextLink href='/invite'>
             <Link mr={3}>invite</Link>
           </NextLink>
-        ) : null}
+        ) : (
+          <Button mr={3} variant='link' onClick={onOpen}>
+            contact
+          </Button>
+        )}
         <Button
           data-cy='logout-link'
           variant='link'
@@ -77,6 +84,9 @@ export const Navbar = ({}) => {
           <Box ml='auto'>{body}</Box>
         </Flex>
       </Flex>
+      {isOpen && (
+        <ContactModal isModalOpen={isOpen} handleModalClose={onClose} />
+      )}
     </>
   );
 };

@@ -32,7 +32,8 @@ export const Wrapper: React.FC<WrapperProps> = ({
         justifyContent='center'
         mt='47px'
       >
-        <ErrorFallback showFullError>{children}</ErrorFallback>
+        {/* <ErrorFallback showFullError>{children}</ErrorFallback> */}
+        {children}
       </Flex>
     </MeProvider>
   );

@@ -102,7 +102,7 @@ const Register: React.FC<registerProps> = ({}) => {
                   type='tel'
                   name='phone'
                   placeholder='phone'
-                  label='Phone (optional)'
+                  label='Phone (optional - used for text notifications)'
                 />
               </Box>
               <Button

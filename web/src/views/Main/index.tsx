@@ -183,9 +183,6 @@ const Main = ({ something }) => {
             >
               <Text fontSize={14}> Reposition Map On Search Results</Text>
             </Checkbox>
-            <Text align='center' fontSize={11} marginTop={'4px !important'}>
-              Hold CTRL and Left Mouse for 3D
-            </Text>
           </Stack>
         </Box>
       )}

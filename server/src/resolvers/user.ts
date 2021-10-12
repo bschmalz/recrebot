@@ -220,8 +220,20 @@ export class UserResolver {
   @Mutation(() => RegisterResponse)
   async invite(
     @Arg('options') options: EmailInput,
-    @Ctx() { redis }: MyContext
+    @Ctx() { req, redis }: MyContext
   ): Promise<RegisterResponse> {
+    const reqUser = await User.findOne({ where: { id: req.session.userId } });
+    if (reqUser?.email !== process.env.AUTH_EMAIL) {
+      return {
+        errors: [
+          {
+            field: 'email',
+            message: 'I wanna know who you are!',
+          },
+        ],
+      };
+    }
+
     const errors = validateEmail(options);
     if (errors) {
       return { errors };
