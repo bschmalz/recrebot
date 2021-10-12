@@ -373,7 +373,7 @@ export type SearchTrailheadsQueryVariables = Exact<{
 }>;
 
 
-export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, latitude: number, longitude: number, parent_name: string, legacy_id: string, subparent_name?: Maybe<string>, subparent_id?: Maybe<string> }> } };
+export type SearchTrailheadsQuery = { __typename?: 'Query', searchTrailheads: { __typename?: 'TrailheadsResponse', trailheads: Array<{ __typename?: 'Trailhead', id: number, name: string, latitude: number, longitude: number, parent_name: string, legacy_id: string, subparent_name?: Maybe<string>, subparent_id?: Maybe<string>, sub_type: string }> } };
 
 export type VerifyInviteTokenQueryVariables = Exact<{
   token: Scalars['String'];
@@ -880,6 +880,7 @@ export const SearchTrailheadsDocument = gql`
       parent_name
       subparent_name
       subparent_id
+      sub_type
     }
   }
 }

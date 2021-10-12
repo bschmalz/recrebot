@@ -1,8 +1,6 @@
 import React, { useState } from 'react';
 import { Box, Image } from '@chakra-ui/react';
 
-import placeholderPic from '../../public/blah.png';
-
 interface SelectedPlaceImageProps {
   src: string;
   alt: string;
@@ -18,8 +16,8 @@ export const SelectedPlaceImage: React.FC<SelectedPlaceImageProps> = ({
       <Image
         src={src}
         fallbackSrc={isInErrorState ? '/defaultPlace.png' : ''}
-        height={isInErrorState ? '160px' : undefined}
-        width={isInErrorState ? '200px' : undefined}
+        height={isInErrorState ? '185px' : undefined}
+        width={isInErrorState ? '265px' : undefined}
         minHeight={'185px'}
         alt={alt}
         onError={() => setError(true)}

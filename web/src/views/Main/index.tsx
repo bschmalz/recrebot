@@ -81,6 +81,8 @@ const Main = ({ something }) => {
   const initMap = () => {
     map.current.on('dragend', onMapUpdate);
     map.current.on('zoomend', onMapUpdate);
+    map.current.on('boxzoomend', onMapUpdate);
+    map.current.on('moveend', onMapUpdate);
     map.current.on('resize', onMapUpdate);
     map.current.on('pitchend', () => {
       if (map.current.getPitch() > 0 && filterOnMapRef.current) {

@@ -4,7 +4,7 @@ import { COOKIE_NAME, __prod__ } from './constants';
 import express from 'express';
 import { ApolloServer } from 'apollo-server-express';
 import { buildSchema } from 'type-graphql';
-import { handleRegister, UserResolver } from './resolvers/user';
+import { UserResolver } from './resolvers/user';
 import Redis from 'ioredis';
 import session from 'express-session';
 import connectRedis from 'connect-redis';
@@ -24,16 +24,12 @@ import { checkCaliCamps } from './scraper/checkCaliCamps';
 import { getCaliLocationDescription } from './utils/getCaliDescription';
 import { logError } from './utils/logError';
 import { validateMessage } from './utils/validateMessage';
-import { scrapeRecData } from './scraper/scrapeRecData';
-import { getImages } from './scraper/getImage';
 
 const main = async () => {
   try {
     const conn = await createConnection({
       type: 'postgres',
       url: process.env.DATABASE_URL,
-      // logging: true,
-      // synchronize: true,
       migrations: [path.join(__dirname, './migrations/*')],
       entities: [User, Campground, Trailhead, TripRequest],
     });
@@ -128,9 +124,9 @@ const main = async () => {
       res.send(result);
     });
 
-    app.get('/getImages', (req, res) => {
-      getImages();
-    });
+    // app.get('/getImages', (req, res) => {
+    //   getImages();
+    // });
 
     // app.get('/initscrape', (req, res) => {
     //   console.log('starting init scrape');

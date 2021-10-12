@@ -22,6 +22,7 @@ query SearchTrailheads(
       parent_name
       subparent_name
       subparent_id
+      sub_type
     }
   }
 }

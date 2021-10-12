@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { IconButton, Image, SkeletonText } from '@chakra-ui/react';
+import { IconButton, SkeletonText } from '@chakra-ui/react';
 import { Box, Heading, Link, Text } from '@chakra-ui/layout';
 import { StyledContainer } from './StyledContainer';
 import { MdAddCircle, MdArrowBack } from 'react-icons/md';
@@ -10,6 +10,11 @@ import { useMap } from '../contexts/MapContext';
 import { useMain } from '../contexts/MainContext';
 import { getLocationDescription } from '../utils/getLocationDescription';
 import { SelectedPlaceImage } from './SelectedPlaceImage';
+
+const subTypeToFolder = {
+  rec_gov: 'rg',
+  res_ca: 'rc',
+};
 
 export const SelectedCard = () => {
   const [fetchedID, setFetchedId] = useState(null);
@@ -140,8 +145,9 @@ export const SelectedCard = () => {
         isRound={true}
         variant='ghost'
       />
+
       <SelectedPlaceImage
-        src={`${process.env.NEXT_PUBLIC_API_URL}/${type}/${id}.png`}
+        src={`placeImages/${type}/${subTypeToFolder[sub_type]}/${legacy_id}.png`}
         alt={`Picture of ${name}`}
       />
       <Box marginTop={3} textAlign='left'>

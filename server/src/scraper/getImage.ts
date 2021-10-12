@@ -6,10 +6,16 @@ import { delay } from '../utils/delay';
 const puppeteer = require('puppeteer');
 const fs = require('fs');
 
+const subTypeToFolderName: { [key: string]: string } = {
+  rec_gov: 'rg',
+  res_ca: 'rc',
+};
+
 export const getImage = async (
   searchString: string,
   type: string,
-  id: number,
+  id: string,
+  subType: string,
   browser: any
 ) => {
   const page = await browser.newPage();
@@ -29,7 +35,7 @@ export const getImage = async (
   var base64Data = src[0].replace(/^data:image\/\w+;base64,/, '');
 
   fs.writeFile(
-    `./public/${type}/${id}.png`,
+    `../web/public/placeImages/${type}/${subType}/${id}.png`,
     base64Data,
     'base64',
     function (err: Error) {
@@ -62,7 +68,12 @@ export const getImages = async () => {
     const str = `${cg.name} campground${
       cg.parent_name ? ` ${cg.parent_name}` : ''
     }`;
-    await tryToGetImage(str, 'campground', cg.id);
+    await tryToGetImage(
+      str,
+      'campground',
+      cg.legacy_id,
+      subTypeToFolderName[cg.sub_type]
+    );
   }
 
   const trailheads = await getRepository(Trailhead)
@@ -72,18 +83,24 @@ export const getImages = async () => {
   for (let i = 0; i < trailheads.length; i++) {
     const th = trailheads[i];
     const str = `${th.name} trail${th.parent_name ? ` ${th.parent_name}` : ''}`;
-    await tryToGetImage(str, 'trailhead', th.id);
+    await tryToGetImage(
+      str,
+      'trailhead',
+      th.legacy_id,
+      subTypeToFolderName[th.sub_type]
+    );
   }
 };
 
 export const tryToGetImage = async (
   searchString: string,
   type: string,
-  id: number
+  id: string,
+  subType: string
 ) => {
   let browser;
   let tries = 1;
-  while (tries < 3) {
+  while (tries < 4) {
     if (tries > 1) {
       await delay();
     }
@@ -100,11 +117,11 @@ export const tryToGetImage = async (
               ],
             })
           : await puppeteer.launch();
-      await getImage(searchString, type, id, browser);
-      tries = 5;
+      await getImage(searchString, type, id, subType, browser);
     } catch (e) {
       tries++;
     } finally {
+      tries = 5;
       await browser.close();
     }
   }

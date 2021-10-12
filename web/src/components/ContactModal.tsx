@@ -36,7 +36,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
             onSubmit={async (values, { setErrors }) => {
               let res;
               try {
-                res = await sendMessage(values).then((res) => res.json());
+                res = await sendMessage(values);
               } catch (e) {
                 toast({
                   title: 'Error sending message.',
