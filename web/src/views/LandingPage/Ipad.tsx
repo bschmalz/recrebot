@@ -73,6 +73,7 @@ export const Ipad: React.FC = () => {
   const [isXLarge] = useMediaQuery('(min-width: 1950px)');
   const [isLarge] = useMediaQuery('(min-width: 1650px)');
   const [isMedium] = useMediaQuery('(min-width: 766px)');
+  const [isNotTall] = useMediaQuery('(max-height: 1200px)');
   const [isShort] = useMediaQuery('(max-height: 800px)');
   const [isVeryShort] = useMediaQuery('(max-height: 500px)');
   if (isServer()) {
@@ -88,7 +89,11 @@ export const Ipad: React.FC = () => {
           style={{ zIndex: 2 }}
           transition={{ enter: { duration: 1 }, exit: { duration: 0.5 } }}
         >
-          <Box position='absolute' top='25%' right={isXLarge ? '15%' : '5%'}>
+          <Box
+            position='absolute'
+            top={isNotTall ? '80px' : '25%'}
+            right={isXLarge ? '15%' : '5%'}
+          >
             <Image
               position='relative'
               src='ipad.png'
