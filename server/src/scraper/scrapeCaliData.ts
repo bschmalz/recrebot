@@ -1,10 +1,10 @@
-import fetch from 'node-fetch';
 import { Campground as CampgroundEntity } from '../entities/Campground';
 import { getConnection } from 'typeorm';
 import { delay } from '../utils/delay';
 import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { getImages } from './getImage';
 import { sampleCaliReqBody } from './checkTripRequest';
+import axios from 'axios';
 
 interface CaliCampResponse {
   PlaceId: number;
@@ -53,12 +53,9 @@ export const fetchCaliCamppgrounds = async () => {
 
 export const fetchCaliCampground = async (id: number) => {
   let body = getReqBody(id);
-  return await fetch(url, {
-    method: 'post',
-    body: JSON.stringify(body),
-    headers: { 'Content-Type': 'application/json' },
-  })
-    .then((r) => r.json())
+  return await axios
+    .post(url, body)
+    .then((r) => r.data)
     .catch((e) => {
       return {
         error: true,
@@ -67,7 +64,7 @@ export const fetchCaliCampground = async (id: number) => {
 };
 
 const checkCampground = async (id: number) => {
-  const res = await fetchCaliCampground(id);
+  const res: any = await fetchCaliCampground(id);
   if (!res || res.error || !res.SelectedPlace) return;
   const { Latitude, Longitude, PlaceId, Name } = res.SelectedPlace;
 

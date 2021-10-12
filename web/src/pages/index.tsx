@@ -2,7 +2,7 @@ import { Layout } from '../components/Layout';
 import { withApollo } from '../utils/withApollo';
 import Head from 'next/head';
 import Main from '../views/Main';
-import { LandingPage } from '../components/LandingPage';
+import { LandingPage } from '../views/LandingPage';
 import { MainContextWrapper } from '../views/Main/MainContextWrapper';
 import { CheckingTripRequestsProvider } from '../contexts/CheckingTripRequests';
 import { LoadingContainer } from '../components/LoadingContainer';

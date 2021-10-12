@@ -9,6 +9,7 @@ import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { useMap } from '../contexts/MapContext';
 import { useMain } from '../contexts/MainContext';
 import { getLocationDescription } from '../utils/getLocationDescription';
+import { SelectedPlaceImage } from './SelectedPlaceImage';
 
 export const SelectedCard = () => {
   const [fetchedID, setFetchedId] = useState(null);
@@ -139,7 +140,7 @@ export const SelectedCard = () => {
         isRound={true}
         variant='ghost'
       />
-      <Image
+      <SelectedPlaceImage
         src={`${process.env.NEXT_PUBLIC_API_URL}/${type}/${id}.png`}
         alt={`Picture of ${name}`}
       />

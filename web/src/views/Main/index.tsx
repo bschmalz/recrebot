@@ -83,7 +83,9 @@ const Main = ({ something }) => {
     map.current.on('zoomend', onMapUpdate);
     map.current.on('resize', onMapUpdate);
     map.current.on('pitchend', () => {
-      console.log('pitch', map.current.getPitch());
+      if (map.current.getPitch() > 0 && filterOnMapRef.current) {
+        toggleMapFilter(true);
+      }
     });
   };
 
@@ -168,7 +170,7 @@ const Main = ({ something }) => {
             <Checkbox
               isChecked={filterOnMap}
               borderColor='#3182CE'
-              onChange={toggleMapFilter}
+              onChange={() => toggleMapFilter()}
             >
               <Text fontSize={14}>Filter Results From Map Boundaries</Text>
             </Checkbox>
@@ -179,6 +181,9 @@ const Main = ({ something }) => {
             >
               <Text fontSize={14}> Reposition Map On Search Results</Text>
             </Checkbox>
+            <Text align='center' fontSize={11} marginTop={'4px !important'}>
+              Hold CTRL and Left Mouse for 3D
+            </Text>
           </Stack>
         </Box>
       )}

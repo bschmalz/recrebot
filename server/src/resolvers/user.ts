@@ -18,7 +18,7 @@ import {
   INVITE_USER_PREFIX,
   REGISTER_USER_PREFIX,
 } from '../constants';
-import { RegisterInput } from './RegisterInput';
+import { RegisterFormInput, RegisterInput } from './RegisterInput';
 import { validateRegister } from '../utils/validateRegister';
 import { sendEmail, sendInvite, sendPasswordReset } from '../utils/sendEmail';
 import { v4 } from 'uuid';
@@ -258,10 +258,16 @@ export class UserResolver {
 
   @Mutation(() => UserResponse)
   async register(
-    @Arg('options') options: RegisterInput,
+    @Arg('options') options: RegisterFormInput,
     @Ctx() { req, redis }: MyContext
   ): Promise<UserResponse> {
-    return await handleRegister(options);
+    const key = INVITE_USER_PREFIX + options.token;
+    const email = (await redis.get(key)) as string;
+    return await handleRegister({
+      phone: options.phone,
+      password: options.password,
+      email,
+    });
   }
 
   @Query(() => VerifyEmailResponse)

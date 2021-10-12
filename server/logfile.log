@@ -61,3 +61,28 @@ relation "campground" already exists
 app level exeception caught: 
 relation "campground" already exists
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/11/2021 6:29 PM	
+Error grabbing locations from db from type Camp
+Cannot read property 'get' of undefined
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/11/2021 6:29 PM	
+Error grabbing locations from db from type Hike
+Cannot read property 'get' of undefined
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/11/2021 6:49 PM	
+app level exeception caught: 
+Cannot determine GraphQL input type for argument named 'options' of 'register' of 'UserResolver' class. Is the value, that is used as its TS type or explicit type, decorated with a proper decorator or is it a proper input value?
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/11/2021 6:51 PM	
+app level exeception caught: 
+Cannot determine GraphQL input type for argument named 'options' of 'register' of 'UserResolver' class. Is the value, that is used as its TS type or explicit type, decorated with a proper decorator or is it a proper input value?
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/11/2021 6:52 PM	
+app level exeception caught: 
+Cannot determine GraphQL input type for argument named 'options' of 'register' of 'UserResolver' class. Is the value, that is used as its TS type or explicit type, decorated with a proper decorator or is it a proper input value?
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**

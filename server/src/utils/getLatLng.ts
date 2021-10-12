@@ -11,5 +11,6 @@ export const getLatLng = (mb: string) => {
     typeof maxLng !== 'number'
       ? false
       : true;
+
   return { boundsAreValid, minLat, maxLat, minLng, maxLng };
 };

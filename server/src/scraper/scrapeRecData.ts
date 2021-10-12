@@ -6,7 +6,6 @@ import {
   PermitGroup,
   PermitGroupResponse,
 } from './types/PermitGroups';
-import fetch from 'node-fetch';
 import { fetchCaliCamppgrounds } from './scrapeCaliData';
 import { getConnection } from 'typeorm';
 import { Trailhead } from '../entities/Trailhead';
@@ -16,6 +15,7 @@ import { ScrapedData, ScrapedDataObj } from './types/ScrapedData';
 import { Campground } from '../entities/Campground';
 import { tryToGetImage } from './getImage';
 import { Facility, RecAreas } from './types/RecAreas';
+import axios from 'axios';
 
 const whiteListedTrailHeads: { [key: string]: boolean } = {
   '233260': true, // Whitney
@@ -112,9 +112,9 @@ export const scrapeRecData = () => {
   const getTrailheads = async (pg: PermitGroup) => {
     const id = pg.FacilityID;
     const url = 'https://www.recreation.gov/api/permitcontent/' + id;
-    const response: PermitGroupResponse = await fetch(url).then((r) =>
-      r.json()
-    );
+    const response: PermitGroupResponse = await axios
+      .get(url)
+      .then((r) => r.data);
     const divisions = response?.payload?.divisions;
     if (!divisions) return;
     for (let key in divisions) {

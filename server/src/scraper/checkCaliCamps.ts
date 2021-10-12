@@ -3,7 +3,7 @@ import { delay } from '../utils/delay';
 import { logError } from '../utils/logError';
 import { sampleCaliReqBody } from './checkTripRequest';
 import dayjs from 'dayjs';
-import fetch from 'node-fetch';
+import axios from 'axios';
 
 const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
@@ -31,14 +31,8 @@ export const checkCaliCamps = async (
           PlaceId: camp.legacy_id,
           StartDate: date.format('YYYY-MM-DD'),
         };
-        const res = await fetch(reserveCaliUrl, {
-          method: 'POST',
-          headers: {
-            Accept: 'application/json',
-            'Content-Type': 'application/json',
-          },
-          body: JSON.stringify(req),
-        }).then((r) => r.json());
+        const axiosres = await axios.post(reserveCaliUrl, req);
+        const res: any = axiosres.data;
         await delay(123, 456);
         const facilities = res?.SelectedPlace?.Facilities || {};
         for (let key in facilities) {

@@ -9,3 +9,13 @@ export class RegisterInput {
   @Field()
   email: string;
 }
+
+@InputType()
+export class RegisterFormInput {
+  @Field({ nullable: true })
+  phone: string;
+  @Field()
+  password: string;
+  @Field()
+  token: string;
+}

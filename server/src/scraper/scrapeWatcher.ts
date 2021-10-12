@@ -1,5 +1,3 @@
-import { Campground } from '../entities/Campground';
-import { Trailhead } from '../entities/Trailhead';
 import { getConnection, getRepository } from 'typeorm';
 import { TripRequest } from '../entities/TripRequest';
 import { checkTripRequest } from './checkTripRequest';
@@ -8,7 +6,8 @@ import { User } from '../entities/User';
 import { sendSuccessEmail } from '../utils/sendEmail';
 import dayjs from 'dayjs';
 import { sendSMS } from '../utils/sendSMS';
-import { logError } from '../utils/logError';
+import Redis from 'ioredis';
+import { getLocations } from './getLocations';
 
 export interface TripRequestInterface {
   id: number;
@@ -32,13 +31,13 @@ export interface ScrapeResult {
   };
 }
 
-export const scrapeWatcher = async () => {
-  intervalScrape();
+export const scrapeWatcher = async (redis: Redis.Redis) => {
+  intervalScrape(redis);
 };
 
 const fiveMins = 1000 * 60 * 5;
 
-const intervalScrape = async () => {
+const intervalScrape = async (redis: Redis.Redis) => {
   console.log('Beginning interval scrape');
   const now = dayjs();
   const trs = await getRepository(TripRequest).createQueryBuilder().getMany();
@@ -64,23 +63,11 @@ const intervalScrape = async () => {
       const diff = now.diff(then, 'day', true);
       if (diff <= 1) continue;
     }
-    let locations: Reservable[] = [];
-
-    try {
-      if (tr.type === 'Camp') {
-        locations = await getRepository(Campground)
-          .createQueryBuilder('campground')
-          .where('campground.id IN (:...ids)', { ids: tr.locations })
-          .getMany();
-      } else {
-        locations = await getRepository(Trailhead)
-          .createQueryBuilder('trailhead')
-          .where('trailhead.id IN (:...ids)', { ids: tr.locations })
-          .getMany();
-      }
-    } catch (e) {
-      logError('Error grabbing locations from db from type ' + tr.type, e);
-    }
+    const locations: Reservable[] = await getLocations(
+      tr.type,
+      tr.locations,
+      redis
+    );
 
     const tripRequest: TripRequestInterface = {
       ...tr,
@@ -92,7 +79,7 @@ const intervalScrape = async () => {
       handleSuccessfulTripRequest(tripRequest, result);
   }
   // Scrape every 5 mins
-  setTimeout(intervalScrape, fiveMins);
+  setTimeout(() => intervalScrape(redis), fiveMins);
 };
 
 const handleSuccessfulTripRequest = async (

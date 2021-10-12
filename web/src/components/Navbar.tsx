@@ -51,8 +51,6 @@ export const Navbar = ({}) => {
       </Flex>
     );
   }
-  console.log('checking', checking);
-  console.log('loading', loading);
 
   return (
     <>

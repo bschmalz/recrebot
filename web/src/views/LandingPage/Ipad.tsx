@@ -2,12 +2,12 @@ import { Image } from '@chakra-ui/image';
 import { Box } from '@chakra-ui/layout';
 import { useMediaQuery } from '@chakra-ui/media-query';
 import React, { useEffect, useRef, useState } from 'react';
-import { isServer } from '../utils/isServer';
-import { delay } from '../utils/delay';
+import { isServer } from '../../utils/isServer';
+import { delay } from '../../utils/delay';
 import { Slide } from '@chakra-ui/transition';
 import { Button } from '@chakra-ui/button';
 import { useDisclosure } from '@chakra-ui/react';
-import { ContactModal } from './ContactModal';
+import { ContactModal } from '../../components/ContactModal';
 
 const images = [
   'screen1.png',
@@ -73,6 +73,7 @@ export const Ipad: React.FC = () => {
   const [isXLarge] = useMediaQuery('(min-width: 1950px)');
   const [isLarge] = useMediaQuery('(min-width: 1650px)');
   const [isMedium] = useMediaQuery('(min-width: 766px)');
+  const [isShort] = useMediaQuery('(max-height: 800px)');
   const [isVeryShort] = useMediaQuery('(max-height: 500px)');
   if (isServer()) {
     return <></>;
@@ -142,7 +143,7 @@ export const Ipad: React.FC = () => {
         >
           <Box
             position='absolute'
-            top='130px'
+            top={isShort ? '80px' : '130px'}
             right='50%'
             transform='translate(50%, 0%)'
           >

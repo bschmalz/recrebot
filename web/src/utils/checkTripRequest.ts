@@ -1,3 +1,4 @@
+import axios from 'axios';
 import dayjs from 'dayjs';
 import { checkRecGovCamps } from './checkRecGovCamps';
 import { checkTrailheads } from './checkTrailheads';
@@ -53,22 +54,15 @@ const checkCampgrounds = async ({
     }
   });
 
-  const reserveCaliCampResults = await fetch(
+  const reserveCaliCampResults = await axios.post(
     `${process.env.NEXT_PUBLIC_API_URL}/rc-check`,
-    {
-      method: 'POST',
-      headers: {
-        Accept: 'application/json',
-        'Content-Type': 'application/json',
-      },
-      body: JSON.stringify({ reserveCaliCamps, dates, min_nights }),
-    }
-  ).then((r) => r.json());
+    { reserveCaliCamps, dates, min_nights }
+  );
 
-  for (let camp in reserveCaliCampResults) {
-    reserveCaliCampResults[camp].dates = reserveCaliCampResults[camp].dates.map(
-      (d) => dayjs(d)
-    );
+  const caliResults = reserveCaliCampResults.data;
+
+  for (let camp in caliResults) {
+    caliResults[camp].dates = caliResults[camp].dates.map((d) => dayjs(d));
   }
 
   const recGovCampResults = await checkRecGovCamps(
@@ -79,5 +73,5 @@ const checkCampgrounds = async ({
     shortenDelay
   );
 
-  return { ...reserveCaliCampResults, ...recGovCampResults };
+  return { ...caliResults, ...recGovCampResults };
 };
