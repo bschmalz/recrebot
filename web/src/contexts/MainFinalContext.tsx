@@ -71,7 +71,7 @@ function MainFinalProvider(props) {
 
   const handleSearch = (val, type) => {
     let center, bounds;
-    if (shouldRenderMap) {
+    if (shouldRenderMap && map?.current) {
       center = JSON.stringify(map.current.getCenter());
       bounds = JSON.stringify(map.current.getBounds());
     }

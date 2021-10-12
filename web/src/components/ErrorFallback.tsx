@@ -14,7 +14,7 @@ export const ErrorFallback: React.FC<ErrorFallbackProps> = ({
   message,
 }) => {
   const renderFallBack = () => {
-    if (showFullError) return <ErrorContainer />;
+    if (showFullError) return <ErrorContainer message={message} />;
     if (message?.length) return <Text>{message}</Text>;
     else return <div />;
   };

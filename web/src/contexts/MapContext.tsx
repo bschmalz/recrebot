@@ -148,6 +148,7 @@ function MapProvider(props) {
     if (repositionMap) safeSetState({ repositionMap: false });
     else {
       safeSetState({ repositionMap: true, filterOnMap: false });
+      map.current.setMinZoom(null);
       filterOnMapRef.current = false;
     }
   };
