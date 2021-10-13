@@ -24,6 +24,7 @@ Frontend:
 - Typescript
 - Type GraphQl
 - Mapbox
+- NextPWA
 
 Backend:
 
@@ -39,6 +40,7 @@ Deployment
 
 - Docker
 - Dokku
+- Vercel
 
 Testing
 
@@ -67,7 +69,21 @@ Testing
 
 Frontend: run 'cypress run'
 
-## Help
+## Deployment
+
+BE (from server dir):
+docker build -t [username]/[appname]:[version] .
+docker push [username]/[appname]:[version]
+
+ssh root@000.1111.2222.3333
+docker pull [username]/[appname]:[version]
+docker tag [username]/[appname]:[version] dokku/[appname]:latest
+dokku tags:deploy [appname] latest
+
+FE (from web dir):
+vercel --prod
+
+## Useful Commands
 
 - When developing on the FE, run 'yarn gen' to generate new React hooks based on graphql changes.
 

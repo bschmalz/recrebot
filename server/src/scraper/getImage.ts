@@ -48,17 +48,6 @@ export const getImage = async (
 export const getImages = async () => {
   // Make sure image directories exist
 
-  const cgDir = '`./public/campground/';
-  const thDir = '`./public/trailhead/';
-
-  if (!fs.existsSync(cgDir)) {
-    fs.mkdirSync(cgDir, { recursive: true });
-  }
-
-  if (!fs.existsSync(thDir)) {
-    fs.mkdirSync(thDir, { recursive: true });
-  }
-
   const campgrounds = await getRepository(Campground)
     .createQueryBuilder('campground')
     .getMany();

@@ -145,7 +145,7 @@ const main = async () => {
 
     app.listen(parseInt(process.env.PORT), () => {
       console.log('server started');
-      scrapeWatcher(redis);
+      // scrapeWatcher(redis);
     });
   } catch (e) {
     logError('app level exeception caught: ', e);
