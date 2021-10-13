@@ -90,6 +90,8 @@ vercel --prod
 
 - When developing on the FE, run 'yarn gen' to generate new React hooks based on graphql changes.
 
+- Migrations, npx typeorm migration:generate -n [migName]
+
 ## Authors
 
 Brian Schmalz

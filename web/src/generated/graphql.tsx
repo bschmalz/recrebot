@@ -45,7 +45,7 @@ export type CampgroundsResponse = {
 export type EditTripRequestInput = {
   custom_name: Scalars['String'];
   type: Scalars['String'];
-  dates: Array<Scalars['DateTime']>;
+  dates: Array<Scalars['String']>;
   locations: Array<Scalars['Int']>;
   min_nights?: Maybe<Scalars['Float']>;
   num_hikers?: Maybe<Scalars['Float']>;
@@ -226,7 +226,7 @@ export type TripRequest = {
   active: Scalars['Boolean'];
   custom_name: Scalars['String'];
   type: Scalars['String'];
-  dates: Array<Scalars['DateTime']>;
+  dates: Array<Scalars['String']>;
   locations: Array<Reservable>;
   min_nights?: Maybe<Scalars['Float']>;
   num_hikers?: Maybe<Scalars['Float']>;
@@ -238,7 +238,7 @@ export type TripRequest = {
 export type TripRequestInput = {
   custom_name: Scalars['String'];
   type: Scalars['String'];
-  dates: Array<Scalars['DateTime']>;
+  dates: Array<Scalars['String']>;
   locations: Array<Scalars['Int']>;
   min_nights?: Maybe<Scalars['Float']>;
   num_hikers?: Maybe<Scalars['Float']>;
@@ -348,7 +348,7 @@ export type VerifyEmailMutation = { __typename?: 'Mutation', verifyEmail: { __ty
 export type GetTripRequestsQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<any>, active: boolean, min_nights?: Maybe<number>, type: string, num_hikers?: Maybe<number>, locations: Array<{ __typename?: 'Reservable', name: string, id: number, legacy_id: string, latitude: number, longitude: number, parent_name: string, subparent_id?: Maybe<string>, sub_type: string }> }>> } };
+export type GetTripRequestsQuery = { __typename?: 'Query', getTripRequests: { __typename?: 'TripRequestsResponse', tripRequests?: Maybe<Array<{ __typename?: 'TripRequest', id: number, custom_name: string, dates: Array<string>, active: boolean, min_nights?: Maybe<number>, type: string, num_hikers?: Maybe<number>, locations: Array<{ __typename?: 'Reservable', name: string, id: number, legacy_id: string, latitude: number, longitude: number, parent_name: string, subparent_id?: Maybe<string>, sub_type: string }> }>> } };
 
 export type MeQueryVariables = Exact<{ [key: string]: never; }>;
 

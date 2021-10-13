@@ -9,7 +9,7 @@ const reserveCaliUrl = 'https://calirdr.usedirect.com/rdr/rdr/search/place';
 
 export const checkCaliCamps = async (
   camps: Reservable[],
-  days: Date[],
+  days: string[],
   min_nights: number
 ) => {
   try {

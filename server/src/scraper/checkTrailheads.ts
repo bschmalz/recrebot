@@ -3,7 +3,7 @@ import { delay } from '../utils/delay';
 import dayjs from 'dayjs';
 
 interface CheckTrailheadsInterface {
-  dates: Date[];
+  dates: string[];
   locations: Reservable[];
   memoFetch: () => Function;
   shortenDelay?: boolean;
@@ -49,7 +49,7 @@ export const checkTrailheads = async ({
   return { ...backcountryResults, ...permitResults };
 };
 
-const getSearchObjects = (dates: Date[]) => {
+const getSearchObjects = (dates: string[]) => {
   const datesToCheck = dates.map((d) => dayjs(d));
   const monthsToCheck: { [key: string]: dayjs.Dayjs[] } = {};
   const results: {

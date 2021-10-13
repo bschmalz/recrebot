@@ -15,7 +15,7 @@ export interface TripRequestInterface {
   active: boolean;
   custom_name: string;
   type: string;
-  dates: Date[];
+  dates: string[];
   locations: Reservable[];
   min_nights?: number;
   last_success: Date | null;
@@ -37,12 +37,27 @@ export const scrapeWatcher = async (redis: Redis.Redis) => {
 
 const fiveMins = 1000 * 60 * 5;
 
+interface TRWithDates {
+  dates: Date[];
+  id: number;
+  last_success?: Date;
+  type: string;
+  locations: number[];
+  userId: number;
+  active: boolean;
+  custom_name: string;
+  min_nights?: number;
+  num_hikers?: number;
+  created_at: Date;
+  updated_at: Date;
+}
+
 const intervalScrape = async (redis: Redis.Redis) => {
   console.log('Beginning interval scrape');
   const now = dayjs();
   const trs = await getRepository(TripRequest).createQueryBuilder().getMany();
   for (let i = 0; i < trs.length; i++) {
-    const tr = { ...trs[i] } as TripRequest;
+    let tr = trs[i];
     const filteredDates = tr.dates.filter((d) => dayjs(d).isAfter(now));
     // In this case, our trip request has an old date that needs to be cleaned up
     if (filteredDates.length !== tr.dates.length) {
@@ -57,6 +72,7 @@ const intervalScrape = async (redis: Redis.Redis) => {
         }
       }
     }
+
     // If we've successfully scraped this in the past 24 hours, we don't want to do it again
     if (tr.last_success) {
       const then = dayjs(tr.last_success);

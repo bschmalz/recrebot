@@ -27,8 +27,8 @@ export class TripRequestInput {
   @Field()
   type: string;
 
-  @Field(() => [Date])
-  dates: Date[];
+  @Field(() => [String])
+  dates: string[];
 
   @Field(() => [Int])
   locations: number[];

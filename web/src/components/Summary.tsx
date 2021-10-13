@@ -1,8 +1,6 @@
 import { Button } from '@chakra-ui/button';
 import { Input } from '@chakra-ui/input';
 import { Badge, Box, Divider, Flex, Text } from '@chakra-ui/layout';
-import dayjs from 'dayjs';
-import utc from 'dayjs/plugin/utc';
 import {
   NumberInput,
   NumberInputField,
@@ -23,8 +21,6 @@ import { useMap } from '../contexts/MapContext';
 import { useMainFinal } from '../contexts/MainFinalContext';
 import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
 import { ResultsModal } from './ResultsModal';
-
-dayjs.extend(utc);
 
 interface Props {
   minimumNights?: number;
@@ -74,7 +70,7 @@ export const Summary: React.FC<Props> = ({
   const createTripRequestObj = (customName: string, minNights, numHikers) => {
     const tr = {
       type: tripType,
-      dates: selectedDates.map((d) => dayjs.utc(d).format()),
+      dates: selectedDates,
       locations: selectedPlaces.map((sp) => sp.id),
       custom_name: customName,
     };
@@ -132,7 +128,7 @@ export const Summary: React.FC<Props> = ({
         setResults(res);
         onOpen();
         // TODO - Remove after we verify success on prod
-        // toggleSearched(true);
+        toggleSearched(true);
       } else {
         toggleSearched(true);
         toast({

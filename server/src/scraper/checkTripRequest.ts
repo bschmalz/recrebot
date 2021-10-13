@@ -32,7 +32,7 @@ export const sampleCaliReqBody = {
 
 interface checkCampgroundsInterface {
   min_nights: number;
-  dates: Date[];
+  dates: string[];
   locations: Reservable[];
   logError?: (message: string, error: Error) => void;
 }
@@ -40,7 +40,7 @@ interface checkCampgroundsInterface {
 interface checkTripRequestInterface {
   type: string;
   min_nights?: number | undefined;
-  dates: Date[];
+  dates: string[];
   locations: Reservable[];
   num_hikers?: number | undefined;
 }
