@@ -81,14 +81,16 @@ export class TripRequestResolver {
     return { tripRequests: tr };
   }
 
-  @Mutation(() => TripRequest)
+  @Mutation(() => TripRequest || null)
   @UseMiddleware(isAuth)
   async createTripRequest(
     @Arg('input') input: TripRequestInput,
     @Ctx() { req }: MyContext
-  ): Promise<TripRequest> {
+  ): Promise<TripRequest | null> {
+    const userId = req.session?.userId;
+    if (!userId) return null;
     const tr = {
-      userId: req.session?.userId,
+      userId,
       ...input,
     };
 

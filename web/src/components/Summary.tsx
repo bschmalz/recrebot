@@ -1,17 +1,8 @@
 import { Button } from '@chakra-ui/button';
 import { Input } from '@chakra-ui/input';
-import {
-  Badge,
-  Box,
-  Center,
-  Divider,
-  Flex,
-  Link,
-  List,
-  ListItem,
-  Text,
-} from '@chakra-ui/layout';
+import { Badge, Box, Divider, Flex, Text } from '@chakra-ui/layout';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
 import {
   NumberInput,
   NumberInputField,
@@ -23,15 +14,7 @@ import { Tag } from '@chakra-ui/tag';
 import React, { useState } from 'react';
 import { StyledContainer } from './StyledContainer';
 import { checkTripRequest } from '../utils/checkTripRequest';
-import {
-  Modal,
-  ModalBody,
-  ModalContent,
-  ModalHeader,
-  ModalOverlay,
-  useDisclosure,
-  useToast,
-} from '@chakra-ui/react';
+import { useDisclosure, useToast } from '@chakra-ui/react';
 import { useTripType } from '../contexts/TripTypeContext';
 import { useSelectedPlaces } from '../contexts/SelectedPlacesContext';
 import { useTripRequests } from '../contexts/TripRequestsContext';
@@ -39,6 +22,9 @@ import { useMain } from '../contexts/MainContext';
 import { useMap } from '../contexts/MapContext';
 import { useMainFinal } from '../contexts/MainFinalContext';
 import { useCheckingTripRequests } from '../contexts/CheckingTripRequests';
+import { ResultsModal } from './ResultsModal';
+
+dayjs.extend(utc);
 
 interface Props {
   minimumNights?: number;
@@ -88,7 +74,7 @@ export const Summary: React.FC<Props> = ({
   const createTripRequestObj = (customName: string, minNights, numHikers) => {
     const tr = {
       type: tripType,
-      dates: selectedDates,
+      dates: selectedDates.map((d) => dayjs.utc(d).format()),
       locations: selectedPlaces.map((sp) => sp.id),
       custom_name: customName,
     };
@@ -145,6 +131,8 @@ export const Summary: React.FC<Props> = ({
       if (res && Object.keys(res).length) {
         setResults(res);
         onOpen();
+        // TODO - Remove after we verify success on prod
+        // toggleSearched(true);
       } else {
         toggleSearched(true);
         toast({
@@ -268,57 +256,7 @@ export const Summary: React.FC<Props> = ({
         </StyledContainer>
       </form>
       {isOpen && (
-        <Modal isOpen={isOpen} onClose={onClose}>
-          <ModalOverlay />
-          <ModalContent>
-            <ModalHeader pb={3}>Search Results</ModalHeader>
-            <ModalBody px={4} py={0}>
-              <Text fontSize={14}>
-                We found matches on the following combinations.
-              </Text>
-              <List>
-                <Divider marginTop={2} />
-                {Object.keys(results).map((name) => {
-                  return (
-                    <>
-                      <ListItem key={name} my={2}>
-                        <Text fontSize={14}>
-                          <Link href={results[name].url} target='_blank'>
-                            <Tag size='md' variant='solid'>
-                              {name}
-                            </Tag>
-                          </Link>
-                          <Box as='span' ml={2}>
-                            {results[name].dates
-                              .sort((a, b) => a - b)
-                              .map((d, i) => {
-                                return `${dayjs(d).format('MM/DD')}${
-                                  i !== results[name].dates.length - 1
-                                    ? ', '
-                                    : ''
-                                }`;
-                              })}{' '}
-                          </Box>
-                        </Text>
-                      </ListItem>
-                      <Divider />
-                    </>
-                  );
-                })}
-              </List>
-              <Text mt={3} fontSize={14}>
-                Trips with matches are not able to saved. Consider booking your
-                reservation now.
-              </Text>
-            </ModalBody>
-
-            <Center p={6}>
-              <Button colorScheme='blue' mr={3} onClick={onClose}>
-                Got It
-              </Button>
-            </Center>
-          </ModalContent>
-        </Modal>
+        <ResultsModal isOpen={isOpen} onClose={onClose} results={results} />
       )}
     </>
   );

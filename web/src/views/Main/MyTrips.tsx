@@ -11,6 +11,8 @@ import {
   Text,
   useDisclosure,
 } from '@chakra-ui/react';
+import { useMediaQuery } from '@chakra-ui/react';
+
 import { FaWalking, FaCampground } from 'react-icons/fa';
 import { renderDate } from '../../utils/renderDate';
 import { MdDeleteForever, MdEdit } from 'react-icons/md';
@@ -19,6 +21,7 @@ import { TripSelections } from '../../components/Summary';
 import { useSelectedPlaces } from '../../contexts/SelectedPlacesContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
 import { useTripType } from '../../contexts/TripTypeContext';
+import { useMap } from '../../contexts/MapContext';
 
 const renderText = (custom_name: string, dates: Date[]) => {
   if (custom_name) return custom_name;
@@ -54,7 +57,11 @@ export const MyTrips: React.FC = () => {
     onClose: closeDeleteModal,
   } = useDisclosure();
 
+  const { updateMapMarkers } = useMap();
+
   const [deletingId, setDeletingId] = useState(null);
+  const [selectedId, setSelectedId] = useState(null);
+  const [smallText] = useMediaQuery('(max-width: 800px)');
 
   const handleDelete = () => {
     deleteTripRequest(deletingId);
@@ -77,6 +84,17 @@ export const MyTrips: React.FC = () => {
     setDates(tr.dates.map((d) => new Date(d)));
     setEditingTripRequest(tr);
     setTripType(tr.type);
+    updateMapMarkers([]);
+  };
+
+  const selectTripRequest = (tr) => {
+    if (tr.id === selectedId) {
+      updateMapMarkers([]);
+      setSelectedId(null);
+    } else {
+      updateMapMarkers(tr.locations);
+      setSelectedId(tr.id);
+    }
   };
 
   const renderBody = () => {
@@ -96,10 +114,16 @@ export const MyTrips: React.FC = () => {
       );
 
     if (errorTripRequests)
-      return <Text>There was an error fetching trip requests.</Text>;
+      return (
+        <Text fontSize={smallText ? 12 : 14}>
+          There was an error fetching trip requests.
+        </Text>
+      );
 
     return !tripRequests.length ? (
-      <Text>It looks like you haven't planned any trips yet.</Text>
+      <Text fontSize={smallText ? 12 : 14} textAlign='center'>
+        It looks like you haven't planned any trips yet.
+      </Text>
     ) : (
       <Accordion width='100%' backgroundColor='white' allowToggle>
         {tripRequests.map((tr) => {
@@ -107,7 +131,11 @@ export const MyTrips: React.FC = () => {
           const Icon = type === 'Hike' ? FaWalking : FaCampground;
           return (
             <AccordionItem key={tr.id}>
-              <AccordionButton width='100%' p={2}>
+              <AccordionButton
+                width='100%'
+                p={2}
+                onClick={() => selectTripRequest(tr)}
+              >
                 <Flex
                   alignContent='center'
                   justifyContent='space-between'

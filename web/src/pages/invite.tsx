@@ -8,7 +8,6 @@ import { toErrorMap } from '../utils/toErrorMap';
 import { useRouter } from 'next/router';
 import { withApollo } from '../utils/withApollo';
 import { FormWrapper } from '../components/FormWrapper';
-import { MeProvider, useMe } from '../contexts/MeContext';
 
 const Invite: React.FC = () => {
   const [emailSent, setEmailSent] = useState(false);
@@ -28,10 +27,7 @@ const Invite: React.FC = () => {
   return (
     <Wrapper variant='small'>
       {emailSent ? (
-        <Box>
-          An email has been sent to your address. Confirm your email account to
-          finish registration.
-        </Box>
+        <Box>An email has been sent to the provided address.</Box>
       ) : (
         <Formik
           initialValues={{ email: '' }}

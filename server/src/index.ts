@@ -99,15 +99,15 @@ const main = async () => {
     app.post('/contact', async (req, res) => {
       const errors = validateMessage(req.body);
       if (errors) {
-        res.send({ errors });
+        return res.send({ errors });
       }
       await sendEmail(
         process.env.EMAIL_USER,
         req.body.message,
-        req.body.subject,
+        req.body.subject || 'Message from contact form',
         req.body.email
       );
-      res.send({ success: true });
+      return res.send({ success: true });
     });
 
     app.post('/rc-check', async (req, res) => {

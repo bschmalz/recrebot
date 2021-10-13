@@ -20,7 +20,7 @@ import {
 } from '../constants';
 import { RegisterFormInput, RegisterInput } from './RegisterInput';
 import { validateRegister } from '../utils/validateRegister';
-import { sendEmail, sendInvite, sendPasswordReset } from '../utils/sendEmail';
+import { sendInvite, sendPasswordReset } from '../utils/sendEmail';
 import { v4 } from 'uuid';
 import { getConnection } from 'typeorm';
 import { EmailInput } from './EmailInput';
@@ -276,7 +276,7 @@ export class UserResolver {
     const key = INVITE_USER_PREFIX + options.token;
     const email = (await redis.get(key)) as string;
     return await handleRegister({
-      phone: options.phone,
+      phone: options.phone?.length ? options.phone : undefined,
       password: options.password,
       email,
     });

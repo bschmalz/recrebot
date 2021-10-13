@@ -3,7 +3,7 @@ import { InputType, Field } from 'type-graphql';
 @InputType()
 export class RegisterInput {
   @Field({ nullable: true })
-  phone: string;
+  phone?: string;
   @Field()
   password: string;
   @Field()
@@ -13,7 +13,7 @@ export class RegisterInput {
 @InputType()
 export class RegisterFormInput {
   @Field({ nullable: true })
-  phone: string;
+  phone?: string;
   @Field()
   password: string;
   @Field()

@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
-import { Box, Image } from '@chakra-ui/react';
+import Image from 'next/image';
+import { Box } from '@chakra-ui/layout';
 
 interface SelectedPlaceImageProps {
   src: string;
@@ -10,16 +11,16 @@ export const SelectedPlaceImage: React.FC<SelectedPlaceImageProps> = ({
   src,
   alt,
 }) => {
-  const [isInErrorState, setError] = useState(false);
+  const [error, setError] = useState(false);
   return (
-    <Box>
+    <Box width={265} height={185} position='relative'>
       <Image
-        src={src}
-        fallbackSrc={isInErrorState ? '/defaultPlace.png' : ''}
-        height={isInErrorState ? '185px' : undefined}
-        width={isInErrorState ? '265px' : undefined}
-        minHeight={'185px'}
+        src={error ? '/defaultPlace.png' : src}
         alt={alt}
+        width={265}
+        height={185}
+        layout='fill'
+        objectFit='contain'
         onError={() => setError(true)}
       />
     </Box>

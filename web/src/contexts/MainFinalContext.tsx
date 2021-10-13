@@ -80,7 +80,7 @@ function MainFinalProvider(props) {
       type === 'Camp' ? campgroundSearch.current : trailheadSearch.current;
     callback({
       variables: {
-        searchTerm: val,
+        searchTerm: val?.trim() || '',
         mapCenter: center,
         mapBounds: bounds,
         filterOnBounds: filterOnMapRef.current,
@@ -123,7 +123,7 @@ function MainFinalProvider(props) {
   const toggleTripType = (newTripType) => {
     if (newTripType !== tripType) {
       setTripType(newTripType);
-
+      resetSearchLocations();
       setSelectedPlaces([]);
       setDates([]);
       selectCard(null);

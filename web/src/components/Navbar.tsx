@@ -34,7 +34,7 @@ export const Navbar = ({}) => {
   } else {
     body = (
       <Flex>
-        {data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
+        {false && data?.me?.email === process.env.NEXT_PUBLIC_EMAIL ? (
           <NextLink href='/invite'>
             <Link mr={3}>invite</Link>
           </NextLink>

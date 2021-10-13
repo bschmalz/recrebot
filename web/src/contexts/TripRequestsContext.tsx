@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useState } from 'react';
 import {
   TripRequest,
   useCreateTripRequestMutation,
@@ -20,7 +20,7 @@ interface TripRequestInterface {
   createTrip: ({}) => void;
   customName: string;
   deleteTripRequest: (id: number) => void;
-  editTripRequest: (input: Trip) => void;
+  editTripRequest: (input: {}) => void;
   editingTripRequest: TripRequest | null;
   errorTripRequests: Error | null;
   loadingTripRequests: boolean;
@@ -71,6 +71,26 @@ function TripRequestsProvider(props) {
     error: errorTripRequests,
     refetch: refetchTripRequests,
   } = useGetTripRequestsQuery();
+
+  const checkVisibility = () => {
+    // Check if our new state is visible
+    if (document.visibilityState === 'visible') {
+      // Try to make sure the current device is a phone with a pwa
+      if (
+        (navigator as any)?.standalone ||
+        window.matchMedia('(display-mode: standalone)').matches
+      ) {
+        refetchTripRequests();
+      }
+    }
+  };
+
+  // Make sure we refresh trip requests on PWAs when they are reopened
+  useEffect(() => {
+    document.addEventListener('visibilitychange', checkVisibility);
+    return () =>
+      document.removeEventListener('visibilitychange', checkVisibility);
+  }, []);
 
   const [
     deleteTripRequestMutation,

@@ -49,7 +49,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
               }
 
               if (res?.data?.errors) {
-                setErrors(toErrorMap(res.errors));
+                setErrors(toErrorMap(res.data.errors));
               } else {
                 if (res?.data?.success)
                   toast({
@@ -77,7 +77,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
                     <InputField
                       name='subject'
                       placeholder='subject'
-                      label='Subject'
+                      label='Subject (Optional)'
                     />
                   </Box>
                   <Box mt={4}>

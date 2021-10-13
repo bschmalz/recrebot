@@ -7,14 +7,7 @@ interface ValidateInput {
 }
 
 export const validateMessage = (params: ValidateInput) => {
-  if (!params.subject.length) {
-    return [
-      {
-        field: 'subject',
-        message: 'must contain a subject',
-      },
-    ];
-  } else if (!params.message.length) {
+  if (!params.message.length) {
     return [
       {
         field: 'message',

@@ -2,7 +2,7 @@ import { RegisterInput } from '../resolvers/RegisterInput';
 
 export const validateRegister = (options: RegisterInput) => {
   try {
-    if (options.phone.length) {
+    if (options.phone?.length) {
       if (options.phone.length !== 10) {
         return [
           {

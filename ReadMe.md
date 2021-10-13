@@ -72,6 +72,9 @@ Frontend: run 'cypress run'
 ## Deployment
 
 BE (from server dir):
+./deploy.sh
+
+or...
 docker build -t [username]/[appname]:[version] .
 docker push [username]/[appname]:[version]
 

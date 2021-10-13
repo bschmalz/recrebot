@@ -147,7 +147,7 @@ export const SelectedCard = () => {
       />
 
       <SelectedPlaceImage
-        src={`placeImages/${type}/${subTypeToFolder[sub_type]}/${legacy_id}.png`}
+        src={`/placeImages/${type}/${subTypeToFolder[sub_type]}/${legacy_id}.png`}
         alt={`Picture of ${name}`}
       />
       <Box marginTop={3} textAlign='left'>

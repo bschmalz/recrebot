@@ -7,9 +7,11 @@ import { useMain } from '../../contexts/MainContext';
 import { useMainFinal } from '../../contexts/MainFinalContext';
 import { useTripRequests } from '../../contexts/TripRequestsContext';
 import { isServer } from '../../utils/isServer';
+import { usePlanTrip } from '../../contexts/PlanTripContext';
 
 export const Map = () => {
-  const { searchText, searchTextRef, sideBarViewRef } = useMain();
+  const { searchText, searchTextRef, sideBarView, sideBarViewRef } = useMain();
+  const { tabIndex } = usePlanTrip();
 
   const { editingTripRequest } = useTripRequests();
   const {
@@ -75,33 +77,35 @@ export const Map = () => {
     !isServer() &&
     shouldRenderMap && (
       <Box ref={mapRef} w='100%' h='100%' id='recrebot-map' position='relative'>
-        <Stack
-          spacing={3}
-          direction='column'
-          position='absolute'
-          top={5}
-          right={5}
-          zIndex={10}
-          fontWeight='bold'
-          backgroundColor='rgba(240, 240, 240, .65)'
-          p={2}
-          borderRadius={6}
-        >
-          <Checkbox
-            isChecked={filterOnMap}
-            borderColor='#3182CE'
-            onChange={() => toggleMapFilter()}
+        {(sideBarView === 'PlanATrip' || editingTripRequest) && tabIndex === 0 && (
+          <Stack
+            spacing={3}
+            direction='column'
+            position='absolute'
+            top={5}
+            right={5}
+            zIndex={10}
+            fontWeight='bold'
+            backgroundColor='rgba(240, 240, 240, .65)'
+            p={2}
+            borderRadius={6}
           >
-            <Text fontSize={14}>Filter Results From Map Boundaries</Text>
-          </Checkbox>
-          <Checkbox
-            isChecked={repositionMap}
-            borderColor='#3182CE'
-            onChange={toggleReposition}
-          >
-            <Text fontSize={14}> Reposition Map On Search Results</Text>
-          </Checkbox>
-        </Stack>
+            <Checkbox
+              isChecked={filterOnMap}
+              borderColor='#3182CE'
+              onChange={() => toggleMapFilter()}
+            >
+              <Text fontSize={14}>Filter Results From Map Boundaries</Text>
+            </Checkbox>
+            <Checkbox
+              isChecked={repositionMap}
+              borderColor='#3182CE'
+              onChange={toggleReposition}
+            >
+              <Text fontSize={14}> Reposition Map On Search Results</Text>
+            </Checkbox>
+          </Stack>
+        )}
       </Box>
     )
   );
