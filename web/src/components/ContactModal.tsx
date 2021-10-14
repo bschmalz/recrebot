@@ -1,11 +1,11 @@
 import React from 'react';
 import { Button } from '@chakra-ui/button';
+import { Center } from '@chakra-ui/layout';
 import {
   Modal,
   ModalOverlay,
   ModalContent,
   ModalCloseButton,
-  ModalBody,
 } from '@chakra-ui/modal';
 import { Box, ModalHeader, useToast } from '@chakra-ui/react';
 import { Formik, Form } from 'formik';
@@ -27,10 +27,10 @@ export const ContactModal: React.FC<ContactModalProps> = ({
   return (
     <Modal isOpen={isModalOpen} onClose={handleModalClose} isCentered>
       <ModalOverlay />
-      <ModalContent>
+      <ModalContent py={4}>
         <ModalCloseButton />
         <ModalHeader>Send Us A Message</ModalHeader>
-        <ModalBody>
+        <Center>
           <Formik
             initialValues={{ email: '', subject: '', message: '' }}
             onSubmit={async (values, { setErrors }) => {
@@ -102,7 +102,7 @@ export const ContactModal: React.FC<ContactModalProps> = ({
               </FormWrapper>
             )}
           </Formik>
-        </ModalBody>
+        </Center>
       </ModalContent>
     </Modal>
   );

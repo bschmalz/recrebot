@@ -138,6 +138,7 @@ function MapProvider(props) {
     } else {
       filterOnMapRef.current = true;
       map.current.setPitch(0);
+      map.current.setBearing(0);
       map.current.setMinZoom(9);
       map.current.resize();
       safeSetState({ filterOnMap: true, repositionMap: false });
