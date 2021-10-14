@@ -72,7 +72,9 @@ const Register: React.FC<registerProps> = ({}) => {
           let res;
           try {
             res = await register({
-              variables: { options: { ...values, token } },
+              variables: {
+                options: { ...values, password: values.password.trim(), token },
+              },
             });
             const { data } = res;
             if (data?.register.errors) {

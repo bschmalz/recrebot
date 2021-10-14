@@ -77,7 +77,10 @@ export const Map = () => {
     !isServer() &&
     shouldRenderMap && (
       <Box ref={mapRef} w='100%' h='100%' id='recrebot-map' position='relative'>
-        {(sideBarView === 'PlanATrip' || editingTripRequest) && tabIndex === 0 && (
+        {!(
+          (sideBarView === 'PlanATrip' || editingTripRequest) &&
+          tabIndex === 1
+        ) && (
           <Stack
             spacing={3}
             direction='column'
@@ -90,13 +93,15 @@ export const Map = () => {
             p={2}
             borderRadius={6}
           >
-            <Checkbox
-              isChecked={filterOnMap}
-              borderColor='#3182CE'
-              onChange={() => toggleMapFilter()}
-            >
-              <Text fontSize={14}>Filter Results From Map Boundaries</Text>
-            </Checkbox>
+            {sideBarView === 'PlanATrip' && tabIndex === 0 && (
+              <Checkbox
+                isChecked={filterOnMap}
+                borderColor='#3182CE'
+                onChange={() => toggleMapFilter()}
+              >
+                <Text fontSize={14}>Filter Results From Map Boundaries</Text>
+              </Checkbox>
+            )}
             <Checkbox
               isChecked={repositionMap}
               borderColor='#3182CE'

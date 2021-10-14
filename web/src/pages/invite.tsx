@@ -33,7 +33,7 @@ const Invite: React.FC = () => {
           initialValues={{ email: '' }}
           onSubmit={async (values, { setErrors }) => {
             const response = await invite({
-              variables: { options: values },
+              variables: { options: { ...values, email: values.email.trim() } },
             });
             if (response.data?.invite.errors) {
               setErrors(toErrorMap(response.data.invite.errors));
