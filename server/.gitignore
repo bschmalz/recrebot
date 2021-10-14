@@ -6,3 +6,4 @@ DS_Store
 public/campground/*
 public/trailhead/*
 **/deploy.sh
+logfile.log

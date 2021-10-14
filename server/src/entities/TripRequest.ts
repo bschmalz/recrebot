@@ -33,7 +33,7 @@ export class TripRequest extends BaseEntity {
   type: string;
 
   @Field(() => [String])
-  @Column({ type: 'date', array: true })
+  @Column('varchar', { array: true })
   dates: string[];
 
   @Field(() => [Reservable])

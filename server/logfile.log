@@ -86,3 +86,13 @@ Cannot determine GraphQL input type for argument named 'options' of 'register' o
 app level exeception caught: 
 Cannot determine GraphQL input type for argument named 'options' of 'register' of 'UserResolver' class. Is the value, that is used as its TS type or explicit type, decorated with a proper decorator or is it a proper input value?
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/13/2021 4:55 PM	
+app level exeception caught: 
+Data type "string" in "TripRequest.dates" is not supported by "postgres" database.
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+10/13/2021 4:56 PM	
+app level exeception caught: 
+Data type "string" in "TripRequest.dates" is not supported by "postgres" database.
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**

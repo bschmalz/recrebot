@@ -118,13 +118,7 @@ function TripRequestsProvider(props) {
     refetchTripRequests();
   };
 
-  const tripRequests =
-    tripRequestsData?.getTripRequests?.tripRequests?.map((tr) => ({
-      ...tr,
-      dates: tr.dates.map((d) => {
-        return new Date(parseInt(d));
-      }),
-    })) || [];
+  const tripRequests = tripRequestsData?.getTripRequests?.tripRequests || [];
 
   const value = {
     createTrip,
