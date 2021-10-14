@@ -127,8 +127,6 @@ export const Summary: React.FC<Props> = ({
       if (res && Object.keys(res).length) {
         setResults(res);
         onOpen();
-        // TODO - Remove after we verify success on prod
-        toggleSearched(true);
       } else {
         toggleSearched(true);
         toast({
