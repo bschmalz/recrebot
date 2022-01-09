@@ -51,6 +51,12 @@ export const checkRecGovCamps = async (
         if (curMonth.campsites) {
           for (let key in curMonth.campsites) {
             const campsite = curMonth.campsites[key];
+            if (
+              !campsite ||
+              (typeof campsite.min_num_people === 'number' &&
+                campsite.min_num_people > 5)
+            )
+              continue;
             const dates = Object.keys(campsite.availabilities);
             dates.forEach((d) => {
               if (campsite.availabilities[d] === 'Available') {

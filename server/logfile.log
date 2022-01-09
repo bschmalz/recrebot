@@ -96,3 +96,8 @@ Data type "string" in "TripRequest.dates" is not supported by "postgres" databas
 app level exeception caught: 
 Data type "string" in "TripRequest.dates" is not supported by "postgres" database.
 --**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**
+01/07/2022 3:49 PM	
+app level exeception caught: 
+connect ECONNREFUSED 127.0.0.1:5432
+--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**--**

@@ -374,7 +374,7 @@ export const TripSelections = ({ dates, places, tripType }) => {
           marginLeft={1}
           marginBottom={1}
         >
-          Seleted Dates
+          Selected Dates
         </Text>
         <Divider marginTop={1} marginBottom={2} />
         {renderDates()}

@@ -96,6 +96,11 @@ const main = async () => {
       cors: false,
     });
 
+    app.get('/testget', (req, res) => {
+      console.log('test get');
+      return res.send('heyo');
+    });
+
     app.post('/contact', async (req, res) => {
       const errors = validateMessage(req.body);
       if (errors) {
@@ -144,7 +149,7 @@ const main = async () => {
     // });
 
     app.listen(parseInt(process.env.PORT), () => {
-      console.log('server started');
+      console.log('server started for real');
       scrapeWatcher(redis);
     });
   } catch (e) {
