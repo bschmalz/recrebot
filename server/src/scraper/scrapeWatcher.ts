@@ -107,7 +107,9 @@ const handleSuccessfulTripRequest = async (
   const user = await User.findOne({ where: { id: tr.userId } });
   if (user) {
     sendSuccessEmail(user.email, result);
-    if (user.phone?.length === 10) sendSMS(user.phone);
+    var isNumber = new RegExp('^[0-9]*$');
+    if (user.phone?.length === 10 && isNumber.test(user.phone))
+      sendSMS(user.phone);
   } else {
     console.error(
       'Found a trip request connected to a user that does not exist'
