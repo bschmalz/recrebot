@@ -3,12 +3,13 @@ import fs from 'fs';
 import handlebars from 'handlebars';
 import { ScrapeResult } from '../scraper/scrapeWatcher';
 import dayjs from 'dayjs';
+import sgMail from '@sendgrid/mail';
+sgMail.setApiKey(process.env.SENDGRID_API_KEY);
 
 const readHTMLFile = (path: string, callback: Function) => {
   fs.readFile(path, { encoding: 'utf-8' }, function (err, html) {
     if (err) {
       throw err;
-      callback(err);
     } else {
       callback(null, html);
     }
@@ -23,27 +24,43 @@ export const sendEmail = async (
   from?: string
 ) => {
   try {
-    const transporter = await nodemailer.createTransport({
-      host: 'smtp.gmail.com',
-      port: 465,
-      secure: true, // use SSL
-      auth: {
-        user: process.env.EMAIL_USER,
-        pass: process.env.EMAIL_PASS,
-      },
-    });
+    const msg = {
+      to,
+      from: process.env.SENDGRID_EMAIL,
+      subject,
+      html: from ? `<p>Email: ${from}</p>` + `<p>Message: ${text}</p>` : text,
+    };
+    sgMail
+      .send(msg)
+      .then(() => {
+        console.log('Email sent');
+      })
+      .catch((error) => {
+        console.error(error);
+      });
 
-    await transporter.sendMail(
-      {
-        from: process.env.EMAIL_USER,
-        to,
-        subject,
-        html: from ? `<p>Email: ${from}</p>` + `<p>Message: ${text}</p>` : text,
-      },
-      (err) => {
-        if (err) console.error('Error sending email', err);
-      }
-    );
+    // old gmail implementaion
+    // const transporter = await nodemailer.createTransport({
+    //   host: 'smtp.gmail.com',
+    //   port: 465,
+    //   secure: true, // use SSL
+    //   auth: {
+    //     user: process.env.EMAIL_USER,
+    //     pass: process.env.EMAIL_PASS,
+    //   },
+    // });
+
+    // await transporter.sendMail(
+    //   {
+    //     from: process.env.EMAIL_USER,
+    //     to,
+    //     subject,
+    //     html: from ? `<p>Email: ${from}</p>` + `<p>Message: ${text}</p>` : text,
+    //   },
+    //   (err) => {
+    //     if (err) console.error('Error sending email', err);
+    //   }
+    // );
   } catch (e) {}
 };
 
