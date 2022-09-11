@@ -68,7 +68,7 @@ export default class Document extends NextDocument {
           <meta property='og:url' content='https://recrebot.com' />
           <meta
             property='og:image'
-            content='https://recrebot.com/icons/apple-touch-icon.png'
+            content='https://recrebot.com/matlock.jpg'
           />
         </Head>
         <body>
